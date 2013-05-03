@@ -1,0 +1,17 @@
+REQUIREMENTS
+------------
+Python 2.x
+Numpy
+Fortran compiler
+
+INSTALLATION
+------------
+Need to navigate to ./modules/fortran and run 'make' to compile fortran library
+Need to have path to ./modules/python and ./modules/fortran in your PYTHONPATH environment variable
+
+RUNNING CODE
+-------------
+The following scripts are in the base directory:
+code.py - for normal NVT Monte-Carlo
+codeffs.py - for FFS simulation with NVT Monte-Carlo dynamics
+diagnostics.py - run after codeffs to collect FFS results
