@@ -79,7 +79,8 @@ while (qhits < totalqhits):
 fin.close()
 
 # now create the dictionary with shot information
-# this is pickled and read by shots at the subsequent interface (see takeshot.py)
+# this is pickled and read by shots at the subsequent interface
+# (see takeshot.py)
 shotdict = {'nshots': totalqhits,'nshotseff': totalqhits,
             'nsuccess': totalqhits,'nsuccesseff' : totalqhits,
             'successnumbers' : N.array(range(1,totalqhits+1)),

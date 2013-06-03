@@ -1,5 +1,8 @@
 #! /usr/bin/env python
 # diagnosis.py
+# 26th June 2012
+# James Mithen
+# 
 # analyse data at all ffs interfaces and write statistics out to file
 # we write two files, 'allinterfaces.out' and 'allinterfaceseff.out'
 # the latter file includes pruning, so if pruning is applied then

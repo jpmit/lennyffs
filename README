@@ -1,11 +1,19 @@
 lennyffs
 
-A code for studying 
+A code for performing Forward Flux Sampling (FFS) simulations of systems
+of particles interacting via Lennard-Jones (LJ) potentials.
+
 Copyright (c) 2012-2013 James Mithen
+j.mithen@surrey.ac.uk
 
 INTRODUCTION
 ------------
+lennyffs is a code for FFS simulations of LJ systems.  
+It was designed to investigate crystal nucleation of LJ systems
+on surfaces.
 
+It can also be used to do 'conventional' Metropolis Monte-Carlo style
+simulations of LJ fluids / solids.  It will do either NVT or NPT.
 
 REQUIREMENTS
 ------------
@@ -15,12 +23,13 @@ Fortran compiler
 
 INSTALLATION
 ------------
-Need to navigate to ./modules/fortran and run 'make' to compile fortran library
-Need to have path to ./modules/python and ./modules/fortran in your PYTHONPATH environment variable
+Navigate to ./modules/fortran and run 'make' to compile fortran library
+Add path to ./modules/python and ./modules/fortran to your PYTHONPATH 
+environment variable
 
 RUNNING CODE
 -------------
-The following scripts are in the base directory:
-code.py - for normal NVT Monte-Carlo
-codeffs.py - for FFS simulation with NVT Monte-Carlo dynamics
+The following scripts are in the exec directory:
+code.py - for normal NVT/NPT Monte-Carlo
+codeffs.py - for FFS simulation with NVT/NPT Monte-Carlo dynamics
 diagnostics.py - run after codeffs to collect FFS results

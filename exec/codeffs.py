@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 # codeffs.py
+# 26th June 2012
 # James Mithen
 #
 # FFS implementation on oracle grid engine using array job facility
