@@ -1,10 +1,10 @@
 #! /usr/bin/env python
 # diagnosis.py
-# 26th July 2012
 # analyse data at all ffs interfaces and write statistics out to file
 # we write two files, 'allinterfaces.out' and 'allinterfaceseff.out'
 # the latter file includes pruning, so if pruning is applied then
 # the results contained in 'allinterfaceseff.out' are the correct ones
+# If pruning is not applied, both files will show the same results
 
 import readwrite
 import numpy as np
