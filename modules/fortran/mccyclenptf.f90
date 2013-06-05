@@ -11,8 +11,8 @@
 !                    note xpos,ypos,zpos,lboxx,lboxy,lboxz and etot are returned 
 
 subroutine executecyclesnpt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,vrc,vrc2,&
-                            press,lboxx,lboxy,lboxz,eps4,maxdisp,maxvol,npar,nsurf,&
-                            zperiodic,r6mult,r12mult,etot)
+                            press,lboxx,lboxy,lboxz,eps4,maxdisp,maxvol,npar,&
+                            nsurf,zperiodic,r6mult,r12mult,etot)
   ! execute ncycles MC cycles
 
   implicit none
@@ -34,7 +34,8 @@ subroutine executecyclesnpt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,vrc,vrc2,&
 
   integer :: ipar,atmovdisp,acmovdisp,atmovvol,acmovvol,cy,it,nparfl,i,j
   real(kind=db) :: rsc,xposi,yposi,zposi,xposinew,yposinew,zposinew,eold,enew
-  real(kind=db) :: lboxnew, lboxold, vboxold, lnvold, lnvnew, vboxnew
+  real(kind=db) :: lboxnew, lboxxold, lboxyold, lboxzold
+  real(kind=db) :: vboxold, lnvold, lnvnew, vboxnew
   real(kind=db) :: scalefac, arg, etotnew
   real(kind=db), dimension(3) :: rvec
   logical :: accept
@@ -63,7 +64,9 @@ subroutine executecyclesnpt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,vrc,vrc2,&
         if (ipar > npar) then ! volume move
            atmovvol = atmovvol + 1
            ! old box volume
-           lboxold = lboxx
+           lboxxold = lboxx
+           lboxyold = lboxy
+           lboxzold = lboxz
            vboxold = lboxx*lboxy*lboxz
            lnvold = log(vboxold)
            
@@ -71,16 +74,17 @@ subroutine executecyclesnpt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,vrc,vrc2,&
            call random_number(rsc)           
            lnvnew = lnvold + maxvol*(rsc - 0.5_db)
            vboxnew = exp(lnvnew)
-           lboxnew = vboxnew ** (1.0_db/3.0_db)
-           lboxx = lboxnew
-           lboxy = lboxnew
-           lboxz = lboxnew
+
+           ! scale factor for multiplying each dimension of simulation box
+           scalefac = (vboxnew / vboxold) ** (1.0_db/3.0_db)
+           lboxx = lboxx*scalefac
+           lboxy = lboxy*scalefac
+           lboxz = lboxz*scalefac
 
            ! rescale particle positions to new volume
-           scalefac = lboxx / lboxold;
-           xpos = xpos * scalefac
-           ypos = ypos * scalefac
-           zpos = zpos * scalefac
+           xpos = xpos*scalefac
+           ypos = ypos*scalefac
+           zpos = zpos*scalefac
 
            call totalenergy(xpos,ypos,zpos,rc,rcsq,lboxx,lboxy,&
                 lboxz,vrc,vrc2,npar,nsurf,zperiodic,&
@@ -100,9 +104,9 @@ subroutine executecyclesnpt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,vrc,vrc2,&
               if (rsc > exp(arg)) then
                  accept = .False.
                  ! back to old boxsize and positions
-                 lboxx = lboxold
-                 lboxy = lboxold
-                 lboxz = lboxold
+                 lboxx = lboxxold
+                 lboxy = lboxyold
+                 lboxz = lboxzold
                  xpos = xpos / scalefac
                  ypos = ypos / scalefac
                  zpos = zpos / scalefac
@@ -182,7 +186,7 @@ subroutine executecyclesnpt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,vrc,vrc2,&
      end do
      
      ! write out energy after every nsamp cycles
-     if (mod(cy,nsamp) == 0) write(*,'(F12.6, F12.6)') etot,lboxx
+     if (mod(cy,nsamp) == 0) write(*,'(F12.6, F12.6, F12.6, F12.6)') etot,lboxx,lboxy,lboxz
      
   end do
 
