@@ -54,8 +54,7 @@ import writeoutput
 # path of executables lambda0.py, finish.py, takeshot.py
 # this is currently set to be ./../scripts relative to this directory
 # there is a bit of a hack here to step back a directory
-mypath = os.path.realpath(__file__)
-epath = os.path.dirname(os.path.dirname(mypath)) + '/scripts/'
+epath = os.path.expanduser('~/awork/montecarlo/epitaxy/codeffs/scripts/')
 
 # can specify a job queue here
 qname = ''
