@@ -12,7 +12,7 @@ FUNCTIONS
 readparams - read parameters from 'in' and return as dictionary
 getparams - read params, make them numerical, add any missing
 checkparams - a few sanity checks on the parameters we read
-addparams - add useful parameters to params dictionary (whether surface or not)
+addparams - add useful parameters to params dictionary
 addparamssurf - add parameters to params dictionary if have surface
 addparamsnosurf - add parameters to params dictionary if no surface
 initpositions - wrapper for initialising particle positions
@@ -131,7 +131,8 @@ def addparamssurf(pdict):
     pdict['nparlayer'] = nparlayer
     pdict['nparsurf'] = nparsurf
 
-    # get lattice parameters and set dimensions of simulation box in x and y
+    # get lattice parameters and set dimensions of simulation
+    # box in x and y
     if pdict['surftype'] == 'fcc':
         # alat is for the conventional (cubic) unit cell
         alat = 2.0**(2.0/3.0)/pdict['nlatt']**(1.0/3.0)
@@ -200,24 +201,32 @@ def addparamsnosurf(pdict):
     pdict['npartot'] = nparfl
 
     # get box dimensions
-    if pdict['mctype'] == 'npt':
-        lbox = pdict['boxvol']**(1.0/3.0)
-        pdict['lboxx'] = lbox
-        pdict['lboxy'] = lbox
-        pdict['lboxz'] = lbox
-    elif pdict['mctype'] == 'nvt':
-        if 'lboxz' in pdict:
-            # use lboxz to set (cubic) box size
-            pdict['lboxz'] = float(pdict['lboxz'])        
-            pdict['lboxx'] = pdict['lboxz']
-            pdict['lboxy'] = pdict['lboxx']
-        else:
+    # for both npt and nvt simulations, the dims are set as follows
+    # - If lboxx, lboxy and lboxz are in pdict, use these
+    # - Otherwise, if boxvol is given in pdict, we will have a cubic
+    #   box of dimension boxvol**(1/3)
+    # - If neither [lboxx,lboxy,lboxz] nor boxvol is in pdict
+    #   we use nstar to set the box dimensions
+    # - If none of the above has set the box dimensions, we have a
+    #   problem (!)
+    if ('lboxx' in pdict) and ('lboxy' in pdict) and ('lboxz' in pdict):
+        pass
+    else:
+        if 'boxvol' in pdict:
+            lbox = pdict['boxvol']**(1.0/3.0)
+            pdict['lboxx'] = lbox
+            pdict['lboxy'] = lbox
+            pdict['lboxz'] = lbox        
+        elif 'nstar' in pdict:
             # use nstar to set box size (beware of coexistence region)
             nstar = pdict['nstar']
             lbox = (nparfl/nstar)**(1.0/3.0)
             pdict['lboxx'] = lbox
             pdict['lboxy'] = lbox
             pdict['lboxz'] = lbox
+        else:
+            # we haven't set the box size (!)
+            print "Warning, box size has not been set properly!"
     return pdict
 
 def initpositions(params):

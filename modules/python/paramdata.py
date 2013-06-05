@@ -42,6 +42,8 @@ PDICT = {# simulation params
          'plane': STRING,
          # box params
          'boxvol': FLOAT,
+         'lboxx': FLOAT,
+         'lboxy': FLOAT,
          'lboxz': FLOAT,
          # MC params
          'mctype': STRING,
@@ -84,7 +86,7 @@ def __strtobool(s):
         raise ValueError
         
 # functions for converting from string to another type
-# note that int, float, str and bool are built-in
+# note that 'int', 'float', 'str' and 'bool' are built-in
     
 FUNCS = {INT: int, FLOAT: float, STRING: str, BOOL: __strtobool,
          INTLIST: __strtointlist}
