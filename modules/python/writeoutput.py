@@ -16,16 +16,16 @@ import bops
 import readwrite
 import pickle
 
-def writepickparams(params):
+def writepickparams(params, fname='params.pkl'):
     """Write out parameters dictionary as .pkl file"""
-    fout = open('params.pkl','wb')
+    fout = open(fname,'wb')
     pickle.dump(params,fout)
     fout.close()
     return
 
-def writeparams(params):
+def writeparams(params, fname='params.out'):
     """Write out dictionary of parameters in human readable form"""
-    fout = open('params.out','w')
+    fout = open(fname,'w')
     outstr = ('# Simulation parameters (Human readable version of params.pkl)\n'
              '# Note that only some of these parameters are used\n'
              '# Others are redundant and could prove downright misleading!\n')
