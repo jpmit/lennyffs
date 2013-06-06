@@ -34,7 +34,7 @@ if params['simulation'] == 'new':
 epot = energy.totalenergy(positions,params)
 
 # perform MC simulation
-params['starttime'] = time.time()
+starttime = time.time()
 params['cycle'] = params['ncycle']
 
 if params['mctype'] == 'npt':
@@ -52,8 +52,9 @@ for rnum in range(1,NSAVE+1):
     writeoutput.writepickparams(params, 'params%d.pkl' %rnum)
     writeoutput.writeparams(params, 'params%d.out' %rnum)
 
-params['endtime'] = time.time()
+endtime = time.time()
 
 # write runtime to stderr
-sys.stderr.write("runtime in s: %.3f" %(params['endtime']-
-                                        params['starttime']))
+sys.stderr.write("runtime in s: %.3f" %(endtime - starttime))
+
+                                        

@@ -33,7 +33,7 @@ if params['simulation'] == 'new':
 epot = energy.totalenergy(positions,params)
 
 # perform MC simulation
-params['starttime'] = time.time()
+starttime = time.time()
 params['cycle'] = params['ncycle']
 
 if params['mctype'] == 'npt':
@@ -41,10 +41,10 @@ if params['mctype'] == 'npt':
 elif params['mctype'] == 'nvt':
     positions, epot = mccycle.cycle(positions,params,epot)
 
-params['endtime'] = time.time()
+endtime = time.time()
 
 # write final positions to file
 writeoutput.writexyz('finalpositions.xyz',positions,params)
 
 # write runtime to stderr
-sys.stderr.write("runtime in s: %.3f" %(params['endtime']-params['starttime']))
+sys.stderr.write("runtime in s: %.3f" %(endtime - starttime))
