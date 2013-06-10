@@ -1,0 +1,14 @@
+#! /usr/bin/env python
+
+# len_boxarea
+# James Mithen
+# Return area of 'bottom' of simulation box.
+
+from ffsfunctions import getpickparams
+
+try:
+    params = getpickparams()
+except IOError:
+    sys.exit("Error: could not open file params.pkl")    
+    
+print params['lboxx']*params['lboxy']

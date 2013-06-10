@@ -1,0 +1,38 @@
+#! /usr/bin/env python
+
+# len_dexyz
+# James Mithen
+# Strip the symbol column from an xyz file
+
+import sys
+import os
+
+if len(sys.argv) != 3:
+    sys.exit("Syntax dexyz infile.xyz outfile")
+
+infile = sys.argv[1]
+outfile = sys.argv[2]
+
+fin = open(infile,'r')
+
+# get number of atoms from top line
+natom = fin.readline()
+try:
+    intnatom = int(natom)
+except ValueError:
+    sys.exit("Error: First line must be number of atoms")
+
+lines = fin.readlines()
+fin.close()
+
+fout = open(outfile,'w')
+fout.write(natom)
+outstr = ''    
+for line in lines:
+    line = line.strip('\n')
+    if line:
+        # strip symbol from line
+        line = line.split()[1:]
+        outstr = "%s%s\n" %(outstr,' '.join(line))
+fout.write(outstr)
+fout.close()

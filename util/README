@@ -1,0 +1,14 @@
+# This directory contains 'utilities' (mainly python scripts) that are
+# useful for using with .xyz configuration files, i.e. files generated
+# after running Monte-Carlo / Molecular dynamics simulations.
+# A brief description where necessary is given below, further 
+# documentation is in the comments in the scripts themselves.
+
+# These are the only two utilities that are not python scripts (they
+# were originally written in C++, so documentation is not available
+# in the files themselves (unless you can read binaries).
+
+len_getfactors -  return Ncluster, Q6cluster and Shapeq6 of a
+                  configuration.
+len_orderparams - return Ncluster, and Q6 and Q4 of both largest 
+                  cluster and the entire system.

@@ -1,0 +1,151 @@
+#! /usr/bin/env python
+
+# len_joincluster
+# James Mithen
+# Output the largest cluster, removing periodic boundary conditions.
+
+import sys
+import numpy as np
+from copy import deepcopy
+import readwrite
+from ffsfunctions import getpickparams
+import bops
+import graph
+
+if len(sys.argv) != 3:
+    sys.exit("Syntax joincluster infile.xyz outfile")
+
+infile = sys.argv[1]
+outfile = sys.argv[2]
+
+try:
+    params = getpickparams()
+except IOError:
+    sys.exit("Error: file params.pkl not found")
+
+# save box dimensions for future use
+lboxx = params['lboxx']
+lboxy = params['lboxy']    
+
+positions,symbols = readwrite.rxyz(infile,True)
+npar = len(positions)
+
+# get crystal atoms
+cpositions = np.array([positions[i] for i in range(npar) if
+                       symbols[i] == 'S'])
+nc = len(cpositions)
+
+# get largest cluster in the periodic system
+xgraph = bops.getxgraph(cpositions,params,range(nc))
+comps = graph.connected_comps(xgraph)
+cluster = max(comps,key=len)
+ncl = len(cluster)
+clpositions = np.empty([ncl,3])
+i = 0
+for j in cluster:
+    clpositions[i] = cpositions[j]
+    i = i + 1
+
+# replicate the largest cluster a total of nine time
+allpositions = np.vstack((clpositions,)*9)
+# horizontal and vertical replicas
+allpositions[ncl:2*ncl,0] = allpositions[ncl:2*ncl:,0] + lboxx
+allpositions[2*ncl:3*ncl,0] = allpositions[2*ncl:3*ncl,0] - lboxx
+allpositions[3*ncl:4*ncl,1] = allpositions[3*ncl:4*ncl,1] + lboxy
+allpositions[4*ncl:5*ncl,1] = allpositions[4*ncl:5*ncl,1] - lboxy
+# diagonal replicas
+allpositions[5*ncl:6*ncl,0] = allpositions[5*ncl:6*ncl,0] + lboxx
+allpositions[5*ncl:6*ncl,1] = allpositions[5*ncl:6*ncl,1] + lboxy
+allpositions[6*ncl:7*ncl,0] = allpositions[6*ncl:7*ncl,0] + lboxx
+allpositions[6*ncl:7*ncl,1] = allpositions[6*ncl:7*ncl,1] - lboxy
+allpositions[7*ncl:8*ncl,0] = allpositions[7*ncl:8*ncl,0] - lboxx
+allpositions[7*ncl:8*ncl,1] = allpositions[7*ncl:8*ncl,1] + lboxy
+allpositions[8*ncl:9*ncl,0] = allpositions[8*ncl:9*ncl,0] - lboxx
+allpositions[8*ncl:9*ncl,1] = allpositions[8*ncl:9*ncl,1] - lboxy
+
+# find the largest cluster in new system, not using periodic boundaries
+params['lboxx'] = 1000000
+params['lboxy'] = 1000000
+xgraph = bops.getxgraph(allpositions,params,range(9*ncl))
+comps = graph.connected_comps(xgraph)
+cluster = max(comps,key=len)
+clpositions = np.empty([ncl,3])
+i = 0
+for j in cluster:
+    clpositions[i] = allpositions[j]
+    i = i + 1
+
+# next, figure out which boundaries the cluster spans and add in
+# surface (if we had surface in input file).
+if nc != npar: # i.e. we have some surface atoms in the xyz file
+    xhigh = False
+    xlow = False
+    yhigh = False
+    ylow = False
+    xhighyhigh = False
+    xhighylow = False
+    xlowyhigh = False
+    xlowylow = False
+    for j in cluster:
+        if (j >= ncl and j < 2*ncl):
+            xhigh = True
+        elif (j >= 2*ncl and j < 3*ncl):
+            xlow = True
+        elif (j >= 3*ncl and j < 4*ncl):
+            yhigh = True
+        elif (j >= 4*ncl and j < 5*ncl):
+            ylow = True
+        elif (j >= 5*ncl and j < 6*ncl):
+            xhighyhigh = True
+        elif (j >= 6*ncl and j < 7*ncl):
+            xhighylow = True
+        elif (j >= 7*ncl and j < 8*ncl):
+            xlowyhigh = True
+        elif (j >= 8*ncl and j < 9*ncl):
+            xlowylow = True
+
+    surfpositions = np.array([positions[i] for i in range(npar)
+                              if symbols[i] == 'O'])
+    ns = len(surfpositions)
+    nextra = (xlow + xhigh + ylow + yhigh + xhighyhigh + xhighylow +
+              xlowyhigh + xlowylow)
+    if nextra:
+        surfpositions = np.vstack((surfpositions,)*(nextra+1))
+        i = ns
+        if xhigh:
+            surfpositions[i:i+ns,0] = surfpositions[i:i+ns,0] + lboxx
+            i = i + ns
+        if xlow:
+            surfpositions[i:i+ns,0] = surfpositions[i:i+ns,0] - lboxx
+            i = i + ns
+        if yhigh:
+            surfpositions[i:i+ns,1] = surfpositions[i:i+ns,1] + lboxy
+            i = i + ns
+        if ylow:
+            surfpositions[i:i+ns,1] = surfpositions[i:i+ns,1] - lboxy
+            i = i + ns
+        if xhighyhigh:
+            surfpositions[i:i+ns,0] = surfpositions[i:i+ns,0] + lboxx
+            surfpositions[i:i+ns,1] = surfpositions[i:i+ns,1] + lboxy
+            i = i + ns
+        if xhighylow:
+            surfpositions[i:i+ns,0] = surfpositions[i:i+ns,0] + lboxx
+            surfpositions[i:i+ns,1] = surfpositions[i:i+ns,1] - lboxy
+            i = i + ns
+        if xlowyhigh:
+            surfpositions[i:i+ns,0] = surfpositions[i:i+ns,0] - lboxx
+            surfpositions[i:i+ns,1] = surfpositions[i:i+ns,1] + lboxy
+            i = i + ns
+        if xlowylow:
+            surfpositions[i:i+ns,0] = surfpositions[i:i+ns,0] - lboxx
+            surfpositions[i:i+ns,1] = surfpositions[i:i+ns,1] - lboxy
+            i = i + ns        
+        ns = len(surfpositions)
+
+    # write out file
+    allpositions = np.vstack((surfpositions,clpositions))
+    readwrite.wxyz(outfile,allpositions,['O']*ns + ['S']*ncl)
+ # no surface atoms in the xyz file    
+else:
+    # write out file
+    readwrite.wxyz(outfile,clpositions,['S']*ncl)            

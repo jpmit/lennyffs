@@ -1,0 +1,30 @@
+#! /usr/bin/env python
+
+# len_vrescale
+# James Mithen
+# Get parameters in Lennard-Jones potential for 'rescaled' potential
+# (which I have called 'potential 2' in my work).
+# We give an interaction strength, which is a well-depth, and a number
+# density.  The parameters returned are the constants to multiply the
+# r6 and r12 terms in the LJ potential by in order to ensure that the
+# well depth is equal to intstrength (in units of epsilon), and that
+# the minimum of the potential is at 2^(1/6) / rholatt^(1/3).
+# See my notes for more information.
+
+import sys
+
+if len(sys.argv) != 3:
+    exit("Syntax vrescale intstrength rholatt")
+
+try:
+    strength = float(sys.argv[1])
+    rho = float(sys.argv[2])
+except:
+    sys.exit("Error with arguments")
+
+rhosq = rho**2
+rho4 = rhosq**2
+r6 = strength/rhosq
+r12 = strength/rho4
+
+print "r6mult: %.8f  r12mult: %.8f" %(r6,r12)

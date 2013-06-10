@@ -1,0 +1,127 @@
+#! /usr/bin/env python
+
+# len_extractlayer
+# James Mithen
+# Extract a 'layer' of crystalline particles from a .xyz file.
+
+import sys
+import readwrite
+import numpy as N
+from ffsfunctions import getpickparams
+
+# if the final argument is set to 'yes', we will output top layer of
+# surface along with the particles in the relevant layer.
+if len(sys.argv) < 4 or len(sys.argv) > 5:
+    sys.exit("Syntax extractlayer num infile.xyz outfile.xyz [yes]")
+
+layer = int(sys.argv[1])
+infile = sys.argv[2]
+outfile = sys.argv[3]
+surface = False
+
+if len(sys.argv) == 5:
+    # last value of 'yes' means we will output top layer of surface
+    if sys.argv[4] == 'yes':
+        surface = True
+
+# read params.pkl file
+try:
+    params = getpickparams()
+except IOError:
+    sys.exit("Problem reading file params.pkl")    
+
+# read infile positions and symbols
+try:
+    fin = open(infile,'r')
+except IOError:
+    sys.exit("Problem reading file %s" %infile)
+positions,symbols = readwrite.rxyz(infile,True)
+fin.close()
+npar = len(positions)
+
+# keep only crystal atoms
+cpositions = N.array([positions[i] for i in range(npar)
+                      if symbols[i] == 'S'])
+nc = len(cpositions)
+
+# work out which crystal atoms are on the desired layer
+# first work out the max z value of the surface atoms
+spositions = N.array([positions[i] for i in range(npar)
+                      if symbols[i] == 'O'])
+zmax = max(spositions[:,2])
+
+# Work out where the layer should be, and allow for +- delta in z-coord
+# --this is a little bit tricky! Details as follows:
+# First we compute the z co-ordinate of the first layer of the crystal,
+# which is where the minimum of the potential is (the results show that
+# the first layer really does form at the potential min).
+# Then we *assume* that the crystal is unstrained, that is, that it has
+# lattice parameter 2**(1.0/6.0)/rhounstrained**(1.0/3.0), where
+# rhounstrained can be tuned below.  This assumption gives a z-coord for
+# the layer we are interested in if that layer is not the first layer.
+# The assumption is a bit wrong, since in general the nucleus is
+# strained, but we allow +- delta of half the layer spacing (~0.5) in
+# the position of the layer, this is far greater than the strain
+# (~0.05) so in practice this assumption doesnt matter.
+
+rhounstrained = 0.95 # this should allow us to reach the fourth layer
+
+if 'plane' not in params:
+    # must be close packed
+    params['plane'] = '0001'
+
+# Here we compute the z-coordinate of the first layer of crystalline
+# particles 'zlay1' (as noted this is the z-coordinate of the minimum
+# in the interaction potential) and the spacing between two consecutive
+# layers of the crystal, 'layspace'.  These are different for close
+# packed and 100 planes, and also depend on the potential (!).
+
+if params['plane'] == '100':
+    # WARNING! this scheme will not work (well) for the cases
+    # in which the overlayer that forms is close packed
+    # NB note for 100 plane the alatt parameter stored in dictionary
+    # is different than from hcp! (it is alatt of the conventional
+    # unit cell).
+    if params['r6mult'] == params['r12mult']:
+        # old potential rescaling
+        zlay1 = zmax + (2.0**(1.0/3.0) - params['alat']**2/4 )**0.5
+    else:
+        # new potential rescaling
+        zlay1 = zmax + (params['alat']) / 2
+    # layspace is spacing between layers 1 and 2, 2 and 3 etc
+    # This is where the no strain assumption comes in
+    layspace =  0.5 * 2.0**(2.0/3.0) / rhounstrained**(1.0/3.0)
+else:
+    # close packed plane
+    if params['r6mult'] == params['r12mult']:
+        # old potential rescaling
+        zlay1 = zmax + (2.0**(1.0/3.0) - params['alat']**2/3)**0.5
+    else:
+        # new potential rescaling
+        zlay1 = zmax + 0.5*((8.0/3.0)**0.5)*params['alat']
+    # layspace is spacing between layers 1 and 2, 2 and 3 etc
+    # This is where the no strain assumption comes in
+    layspace =  0.5*((8.0/3.0)**0.5)*(2.0**(1.0/6.0)/
+                                      rhounstrained**(1.0/3.0))
+
+# work out z coord of layer
+zlayerpos = zlay1 + (layer - 1)*layspace
+zlayermin = zlayerpos - 0.5*layspace
+zlayermax = zlayerpos + 0.5*layspace
+
+# list of the particle positions for particles in the layer we are
+# interested in
+layeratoms = [pos for pos in cpositions if (pos[2] > zlayermin)
+              and (pos[2] < zlayermax)]
+
+# write the data to the output file
+if surface:
+    # we write particle positions for the top layer of surface
+    # particles along with the particles in the layer.
+    surfatoms = [positions[i] for i in range(npar) if
+                 (symbols[i] == 'O' and positions[i][2] == zmax)]
+    readwrite.wxyz(outfile,surfatoms+layeratoms,['O']*len(surfatoms)
+                   + ['S']*len(layeratoms))
+else:
+    # we only write the layer particles
+    readwrite.wxyz(outfile,layeratoms,['S']*len(layeratoms))

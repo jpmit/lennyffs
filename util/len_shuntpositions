@@ -1,0 +1,36 @@
+#!/usr/bin/env python
+
+# len_shuntpositions
+# James Mithen
+# Move the positions of particles in .xyz file by some distance in the
+# x, y, or z direction. We have to specify particle type (the symbol
+# in the xyz file), the axis, and the distance to move).
+
+import readwrite
+import sys
+
+if len(sys.argv) != 6:
+    sys.exit("Syntax shuntpositions symbols axis[x/y/z] "
+             "distance infile.xyz outfile.xyz")
+
+axdict = {'x': 0, 'y': 1, 'z':2}
+
+# the symbol can actually be anything, but should usually be 'S'
+# (solid), 'N' (liquid) or 'O' (surface).
+symbols = list(sys.argv[1])
+ax = sys.argv[2]
+if ax in axdict:
+    axis = axdict[ax]
+else:
+    sys.exit("Error: Axis %s should be either 'x', 'y' or 'z'" %ax)
+dist = float(sys.argv[3])
+infile = sys.argv[4]
+outfile = sys.argv[5]
+
+pos, symbs = readwrite.rxyz(infile,True)
+
+for par in range(len(symbs)):
+    if symbs[par] in symbols:
+        pos[par][axis] += dist
+
+readwrite.wxyz(outfile,pos,symbs)

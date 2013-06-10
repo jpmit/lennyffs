@@ -1,0 +1,87 @@
+#! /usr/bin/env python
+
+# len_lattparam
+# James Mithen
+# Estimate the 'lattice parameter' (spacing between nearest neighbour
+# particles) for a set of crystalline particles.
+# Usually, this is useful for a single layer of crystalline particles.
+
+import os
+from ffsfunctions import getpickparams
+import readwrite
+import numpy as np
+import sys
+
+# the last parameter controls whether we give a verbose output.
+if len(sys.argv) != 2 and len(sys.argv) != 3:
+    sys.exit("Syntax lattparam infile.xyz [yes]")
+
+infile = sys.argv[1]
+
+if len(sys.argv) == 3:
+    # last parameter controls output type
+    if sys.argv[2] == 'yes':
+        outputfull = True
+else:
+    outputfull = False
+
+try:
+    params = getpickparams()
+except IOError:
+    sys.exit("Error: file params.pkl not found")
+
+# read infile
+positions, symbols = readwrite.rxyz(infile,True)
+npar = len(positions)
+
+# crystal atoms
+cpositions = np.array([positions[i] for i in range(npar)
+                       if symbols[i] == 'S'])
+nc = len(cpositions)
+
+lboxx = params['lboxx']
+lboxy = params['lboxy']
+nneigh = np.zeros(nc)
+ndist2 = np.zeros(nc)
+ndist = np.zeros(nc)
+nsep = 1.35 # note 1.35 is good here
+nsep2 = nsep**2
+neightot = 0
+disttot2 = 0.0
+disttot = 0.0
+for i in range(nc):
+    for j in range(nc):
+        if (i != j):
+            sepx = cpositions[i][0] - cpositions[j][0]
+            # periodic bcs
+            sepx = sepx - lboxx*np.rint(sepx/lboxx)
+            if abs(sepx) < nsep:
+                sepy = cpositions[i][1] - cpositions[j][1]
+                sepy = sepy - lboxy*np.rint(sepy/lboxy)
+                if abs(sepy) < nsep:
+                    sepz = cpositions[i][2] - cpositions[j][2]
+                    d2 = sepx**2 + sepy**2 + sepz**2
+                    if d2 < nsep2:
+                        d = d2**0.5
+                        nneigh[i] += 1
+                        ndist2[i] += d2
+                        ndist[i] += d
+                        disttot += d
+                        disttot2 += d2
+                        neightot += 1
+    if nneigh[i] != 0:
+        # this means we get an array of <d**2> for each particle
+        ndist2[i] = ndist2[i]/nneigh[i]
+        ndist[i] = ndist[i]/nneigh[i]
+
+if outputfull:
+    # print sorted list of numneighbours, <dist>
+    print nc
+    p = nneigh.argsort()
+    for (nn, dist) in zip(nneigh[p],ndist[p]):
+        print "%d %.5f" %(nn,dist)
+                                 
+else:    
+    # print best estimate of lattice param, and rms, number of xpars
+    # and total neighbours
+    print disttot/neightot,(disttot2/neightot)**0.5,nc,neightot

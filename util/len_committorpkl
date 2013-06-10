@@ -1,0 +1,30 @@
+#! /usr/bin/env python
+
+# len_committorpkl
+# James Mithen
+# Script for writing 'interface*.pkl' file needed for committor
+# calculations.
+# Note that the directory this script is run in should contain only a
+# single pos*.xyz file.
+
+import glob
+import re
+import pickle
+import numpy as np
+
+xyzfile = glob.glob('pos*.xyz')[0]
+
+# get interface number from xyz filename
+interface, shot = re.findall(r'\d+',xyzfile)
+
+# this dictionary ensures that the FFS code will always pick the
+# single pos file we have in the directory for starting FFS
+# simulations.
+shotdict = {'nshots': 1, 'nshotseff': 1, 'nsuccess': 1,
+            'nsuccesseff': 1, 'successnumbers' : np.array([int(shot)]),
+            'successweights' : np.array([1.0])}
+
+# write the pickle file
+fout = open('interface%s.pkl' %interface,'wb')
+pickle.dump(shotdict, fout)
+fout.close()

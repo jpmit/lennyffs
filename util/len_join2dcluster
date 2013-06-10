@@ -1,0 +1,83 @@
+#! /usr/bin/env python
+
+# len_join2dcluster
+# James Mithen
+# Output the largest '2d' cluster, removing periodic boundary
+# conditions.  The .xyz file passed to this script should contain a
+# single 'layer' of crystal particles.  See len_extractlayer for how to
+# get this, usually len_extractlayer should be run before this script.
+
+import sys
+import numpy as np
+import readwrite
+import bops
+from ffsfunctions import getpickparams
+import graph
+
+if len(sys.argv) != 3:
+    sys.exit("Syntax join2dcluster infile.xyz outfile")
+
+infile = sys.argv[1]
+outfile = sys.argv[2]
+
+try:
+    params = getpickparams()
+except IOError:
+    sys.exit("Error: file params.pkl not found")
+
+# save box dimensions for future use
+lboxx = params['lboxx']
+lboxy = params['lboxy']    
+
+cpositions,symbols = readwrite.rxyz(infile,True)
+nc = len(cpositions)
+
+# get largest cluster in the periodic system
+xgraph = bops.getxgraph(cpositions,params,range(nc))
+comps = graph.connected_comps(xgraph)
+cluster = max(comps,key=len)
+ncl = len(cluster)
+clpositions = np.empty([ncl,3])
+i = 0
+for j in cluster:
+    clpositions[i] = cpositions[j]
+    i = i + 1
+
+# replicate the largest cluster a total of nine time
+allpositions = np.vstack((clpositions,)*9)
+# horizontal and vertical replicas
+allpositions[ncl:2*ncl,0] = allpositions[ncl:2*ncl:,0] + lboxx
+allpositions[2*ncl:3*ncl,0] = allpositions[2*ncl:3*ncl,0] - lboxx
+allpositions[3*ncl:4*ncl,1] = allpositions[3*ncl:4*ncl,1] + lboxy
+allpositions[4*ncl:5*ncl,1] = allpositions[4*ncl:5*ncl,1] - lboxy
+# diagonal replicas
+allpositions[5*ncl:6*ncl,0] = allpositions[5*ncl:6*ncl,0] + lboxx
+allpositions[5*ncl:6*ncl,1] = allpositions[5*ncl:6*ncl,1] + lboxy
+allpositions[6*ncl:7*ncl,0] = allpositions[6*ncl:7*ncl,0] + lboxx
+allpositions[6*ncl:7*ncl,1] = allpositions[6*ncl:7*ncl,1] - lboxy
+allpositions[7*ncl:8*ncl,0] = allpositions[7*ncl:8*ncl,0] - lboxx
+allpositions[7*ncl:8*ncl,1] = allpositions[7*ncl:8*ncl,1] + lboxy
+allpositions[8*ncl:9*ncl,0] = allpositions[8*ncl:9*ncl,0] - lboxx
+allpositions[8*ncl:9*ncl,1] = allpositions[8*ncl:9*ncl,1] - lboxy
+
+# find the largest cluster in new system, not using periodic
+# boundaries
+params['lboxx'] = 1000000 # effectively means non-periodic
+params['lboxy'] = 1000000
+xgraph = bops.getxgraph(allpositions,params,range(9*ncl))
+comps = graph.connected_comps(xgraph)
+cluster = max(comps,key=len)
+ncluster = len(cluster)
+clpositions = np.empty([ncluster,3])
+i = 0
+if ncluster > ncl:
+    # the 2d layer 'percolates' i.e. goes across the periodic bcs
+    wstr =  ("Warning, cluster percolates, ncluster: %d ncl: %d"
+             %(ncluster,ncl))
+    print wstr
+for j in cluster:
+    clpositions[i] = allpositions[j]
+    i = i + 1
+
+# write out file
+readwrite.wxyz(outfile,clpositions,['S']*ncluster)

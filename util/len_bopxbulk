@@ -1,0 +1,46 @@
+#! /usr/bin/env python
+
+# len_bopxbulk
+# James Mithen
+# Return size of largest crystalline cluster in system.
+# Note that the crystalline particles must already be identified in
+# the .xyz file, these are the particles with symbol 'S' (yellow in
+# jmol).
+
+import sys
+import os
+import numpy as np
+import readwrite
+import bops
+import graph
+from ffsfunctions import getpickparams
+
+if len(sys.argv) != 2:
+    sys.exit("Syntax bopxbulk infile.xyz")
+
+infile = sys.argv[1]
+fin = open(infile,'r')
+
+try:
+    params = getpickparams()
+except IOError:
+    sys.exit("Error: could not open file params.pkl")
+
+# read infile and keep only crystal atoms
+positions, symbols = readwrite.rxyz(infile,True)
+fin.close()
+npar = len(positions)
+
+# crystal atoms
+cpositions = np.array([positions[i] for i in range(npar)
+                       if symbols[i] == 'S'])
+nc = len(cpositions)
+
+# get graph of connections
+xgraph = bops.getxgraph(cpositions,params,range(nc))
+
+# get largest cluster
+comps = graph.connected_comps(xgraph)
+ncl = len(comps[0])
+
+print ncl

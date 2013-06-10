@@ -1,0 +1,16 @@
+#! /usr/bin/env python
+
+# len_rewriteparams
+# James Mithen
+# Read params from file "in" and write 'params.out' and 'params.pkl'
+# files.
+
+import initsim
+import writeoutput
+
+# get params and write to pickle file 'params.pkl' for future reading
+params = initsim.getparams()
+writeoutput.writepickparams(params)
+
+# write params to 'pickle.out' -> human readable version of params.pkl
+writeoutput.writeparams(params)

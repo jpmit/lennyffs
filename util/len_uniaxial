@@ -1,0 +1,111 @@
+#! /usr/bin/env python
+
+# len_uniaxial
+# James Mithen
+# Try to figure out whether uniaxial strain is present by
+# differentiating neighbours along different axes.  NB This is a bit
+# preliminary, it has been used a bit for 111 plane nucleating on 100
+# surface.
+
+import os
+from ffsfunctions import getpickparams
+import readwrite
+import numpy as np
+import sys
+
+if len(sys.argv) != 2:
+    sys.exit("Syntax uniaxial infile.xyz")
+
+infile = sys.argv[1]
+
+try:
+    params = getpickparams()
+except IOError:
+    sys.exit("Error: file params.pkl not found")    
+
+# read infile
+positions, symbols = readwrite.rxyz(infile,True)
+npar = len(positions)
+
+# crystal atoms
+cnums = [i+1 for i in range(npar) if symbols[i] == 'S']
+cpositions = np.array([positions[i] for i in range(npar)
+                       if symbols[i] == 'S'])
+nc = len(cpositions)
+
+lboxx = params['lboxx']
+lboxy = params['lboxy']
+nsep = 1.35
+nsep2 = nsep**2
+neightot = 0
+distaxis1x = []
+distaxis2x = []
+distaxis3x = []
+distaxis1y = []
+distaxis2y = []
+distaxis3y = []
+alldotsx = []
+alldotsy = []
+# normalised vectors along the three hcp axes
+# x-axis
+ax1x = (1.0,0.0)
+ax2x = (3.0**0.5/2.0, 0.5)
+ax3x = (-3.0**0.5/2.0, 0.5)
+# y-axis
+ax1y = (0.0,1.0)
+ax2y = (3.0**0.5/2.0,0.5)
+ax3y = (3.0**0.5/2.0,-0.5 )
+
+for i in range(nc):
+    for j in range(nc):
+        if (i != j):
+            sepx = cpositions[i][0] - cpositions[j][0]
+            # periodic bcs
+            sepx = sepx - lboxx*np.rint(sepx/lboxx)
+            if abs(sepx) < nsep:
+                sepy = cpositions[i][1] - cpositions[j][1]
+                sepy = sepy - lboxy*np.rint(sepy/lboxy)
+                if abs(sepy) < nsep:
+                    sepz = cpositions[i][2] - cpositions[j][2]
+                    d2 = sepx**2 + sepy**2 + sepz**2
+                    if d2 < nsep2:
+                        d = d2**0.5                        
+                        # dot neighbor along all three axes, which ever
+                        # dot product is larger gives the desired axis
+                        # ignore the z-separation in this calculation
+                        normsep = (np.array([sepx,sepy]) /
+                                   (sepx**2 + sepy**2)**0.5)
+                        a1dotx = abs(np.dot(normsep,ax1x))
+                        a1doty = abs(np.dot(normsep,ax1y))
+                        a2dotx = abs(np.dot(normsep,ax2x))
+                        a2doty = abs(np.dot(normsep,ax2y))
+                        a3dotx = abs(np.dot(normsep,ax3x))
+                        a3doty = abs(np.dot(normsep,ax3y))                        
+
+                        # add separation to ax1,2 or 3 separations
+                        if (a1dotx > a2dotx) and (a1dotx > a3dotx):
+                            distaxis1x.append(d)
+                            alldotsx.append(a1dotx)
+                        elif (a2dotx > a1dotx) and (a2dotx > a3dotx):
+                            distaxis2x.append(d)
+                        else:
+                            distaxis3x.append(d)
+
+                        if (a1doty > a2doty) and (a1doty > a3doty):
+                            distaxis1y.append(d)
+                            alldotsy.append(a1doty)
+                            
+                        elif (a2doty > a1doty) and (a2doty > a3doty):
+                            distaxis2y.append(d)
+                        else:
+                            distaxis3y.append(d)
+                        
+                        neightot += 1
+
+# figure out whether overlayer is aligned along x or y axis,
+
+if (len(alldotsy) > 2*len(alldotsx)):
+    # then the overlayer is aligned along the y axis
+    print 2, np.average(distaxis1y), np.average(distaxis2y + distaxis3y), len(distaxis1y), len(distaxis2y + distaxis3y)
+else:
+    print 1, np.average(distaxis1x),np.average(distaxis2x + distaxis3x), len(distaxis1x), len(distaxis2x + distaxis3x)

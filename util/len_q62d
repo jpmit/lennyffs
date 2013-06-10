@@ -1,0 +1,62 @@
+#! /usr/bin/env python
+
+# len_q62d
+# James Mithen
+# Compute the 2d order parameters q6 and q4 for a single layer.
+# The .xyz file should contain only a single layer of crystalline
+# particles.  Note that periodic bounary conditions are not used,
+# so it makes sense to run len_join2dcluster before running this
+# script.
+
+import sys
+import numpy as np
+import readwrite
+
+ndist = 1.5
+ndistsq = ndist**2
+
+if len(sys.argv) != 2:
+    sys.exit("Syntax q62d infile.xyz")
+
+infile = sys.argv[1]
+
+positions,symbols = readwrite.rxyz(infile,True)
+npar = len(positions)
+
+# get psi_6 and psi_4
+neigh = np.zeros(npar)
+psi6 = np.zeros(npar,dtype=complex)
+psi4 = np.zeros(npar,dtype=complex)
+for i in range(npar):
+    for j in range(npar):
+        if i != j:
+            sepx = positions[i][0] - positions[j][0]
+            if (abs(sepx) < ndist):
+                sepy = positions[i][1] - positions[j][1]
+                if (abs(sepy) < ndist):
+                    rijsq = sepx**2 + sepy**2
+                    if rijsq < ndistsq:
+                        # i and j are neighbours
+                        # compute psi_6 and psi_4
+                        neigh[i] = neigh[i] + 1
+                        rij = rijsq**0.5
+                        theta = np.arccos(sepy/rij)
+                        if sepx < 0.0:
+                            theta = 2*np.pi - theta
+                        psi6[i] = psi6[i] + complex(np.cos(6*theta),
+                                                    np.sin(6*theta))
+                        psi4[i] = psi4[i] + complex(np.cos(4*theta),
+                                                    np.sin(4*theta))
+
+# divide by number of neighbours
+psi6 = psi6 / neigh
+psi4 = psi4 / neigh
+
+# note that what we are computing and returning here are GLOBAL bond
+# order parameters PSI_6 and PSI_4 (i.e. numbers for the whole layer).
+
+globpsi6 = abs(sum(psi6))/npar
+globpsi4 = abs(sum(psi4))/npar
+
+print "psi4: %.3f" %globpsi4
+print "psi6: %.3f" %globpsi6

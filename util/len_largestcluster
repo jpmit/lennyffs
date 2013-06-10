@@ -1,0 +1,59 @@
+#! /usr/bin/env python
+
+# len_largestcluster
+# James Mithen
+# Output the largest crystalline cluster in the system.
+
+import sys
+import os
+import numpy as np
+import readwrite
+import bops
+import graph
+from ffsfunctions import getpickparams
+
+if len(sys.argv) != 3:
+    sys.exit("Syntax largestcluster infile.xyz outfile")
+
+infile = sys.argv[1]
+outfile = sys.argv[2]
+
+fin = open(infile,'r')
+
+try:
+    params = getpickparams()
+except IOError:
+    sys.exit("Error: file params.pkl not found")
+
+# read infile and keep only surface and crystal atoms
+positions, symbols = readwrite.rxyz(infile,True)
+fin.close()
+npar = len(positions)
+
+# surface atoms
+spositions = np.array([positions[i] for i in range(npar)
+                       if symbols[i] == 'O'])
+ns = len(spositions)
+
+# crystal atoms
+cpositions = np.array([positions[i] for i in range(npar)
+                       if symbols[i] == 'S'])
+nc = len(cpositions)
+
+# get graph of connections
+xgraph = bops.getxgraph(cpositions,params,range(nc))
+
+# get largest cluster
+comps = graph.connected_comps(xgraph)
+cluster = max(comps,key=len)
+ncl = len(cluster)
+clpositions = np.empty([ncl,3])
+i = 0
+for j in cluster:
+    clpositions[i] = cpositions[j]
+    i = i + 1
+
+# write out surface and largest cluster atoms
+symbols = ['O']*ns + ['S']*ncl
+positions = np.append(spositions,clpositions,axis=0)
+readwrite.wxyz(outfile,positions,symbols)

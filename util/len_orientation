@@ -1,0 +1,76 @@
+#! /usr/bin/env python
+
+# len_orientation
+# James Mithen
+# Compute orientation angle on surface.
+# This only makes sense for the first layer of the crystal, so should
+# first run 'len_extractlayer'.  Also, we ignore periodic bcs here
+# (this is necessary for computing the orientation angle), so we should
+# also have run 'len_joincluster'.
+
+import readwrite
+import sys
+import numpy as np
+from copy import deepcopy
+
+if len(sys.argv) != 2:
+    sys.exit("Syntax orientation infile.xyz")    
+
+infile = sys.argv[1]
+
+sep = 1.5
+sepsq = sep**2
+
+# get crystalline particles
+positions,symbols = readwrite.rxyz(infile,True)
+cpositions = [positions[i] for i in range(len(positions))
+              if symbols[i] == 'S']
+
+# for each particle on layer, get neighbours
+nc = len(cpositions)
+neighs = [ [] ] * nc
+for i in range(nc):
+    neighs[i] = []
+
+for i in range(nc):
+    for j in range(i+1,nc):
+        dx2 = (cpositions[i][0] - cpositions[j][0])**2
+        if dx2 < sepsq:
+            dy2 = (cpositions[i][1] - cpositions[j][1])**2
+            if (dx2 + dy2 < sepsq):
+                dz2 = (cpositions[i][2] - cpositions[j][2])**2
+                if (dx2 + dy2 + dz2 < sepsq):
+                    neighs[i].append(j)
+                    neighs[j].append(i)
+
+# number of particles with six neighbours
+n6 = sum([1 for i in range(nc) if len(neighs[i]) == 6])
+allthetas = np.zeros(n6)
+# for each particle, compute orientation angle with neighbours
+count6 = 0
+for i in range(nc):
+    nn = len(neighs[i])
+    if nn == 6:
+        # compute all angles with neighbours
+        thetas = np.zeros(6)
+        for (j,nj) in zip(neighs[i],range(6)):
+            avec = np.array([cpositions[j][0] - cpositions[i][0],
+                             cpositions[j][1] - cpositions[i][1]])
+            anorm = np.linalg.norm(avec)
+            thetas[nj] = np.arccos(avec[0]/anorm)
+            if avec[1] < 0.0:
+                thetas[nj] = thetas[nj] + np.pi
+        # convert into degrees
+        thetas = thetas*(180.0/np.pi)
+        print thetas
+        # output the smallest value of theta in degrees
+        mintheta =  np.min(thetas)
+        smallesttheta = min(mintheta,abs(60.0 - mintheta))
+        print mintheta,smallesttheta
+        allthetas[count6] = smallesttheta
+        count6 += 1
+
+# average theta value is best guess for the rotation angle of the layer
+print "Averaged over: %d Average theta: %.6f" %(n6,
+                                                np.average(allthetas))
+
