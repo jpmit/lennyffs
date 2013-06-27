@@ -18,8 +18,6 @@ if len(sys.argv) != 3:
 infile = sys.argv[1]
 outfile = sys.argv[2]
 
-fin = open(infile,'r')
-
 try:
     params = getpickparams()
 except IOError:
@@ -27,7 +25,6 @@ except IOError:
 
 # read infile and keep only surface and crystal atoms
 positions, symbols = readwrite.rxyz(infile,True)
-fin.close()
 npar = len(positions)
 
 # surface atoms
