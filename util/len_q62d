@@ -9,19 +9,30 @@
 # script.
 
 import sys
+from ffsfunctions import getpickparams
 import numpy as np
 import readwrite
-
-ndist = 1.5
-ndistsq = ndist**2
 
 if len(sys.argv) != 2:
     sys.exit("Syntax q62d infile.xyz")
 
 infile = sys.argv[1]
 
+try:
+    params = getpickparams()
+except IOError:
+    sys.exit("Error: file params.pkl not found")
+
+# read particle positions
 positions,symbols = readwrite.rxyz(infile,True)
 npar = len(positions)
+
+# neighbour separation and box dims from params dict
+ndist = params['stillsep']
+ndistsq = ndist**2
+lboxx = params['lboxx']
+lboxy = params['lboxy']
+lboxz = params['lboxz']
 
 # get psi_6 and psi_4
 neigh = np.zeros(npar)
@@ -31,8 +42,12 @@ for i in range(npar):
     for j in range(npar):
         if i != j:
             sepx = positions[i][0] - positions[j][0]
+            # periodic bcs
+            sepx = sepx - lboxx*np.rint(sepx/lboxx)
             if (abs(sepx) < ndist):
                 sepy = positions[i][1] - positions[j][1]
+                # periodic bcs
+                sepy = sepy - lboxy*np.rint(sepy/lboxy)                
                 if (abs(sepy) < ndist):
                     rijsq = sepx**2 + sepy**2
                     if rijsq < ndistsq:
