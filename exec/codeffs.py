@@ -78,7 +78,9 @@ minsuccess = params['minsuccess']
 ffsnm = params['ffsname']
 ffsre = params['ffsrestart']
 
-if ffsre == 'new':
+# if ffsrestart in params file is set to -1, we start a 'new' FFS
+# simulation
+if ffsre == -1:
     # go from phase A to phase lambda0
     substring = ('qsub %s -cwd -N shots0_0_%s -b y '
                  '%s/lambda0.py' %(qstr,ffsnm,epath))
