@@ -93,10 +93,10 @@ if ffsre == -1:
     print "running command: %s" %substring
 
 # for each interface in turn submit an array job
-if ffsre == 'new':
+if ffsre == -1:
     intstart = 0
 else:
-    intstart = int(ffsre)
+    intstart = ffsre
     
 for nint in range(intstart,numint):
 
