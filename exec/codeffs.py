@@ -46,15 +46,17 @@
 # data from the interface*.out files and compute FFS statistics for the
 # entire simulation i.e. rates.
 
+import sys
 import os
 import initsim
 from ffsfunctions import *
 import writeoutput
 
-# path of executables lambda0.py, finish.py, takeshot.py
-# this is currently set to be ./../scripts relative to this directory
-# there is a bit of a hack here to step back a directory
-epath = os.path.expanduser('~/awork/montecarlo/epitaxy/codeffs/scripts/')
+# full path is the complete path to codeffs.py
+fullpath = os.path.abspath(os.path.dirname(sys.argv[0]))
+# epath is path to executables lambda0.py, finish.py, takeshot.py
+epath = os.path.normpath(os.path.join(fullpath, '..', 'scripts'))
+print 'path to scripts lambda0.py, finish.py, takeshot.py is', epath
 
 # can specify a job queue here
 qname = ''
