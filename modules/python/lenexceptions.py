@@ -5,4 +5,4 @@
 Exception classes used globally.
 """
 
-class UtilError(exception): pass
+class UtilError(Exception): pass
