@@ -11,6 +11,7 @@ import readwrite
 from ffsfunctions import getpickparams
 import bops
 import graph
+from lenexceptions import UtilError
 
 if len(sys.argv) != 3:
     sys.exit("Syntax joincluster infile.xyz outfile")
@@ -27,6 +28,7 @@ except IOError:
 lboxx = params['lboxx']
 lboxy = params['lboxy']    
 
+# get particle positions
 positions,symbols = readwrite.rxyz(infile,True)
 npar = len(positions)
 
@@ -46,7 +48,7 @@ for j in cluster:
     clpositions[i] = cpositions[j]
     i = i + 1
 
-# replicate the largest cluster a total of nine time
+# replicate the largest cluster a total of nine times
 allpositions = np.vstack((clpositions,)*9)
 # horizontal and vertical replicas
 allpositions[ncl:2*ncl,0] = allpositions[ncl:2*ncl:,0] + lboxx
@@ -69,6 +71,12 @@ params['lboxy'] = 1000000
 xgraph = bops.getxgraph(allpositions,params,range(9*ncl))
 comps = graph.connected_comps(xgraph)
 cluster = max(comps,key=len)
+# check that the cluster size computed in periodic boundaries is same
+# as without periodic boundaries, if not, then the cluster is percolating
+if len(cluster) != ncl:
+    raise UtilError, ('cluster percolating, size {0}, with'
+                      'boundaries {1}'.format(ncl,len(cluster)))
+
 clpositions = np.empty([ncl,3])
 i = 0
 for j in cluster:
