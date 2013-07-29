@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # code.py
-# 26th June 2012
 # James Mithen
+# j.mithen@surrey.ac.uk
 #
 # MC code for investigating epitaxial nucleation on surfaces.  This
 # code just performs a certain number of MC steps governed by the
@@ -9,6 +9,7 @@
 # calculation done here.  Thus, this script is mainly useful for
 # equilibration/quenching etc.  For FFS simulations, see codeffs.py
 
+import potselector
 import initsim
 import writeoutput
 import energy
@@ -28,17 +29,24 @@ positions = initsim.initpositions(params)
 if params['simulation'] == 'new':
     writeoutput.writexyz('initpositions.xyz',positions,params)
 
+# from parameters file, create PotSelector object.  This will handle
+# correct selection of the underlying fortran functions correctly (the
+# functions called depend on the potential, i.e. the value of
+# params['potential']).
+PotManager = potselector.PotSelector(params)
+    
+
 # compute initial energy
-epot = energy.totalenergy(positions,params)
+epot = PotManager.TotalEnergy(positions,params)
 
 # perform MC simulation
 starttime = time.time()
 params['cycle'] = params['ncycle']
 
 if params['mctype'] == 'npt':
-    positions, epot = mccycle.cyclenpt(positions,params,epot)
+    positions, epot = PotManager.CycleNPT(positions,params,epot)
 elif params['mctype'] == 'nvt':
-    positions, epot = mccycle.cycle(positions,params,epot)
+    positions, epot = PotManager.CycleNVT(positions,params,epot)
 
 endtime = time.time()
 

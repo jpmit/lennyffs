@@ -20,6 +20,7 @@ PDICT = {# simulation params
          'simulation': STRING,
          'restartfile': STRING,
          # interaction potential params
+         'potential' : STRING,
          'rcut': FLOAT,
          'r6mult': FLOAT,
          'r12mult': FLOAT,
