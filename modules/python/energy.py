@@ -47,8 +47,8 @@ def gauss_totalenergy(positions,params):
     nparsurf = params['nparsurf']
     zperiodic = params['zperiodic']
 
-    etot = mcfuncs.len_totalenergy(positions[:,0],positions[:,1],
-                                   positions[:,2],rcut,rcsq,lboxx,
-                                   lboxy,lboxz,vrc,vrc2, nparsurf,
-                                   zperiodic)
+    etot = mcfuncs.gauss_totalenergy(positions[:,0],positions[:,1],
+                                     positions[:,2],rcut,rcsq,lboxx,
+                                     lboxy,lboxz,vrc,vrc2, nparsurf,
+                                     zperiodic)
     return etot

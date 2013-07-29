@@ -34,7 +34,6 @@ if params['simulation'] == 'new':
 # functions called depend on the potential, i.e. the value of
 # params['potential']).
 PotManager = potselector.PotSelector(params)
-    
 
 # compute initial energy
 epot = PotManager.TotalEnergy(positions,params)
@@ -54,4 +53,4 @@ endtime = time.time()
 writeoutput.writexyz('finalpositions.xyz',positions,params)
 
 # write runtime to stderr
-sys.stderr.write("runtime in s: %.3f" %(endtime - starttime))
+sys.stderr.write("runtime in s: %.3f\n" %(endtime - starttime))

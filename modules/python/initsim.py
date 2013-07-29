@@ -86,24 +86,34 @@ def checkparams(pdict):
 
 def addparams(pdict):
     """Add some useful parameters to the dictionary"""
+    # if type of mc simulation not specified, default to nvt
+    if 'mctype' not in pdict:
+        pdict['mctype'] = 'nvt'
+    # eps/k_bT
+    pdict['epsovert'] = 1.0 / pdict['Tstar']
     # 4eps/k_bT
     pdict['eps4'] = 4.0 / pdict['Tstar'] 
     # cutoff radius
     rc2 = pdict['rcut']**2
     pdict['rcsq'] = rc2        
     # potentials at cutoff
-    rc2i = 1.0/rc2
-    rc6i = rc2i**3
-    rc12i = rc6i**2
-    # particle-particle
-    vrc = rc12i - rc6i
-    pdict['vrc'] = vrc # nb this is in units of 4eps
-    # particle-surface
-    if not pdict['surface']:
-        # r6mult and r12 mult are redundant, set to 1
-        pdict['r6mult'] = pdict['r12mult'] = 1.0
-        
-    vrc2 = pdict['r12mult']*rc12i - pdict['r6mult']*rc6i
+    if pdict['potential'] == 'len':
+        rc2i = 1.0/rc2
+        rc6i = rc2i**3
+        rc12i = rc6i**2
+        # particle-particle
+        vrc = rc12i - rc6i
+        # particle-surface
+        if not pdict['surface']:
+            # r6mult and r12 mult are redundant, set to 1
+            pdict['r6mult'] = pdict['r12mult'] = 1.0
+        vrc2 = pdict['r12mult']*rc12i - pdict['r6mult']*rc6i
+    elif pdict['potential'] == 'gauss':
+        vrc = np.exp(-rc2)
+        vrc2 = vrc
+
+    # for len, this is in units of 4eps, for gauss in units of eps
+    pdict['vrc'] = vrc 
     pdict['vrc2'] = vrc2
 
     # add parameters specific to whether there is a surface

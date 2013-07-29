@@ -16,4 +16,4 @@ class NoInputParamError(Exception): pass
 class InputParamNotAllowedError(Exception): pass
 
 # input parameter can't be converted properly
-class InputParamUnconvertible(Exception): pass
+class InputParamUnconvertibleError(Exception): pass

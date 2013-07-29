@@ -92,9 +92,9 @@ subroutine gauss_executecyclesnvt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,vrc,vrc2,
            end if
 
            ! find new energy
-           call len_energyipar(ipar,xposinew,yposinew,zposinew,xpos,ypos,zpos,&
-                               rc,rcsq,lboxx,lboxy,lboxz,vrc,vrc2,npar,nsurf,&
-                               zperiodic,enew)
+           call gauss_energyipar(ipar,xposinew,yposinew,zposinew,xpos,ypos,zpos,&
+                                 rc,rcsq,lboxx,lboxy,lboxz,vrc,vrc2,npar,nsurf,&
+                                 zperiodic,enew)
 
            ! choose whether to accept the move or not
            accept = .True.
