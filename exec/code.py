@@ -3,12 +3,11 @@
 # 26th June 2012
 # James Mithen
 #
-# MC code for investigating epitaxial nucleation on surfaces
-# this code just performs a certain number of MC steps governed
-# by the parameters in the 'in' file.
-# Note there is no 'Order Parameter' calculation done here
-# Thus, this script is mainly useful for equilibration/quenching etc.
-# For FFS simulations, see codeffs.py
+# MC code for investigating epitaxial nucleation on surfaces.  This
+# code just performs a certain number of MC steps governed by the
+# parameters in the 'in' file.  Note there is no 'Order Parameter'
+# calculation done here.  Thus, this script is mainly useful for
+# equilibration/quenching etc.  For FFS simulations, see codeffs.py
 
 import initsim
 import writeoutput

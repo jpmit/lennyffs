@@ -3,10 +3,10 @@
 # James Mithen
 
 """
-Wrapper to Fortran code for performing the Monte Carlo simulation
-This just calls the fortran subroutine 'executecycles'
-(see mccyclef.f90) for nvt simulation, and 'executecyclesnpt'
-(see mccyclenptf.f90) for npt simulation.
+Wrapper to Fortran code for performing the Monte Carlo simulation This
+just calls the fortran subroutine 'executecycles' (see mccyclef.f90)
+for nvt simulation, and 'executecyclesnpt' (see mccyclenptf.f90) for
+npt simulation.
 """
 
 import mcfuncs
