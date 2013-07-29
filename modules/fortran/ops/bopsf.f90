@@ -1,6 +1,7 @@
 ! bopsf.f90
-! 16th July 2012
 ! James Mithen
+! j.mithen@surrey.ac.uk
+!
 ! Fortran subroutines and functions for computing local bond order parameters
 ! See ten Wolde,Ruiz-Montero and Frenkel, Faraday Discuss. 104, 93  
 !

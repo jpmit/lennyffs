@@ -1,17 +1,18 @@
-! mccylef.f90
-! 28th June 2012
+! len_mccylenvt.f90
 ! James Mithen
-! Fortran subroutine for executing Monte carlo cycles
-! A cycle consists of nparfl attempted positional moves
-! The Metropolis Monte Carlo algorithm is used
+! j.mithen@surrey.ac.uk
+!
+! Fortran subroutine for executing Monte carlo cycles.  A cycle
+! consists of nparfl attempted positional moves.  The Metropolis Monte
+! Carlo algorithm is used.
 !
 ! SUBROUTINES:
-! executecycles - execute ncycles monte carlo cycles, then return
-!                 note xpos,ypos,zpos and etot are returned 
+! len_executecyclesnvt - execute ncycles monte carlo cycles
+!                        note xpos,ypos,zpos and etot are returned 
 
-subroutine executecycles(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,vrc,vrc2,&
-                         lboxx,lboxy,lboxz,eps4,maxdisp,npar,nsurf,&
-                         zperiodic,r6mult,r12mult,etot)
+subroutine len_executecyclesnvt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,vrc,vrc2,&
+                                lboxx,lboxy,lboxz,eps4,maxdisp,npar,nsurf,&
+                                zperiodic,r6mult,r12mult,etot)
   ! execute ncycles MD cycles
 
   implicit none
@@ -56,9 +57,9 @@ subroutine executecycles(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,vrc,vrc2,&
         zposi = zpos(ipar)
 
         ! find old energy
-        call energyipar(ipar,xposi,yposi,zposi,xpos,ypos,zpos,rc,rcsq,&
-                        lboxx,lboxy,lboxz,vrc,vrc2,npar,nsurf,zperiodic,&
-                        r6mult,r12mult,eold)
+        call len_energyipar(ipar,xposi,yposi,zposi,xpos,ypos,zpos,rc,rcsq,&
+                            lboxx,lboxy,lboxz,vrc,vrc2,npar,nsurf,zperiodic,&
+                            r6mult,r12mult,eold)
 
         ! displace particle
         call random_number(rvec)
@@ -91,9 +92,9 @@ subroutine executecycles(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,vrc,vrc2,&
            end if
 
            ! find new energy
-           call energyipar(ipar,xposinew,yposinew,zposinew,xpos,ypos,zpos,&
-                           rc,rcsq,lboxx,lboxy,lboxz,vrc,vrc2,npar,nsurf,&
-                           zperiodic,r6mult,r12mult,enew)
+           call len_energyipar(ipar,xposinew,yposinew,zposinew,xpos,ypos,zpos,&
+                               rc,rcsq,lboxx,lboxy,lboxz,vrc,vrc2,npar,nsurf,&
+                               zperiodic,r6mult,r12mult,enew)
 
            ! choose whether to accept the move or not
            accept = .True.
@@ -122,4 +123,4 @@ subroutine executecycles(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,vrc,vrc2,&
   ! write out acceptance ratio
   write(*,'("acceptance ratio", I7, I7, F7.3)') acmov,atmov,real(acmov)/atmov
 
-end subroutine executecycles
+end subroutine len_executecyclesnvt

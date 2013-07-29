@@ -1,6 +1,7 @@
 ! initsimf.f90
-! 29th June 2012
 ! James Mithen
+! j.mithen@surrey.ac.uk
+!
 ! Fortran subroutines for initialising particle positions
 ! and for initialising random number generator
 !

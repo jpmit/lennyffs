@@ -1,16 +1,19 @@
-! energyf.f90
-! 27th June 2012
-! Fortran subroutines for computing potential energy (p.e.)
+! len_energyf.f90
+! James Mithen
+! j.mithen@surrey.ac.uk
+!
+! Fortran subroutines for computing potential energy (p.e.) for
+! Lennard Jones interaction.
 !
 ! SUBROUTINES:
-! totalenergy - compute total p.e. of system by summing
-!               p.e. between all pairs of particles
-! energyipar  - compute p.e. between a given particle
-!               and all other particles
+! len_totalenergy - compute total p.e. of system by summing
+!                   p.e. between all pairs of particles
+! len_energyipar  - compute p.e. between a given particle
+!                   and all other particles
 
-subroutine totalenergy(xpos,ypos,zpos,rc,rcsq,&
-                        lboxx,lboxy,lboxz,vrc,vrc2,npar,&
-                        nsurf,zperiodic,r6mult,r12mult,epot)
+subroutine len_totalenergy(xpos,ypos,zpos,rc,rcsq,&
+                           lboxx,lboxy,lboxz,vrc,vrc2,npar,&
+                           nsurf,zperiodic,r6mult,r12mult,epot)
    !!! Computes total potential energy of system (in units of 4epsilon)
 
   implicit none
@@ -88,11 +91,11 @@ subroutine totalenergy(xpos,ypos,zpos,rc,rcsq,&
      end do
   end do
 
-end subroutine totalenergy
+end subroutine len_totalenergy
 
-subroutine energyipar(ipar,xposi,yposi,zposi,xpos,ypos,zpos,rc,rcsq,&
-                      lboxx,lboxy,lboxz,vrc,vrc2,npar,&
-                      nsurf,zperiodic,r6mult,r12mult,epot)
+subroutine len_energyipar(ipar,xposi,yposi,zposi,xpos,ypos,zpos,rc,rcsq,&
+                          lboxx,lboxy,lboxz,vrc,vrc2,npar,&
+                          nsurf,zperiodic,r6mult,r12mult,epot)
    !!! Computes potential energy of particle ipar (in units of 4epsilon)
 
   implicit none
@@ -169,4 +172,4 @@ subroutine energyipar(ipar,xposi,yposi,zposi,xpos,ypos,zpos,rc,rcsq,&
      end if
   end do
 
-end subroutine energyipar
+end subroutine len_energyipar

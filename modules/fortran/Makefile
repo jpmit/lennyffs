@@ -1,2 +1,5 @@
+SRC = global/initsimf.f90 ops/bopsf.f90 len/len_energy.f90 len/len_mccyclenvt.f90 \
+      len/len_mccyclenpt.f90
+
 all:
-	f2py -c -m --f90flags="-O3" mcfuncslinux energyf.f90 initsimf.f90 mccyclef.f90 bopsf.f90 mccyclenptf.f90
+	f2py -c -m --f90flags="-O3" mcfuncslinux $(SRC)

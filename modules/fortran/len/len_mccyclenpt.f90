@@ -1,16 +1,17 @@
-! mccylefnpt.f90
-! 27th March 2013
+! len_mccylefnpt.f90
 ! James Mithen
-! Fortran subroutine for executing Monte carlo cycles
-! A cycle consists of nparfl attempted positional moves
-! and a single volume move (on average)
-! The Metropolis Monte Carlo algorithm is used
+! j.mithen@surrey.ac.uk
+!
+! Fortran subroutine for executing Monte carlo cycles.  A cycle
+! consists of nparfl attempted positional moves and a single volume
+! move (on average).  The Metropolis Monte Carlo algorithm is used.
 !
 ! SUBROUTINES:
-! executecyclesnpt - execute ncycles monte carlo cycles, then return
-!                    note xpos,ypos,zpos,lboxx,lboxy,lboxz and etot are returned 
+! len_executecyclesnpt - execute ncycles monte carlo cycles
+!                        note xpos,ypos,zpos,lboxx,lboxy,lboxz and
+!                        etot are returned. 
 
-subroutine executecyclesnpt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,vrc,vrc2,&
+subroutine len_executecyclesnpt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,vrc,vrc2,&
                             press,lboxx,lboxy,lboxz,eps4,maxdisp,maxvol,npar,&
                             nsurf,zperiodic,r6mult,r12mult,etot)
   ! execute ncycles MC cycles
@@ -86,9 +87,9 @@ subroutine executecyclesnpt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,vrc,vrc2,&
            ypos = ypos*scalefac
            zpos = zpos*scalefac
 
-           call totalenergy(xpos,ypos,zpos,rc,rcsq,lboxx,lboxy,&
-                lboxz,vrc,vrc2,npar,nsurf,zperiodic,&
-                r6mult,r12mult,etotnew)
+           call len_totalenergy(xpos,ypos,zpos,rc,rcsq,lboxx,lboxy,&
+                                lboxz,vrc,vrc2,npar,nsurf,zperiodic,&
+                                r6mult,r12mult,etotnew)
 
            ! See FS p122 (Algorithm 11) for this acceptance rule
            ! ignore - (Note that the factor in front of lnvnew - lnvold
@@ -126,9 +127,9 @@ subroutine executecyclesnpt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,vrc,vrc2,&
            zposi = zpos(ipar)
 
            ! find old energy
-           call energyipar(ipar,xposi,yposi,zposi,xpos,ypos,zpos,rc,rcsq,&
-                lboxx,lboxy,lboxz,vrc,vrc2,npar,nsurf,zperiodic,&
-                r6mult,r12mult,eold)
+           call len_energyipar(ipar,xposi,yposi,zposi,xpos,ypos,zpos,rc,&
+                               rcsq,lboxx,lboxy,lboxz,vrc,vrc2,npar,&
+                               nsurf,zperiodic,r6mult,r12mult,eold)
 
            ! displace particle
            call random_number(rvec)
@@ -161,9 +162,10 @@ subroutine executecyclesnpt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,vrc,vrc2,&
               end if
 
               ! find new energy
-              call energyipar(ipar,xposinew,yposinew,zposinew,xpos,ypos,zpos,&
-                   rc,rcsq,lboxx,lboxy,lboxz,vrc,vrc2,npar,nsurf,&
-                   zperiodic,r6mult,r12mult,enew)
+              call len_energyipar(ipar,xposinew,yposinew,zposinew,xpos,&
+                                  ypos,zpos,rc,rcsq,lboxx,lboxy,lboxz,&
+                                  vrc,vrc2,npar,nsurf,zperiodic,r6mult,&
+                                  r12mult,enew)
 
               ! choose whether to accept the move or not
               accept = .True.
@@ -195,4 +197,4 @@ subroutine executecyclesnpt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,vrc,vrc2,&
        acmovdisp,atmovdisp,real(acmovdisp)/atmovdisp,&
        acmovvol,atmovvol,real(acmovvol)/atmovvol
 
-end subroutine executecyclesnpt
+end subroutine len_executecyclesnpt
