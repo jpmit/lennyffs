@@ -41,6 +41,10 @@ xgraph = bops.getxgraph(cpositions,params,range(nc))
 
 # get largest cluster
 comps = graph.connected_comps(xgraph)
-ncl = len(comps[0])
+if not comps:
+    # there are no crystalline particles, comps = []
+    ncl = 0
+else:
+    ncl = len(comps[0])
 
 print ncl
