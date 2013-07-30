@@ -32,20 +32,21 @@ if params['simulation'] == 'new':
 # from parameters file, create PotSelector object.  This will handle
 # correct selection of the underlying fortran functions correctly (the
 # functions called depend on the potential, i.e. the value of
-# params['potential']).
+# params['potential'], and also on the type of MC cycle wanted, i.e.
+# params['mctype']
 PotManager = potselector.PotSelector(params)
+TotalEnergy = PotManager.TotalEnergyFunc()
+RunCycle = PotManager.MCCycleFunc()
 
 # compute initial energy
-epot = PotManager.TotalEnergy(positions,params)
+epot = TotalEnergy(positions,params)
 
 # perform MC simulation
 starttime = time.time()
 params['cycle'] = params['ncycle']
 
-if params['mctype'] == 'npt':
-    positions, epot = PotManager.CycleNPT(positions,params,epot)
-elif params['mctype'] == 'nvt':
-    positions, epot = PotManager.CycleNVT(positions,params,epot)
+# run the MC cycles
+positions, epot = RunCycle(positions, params, epot)
 
 endtime = time.time()
 
