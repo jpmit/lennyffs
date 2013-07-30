@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # finish.py
-# 27th July 2012
 # James Mithen
+# j.mithen@surrey.ac.uk
 #
 # We have made it from interface intfrom to interface intfrom+1
 # This script gathers the results of every shot at this interface
@@ -12,7 +12,7 @@ import sys
 import os
 import glob
 import pickle
-import numpy as N
+import numpy as np
 
 # get arguments and complain if not right
 # expect at least 1 argument: intfrom
@@ -42,7 +42,7 @@ sfiles = glob.glob('shots%d_*.out' %(intfrom + 1))
 nshots = len(sfiles)
 
 # get sorted list of shot numbers
-shotnums = N.zeros(nshots,dtype=int)
+shotnums = np.zeros(nshots,dtype=int)
 i = 0
 for sfile in sfiles:
     snum = int(sfile.split('_')[1].split('.')[0])    
@@ -51,10 +51,10 @@ for sfile in sfiles:
 shotnums.sort()
 
 # open each shot file for interface, and get from,time,success,weight
-shotfrom = N.zeros(nshots,dtype=int)
-times = N.zeros(nshots,dtype=int)
-success = N.zeros(nshots,dtype=int)
-weights = N.zeros(nshots)
+shotfrom = np.zeros(nshots,dtype=int)
+times = np.zeros(nshots,dtype=int)
+success = np.zeros(nshots,dtype=int)
+weights = np.zeros(nshots)
 # also want shot numbers of successful shots and their weights
 successnumbers = []
 successweights = []
@@ -120,8 +120,8 @@ fout.close()
 # now create the dictionary with shot information
 # this is pickled and read by shots at the subsequent interface
 shotdict = {'nshots': nshots,'nshotseff': nshotseff, 'nsuccess': nsuccess,
-            'nsuccesseff' : nsuccesseff, 'successnumbers' : N.array(successnumbers),
-            'successweights': N.array(successweights)}
+            'nsuccesseff' : nsuccesseff, 'successnumbers' : np.array(successnumbers),
+            'successweights': np.array(successweights)}
 # write out to pickle file
 fout = open('interface%d.pkl' %(intfrom+1), 'wb')
 pickle.dump(shotdict, fout)

@@ -17,3 +17,6 @@ class InputParamNotAllowedError(Exception): pass
 
 # input parameter can't be converted properly
 class InputParamUnconvertibleError(Exception): pass
+
+# FFS error
+class FFSError(Exception): pass

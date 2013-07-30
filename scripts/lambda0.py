@@ -1,26 +1,29 @@
 #! /usr/bin/env python
 # lambda0.py
-# 20th July 2012
 # James Mithen
+# j.mithen@surrey.ac.uk
 #
-# Take the system from phase A to Lambda0 in FFS simulation
+# Take the system from phase A to Lambda0 in FFS simulation.
 # see Allen, Valerani, ten Wolde J. Phys. Condens. matter 21, 463102
 
-from ffsfunctions import savelambda0config, getpickparams
-from writeoutput import  writexyz
-import initsim
 import sys
 import pickle
+import numpy as np
+import initsim
 import energy
 import mccycle
 from bops import bopxbulk
-import numpy as N
+from ffsfunctions import savelambda0config, getpickparams
+from writeoutput import  writexyz
+import potselector
+from lenexceptions import *
 
 params = getpickparams()
 
 lamA = params['lambdaA']
 lam0 = params['lambdas'][0]
-totalqhits = params['totalqhits'] # num times to go through lambda0 from A
+totalqhits = params['totalqhits'] # num times to go through lambda0
+                                  # from phase A
 lamsamp = params['lambdasamp'] # number of MC cycles per OP evaluation
 params['cycle'] = lamsamp
 
@@ -28,10 +31,17 @@ params['cycle'] = lamsamp
 positions = initsim.initpositions(params)
 
 # check that lambda < lamA (we are in phase A)
-nxtal,bopx = bopxbulk(positions,params)
+nxtal, bopx = bopxbulk(positions,params)
 if (bopx >= lamA):
-    sys.exit('Error: BOPxbulk is %d, system must start in phase A, '
-             'BOPxbulk < %d' %(bopx,lamA))
+    raise FFSError, ('BOPxbulk is {0}, system must start in phase A, '
+                     'BOPxbulk < {1}'.format(bopx,lamA))
+
+# get the correct energy function and MC cycle function using
+# PotSelector interface
+
+PotManager = potselector.PotSelector(params)
+totalenergyfunc = PotManager.TotalEnergyFunc()
+cyclefunc = PotManager.MCCycleFunc()
 
 # write initial OP to file
 fin = open('ffsacc.out','w')
@@ -43,10 +53,11 @@ fin.flush()
 qhits = 0 # num times passed through lambda0
 thit = 0
 ttot = 0
-epot = energy.totalenergy(positions,params)    
+
+epot = totalenergyfunc(positions,params)    
 while (qhits < totalqhits):
     # make some trial moves
-    positions,epot = mccycle.cycle(positions,params,epot)
+    positions,epot = cyclefunc(positions,params,epot)
     thit = thit + lamsamp
     ttot = ttot + lamsamp
     # evaluate OP
@@ -61,7 +72,7 @@ while (qhits < totalqhits):
         thit = 0
         # now let the system relax back to lambda A
         while (bopx >= lamA):
-            positions,epot = mccycle.cycle(positions,params,epot)
+            positions,epot = cyclefunc(positions,params,epot)
             ttot = ttot + lamsamp                
             # evaluate OP
             nxtal, bopx = bopxbulk(positions,params)
@@ -72,7 +83,7 @@ while (qhits < totalqhits):
             if (bopx > lam0*10):
                 positions = initsim.initpositions(params)
                 nxtal,bopx = bopxbulk(positions,params)
-                epot = energy.totalenergy(positions,params)
+                epot = totalenergyfunc(positions,params)
                 fin.write('RETURNING TO PHASE A\n')
                 fin.write('%d %d %d\n' %(ttot,nxtal,bopx))
                 
@@ -83,8 +94,8 @@ fin.close()
 # (see takeshot.py)
 shotdict = {'nshots': totalqhits,'nshotseff': totalqhits,
             'nsuccess': totalqhits,'nsuccesseff' : totalqhits,
-            'successnumbers' : N.array(range(1,totalqhits+1)),
-            'successweights': N.ones(totalqhits)}
+            'successnumbers' : np.array(range(1,totalqhits+1)),
+            'successweights': np.ones(totalqhits)}
 # write out to pickle file
 fout = open('interface0.pkl', 'wb')
 pickle.dump(shotdict, fout)

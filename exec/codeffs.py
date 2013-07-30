@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # codeffs.py
-# 26th June 2012
 # James Mithen
+# j.mithen@surrey.ac.uk
 #
 # FFS implementation on oracle grid engine using array job facility
 # This script is an implementation of 'Forward Flux Sampling' (FFS)
@@ -79,10 +79,12 @@ nbatch = params['nbatch']
 minsuccess = params['minsuccess']
 ffsnm = params['ffsname']
 ffsre = params['ffsrestart']
+# syntactic sugar - if ffsre = FFSNEW, we are starting new simulation
+FFSNEW = -1
 
 # if ffsrestart in params file is set to -1, we start a 'new' FFS
 # simulation
-if ffsre == -1:
+if ffsre == FFSNEW:
     # go from phase A to phase lambda0
     substring = ('qsub %s -cwd -N shots0_0_%s -b y '
                  '%s/lambda0.py' %(qstr,ffsnm,epath))
@@ -95,7 +97,7 @@ if ffsre == -1:
     print "running command: %s" %substring
 
 # for each interface in turn submit an array job
-if ffsre == -1:
+if ffsre == FFSNEW:
     intstart = 0
 else:
     intstart = ffsre
@@ -106,7 +108,7 @@ for nint in range(intstart,numint):
     if nint == intstart:
         # for first interface, only hold job if we started
         #  FFS from beginning
-        if ffsre == 'new':
+        if ffsre == FFSNEW:
             holdstr = '-hold_jid finish0_%s' %ffsnm
         else:
             holdstr = ''

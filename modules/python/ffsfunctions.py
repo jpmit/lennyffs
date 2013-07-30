@@ -1,6 +1,6 @@
 # ffsfunctions.py
-# 31st July 2012
 # James Mithen
+# j.mithen@surrey.ac.uk
 
 """
 FFS specific functions
@@ -15,9 +15,8 @@ import os
 import sys
 import glob
 import pickle
-import numpy as N
-import energy
-import mccycle
+import numpy as np
+import potselector
 import initsim
 import readwrite
 from bops import bopxbulk
@@ -50,8 +49,12 @@ def takeshot(initfile,nint,params):
     # read positions from file
     params['restartfile'] = initfile
     positions = readwrite.rxyz(params['restartfile'])
+    # get correct functions for total energy and mccycle
+    pman = potselector.PotSelector(params)
+    totalenergyfunc = pman.TotalEnergyFunc()
+    mccyclefunc = pman.MCCycleFunc()
     # get initial potential energy
-    epot = energy.totalenergy(positions,params)
+    epot = totalenergyfunc(positions,params)
     # get bopxbulk, which is the OP)
     nxtal,bopx = bopxbulk(positions,params)
     print "Initial BOPX: %d" %bopx
@@ -65,17 +68,17 @@ def takeshot(initfile,nint,params):
     ttot = 0
     pruned = False
     while (bopx >= lamA) and (bopx < lamint):
-        
+
         # pruning->test if we have gone through an interface below
         if params['pruning']:
             # check if we have hit the next interface in turn
             # note while loop since we may have gone though more
             # than a single interface since last check of bopx
             while (bopx <= lowlambda):
-                # we can only prune if the lower interface is at least lambda0          
+                # we can only prune if the lower interface is at least lambda0
                 if (lowint >= 0):
                     # kill with prob prunprob
-                    r = N.random.rand()
+                    r = np.random.rand()
                     if (r < params['prunprob']):
                         print 'Run killed by prune since OP <= %d' %lowlambda
                         pruned = True
@@ -100,7 +103,7 @@ def takeshot(initfile,nint,params):
             break
                 
         # make some trial moves
-        positions,epot = mccycle.cycle(positions,params,epot)
+        positions,epot = mccyclefunc(positions,params,epot)
         ttot = ttot + lamsamp
 
         # evaluate OP

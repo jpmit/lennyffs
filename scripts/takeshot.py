@@ -1,24 +1,24 @@
 #! /usr/bin/env python
 # takeshot.py
-# 20th July 2012
 # James Mithen
+# j.mithen@surrey.ac.uk
 #
-# Take a 'shot' in FFS parlance, from one interface to another.
-# see Allen, Valerani, ten Wolde J. Phys. Condens. matter 21, 463102
+# Take a 'shot' in FFS parlance, from one interface to another.  See
+# Allen, Valerani, ten Wolde J. Phys. Condens. matter 21, 463102.
 
 import sys
 import os
 import readwrite
 from writeoutput import writexyz
-import numpy as N
+import numpy as np
 from ffsfunctions import *
 
-# get arguments and complain if not right
-# expect at least 1 argument: intfrom
-# which is the interface we are arriving from
-# e.g. if intfrom=0, we are taking a shot from lambda0, aiming for lambda1
-# the second argument is optional, if present check if we already have
-# minsuccess successful shots at this interface, and terminate if so
+# get arguments and complain if not right. Expect at least 1 argument:
+# intfrom, which is the interface we are arriving from e.g. if
+# intfrom=0, we are taking a shot from lambda0, aiming for
+# lambda1. The second argument is optional, if present check if we
+# already have minsuccess successful shots at this interface, and
+# terminate if so
 
 argc = len(sys.argv)
 if (argc != 2 and argc != 3):
@@ -42,7 +42,7 @@ shotdict = getshotdict(intfrom)
 
 # pick an initial configuration at random from previous interface
 # first pick random number between 0 and total weight
-r = shotdict['nsuccesseff']*N.random.rand()
+r = shotdict['nsuccesseff']*np.random.rand()
 wcounter = 0.0
 for (num, w) in zip(shotdict['successnumbers'],shotdict['successweights']):
     wcounter = wcounter + w
