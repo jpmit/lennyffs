@@ -1,6 +1,6 @@
 # bops.py
-# 21st June 2012
 # James Mithen
+# j.mithen@surrey.ac.uk
 
 """
 Local bond order parameters for FFS code
@@ -17,7 +17,6 @@ getxgraph - return Graph of xtal particles, with nodes that are xtal pars, and
             edges between any two pars that are neighbours.
 """
 
-import numpy as N
 import graph
 import mcfuncs
 
@@ -56,10 +55,11 @@ def getxpars(positions,params):
                                 params['lboxy'],params['lboxz'],zperiodic,
                                 nsep,minlinks,thresh)
 
-    # note that the fortran routine returns xpars(1:npar)
-    # most of these entries will be zero, we only want the non-zero ones
-    # also note we subtract 1 from ALL of the xtal particle numbers returned
-    # from mcfuncs.xpars due to zero indexing in Python
+    # Note that the fortran routine returns xpars(1:npar).  Most of
+    # these entries will be zero, we only want the non-zero ones.
+    # Also note we subtract 1 from ALL of the xtal particle numbers
+    # returned from mcfuncs.xpars due to zero indexing in Python (and
+    # one indexing in Fortran).
     return (xpars[:nxtal] - 1)
 
 def getxgraph(positions,params,xpars):
@@ -71,30 +71,36 @@ def getxgraph(positions,params,xpars):
     lboxy = params['lboxy']
     lboxz = params['lboxz']
     zperiodic = params['zperiodic']
+
+    # half times box width for computing periodic bcs
+    p5lboxx = 0.5*lboxx
+    p5lboxy = 0.5*lboxy
+    p5lboxz = 0.5*lboxz
+    
     for i in xpars:
         # get distances to all other solid particles
         for j in xpars:
             if i != j:
                 sepx = positions[i][0] - positions[j][0]
                 # periodic boundary conditions
-                if (sepx > 0.5*lboxx):
+                if (sepx > p5lboxx):
                     sepx = sepx - lboxx
-                elif (sepx < -0.5*lboxx):
+                elif (sepx < -p5lboxx):
                     sepx = sepx + lboxx
                 if (abs(sepx) < stillsep):
                     sepy = positions[i][1] - positions[j][1]
                     # periodic boundary conditions
-                    if (sepy > 0.5*lboxy):
+                    if (sepy > p5lboxy):
                         sepy = sepy - lboxy
-                    elif (sepy < -0.5*lboxy):
+                    elif (sepy < -p5lboxy):
                         sepy = sepy + lboxy
                     if (abs(sepy) < stillsep):
                         sepz = positions[i][2] - positions[j][2]
                         # periodic boundary conditions
                         if (zperiodic):
-                            if (sepz > 0.5*lboxz):
+                            if (sepz > p5lboxz):
                                 sepz = sepz - lboxz
-                            elif (sepz < -0.5*lboxz):
+                            elif (sepz < -p5lboxz):
                                 sepz = sepz + lboxz
                         if (abs(sepz) < stillsep):
                             # compute separation
