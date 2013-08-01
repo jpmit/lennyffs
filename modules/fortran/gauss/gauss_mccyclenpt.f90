@@ -188,7 +188,7 @@ subroutine gauss_executecyclesnpt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,&
      end do
      
      ! write out energy after every nsamp cycles
-     if (mod(cy,nsamp) == 0) write(*,'(F12.6, F12.6, F12.6, F12.6)') etot,lboxx,lboxy,lboxz
+     if (mod(cy,nsamp) == 0) write(*,'(I7,F12.6, F12.6, F12.6, F12.6)') cy,etot,lboxx,lboxy,lboxz
      
   end do
 

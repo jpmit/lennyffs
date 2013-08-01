@@ -13,7 +13,7 @@ from lenexceptions import *
 import energy
 import mccycle
 
-class PotSelector:
+class PotSelector(object):
     # syntactic sugar
     LEN = 'len'
     GAUSS = 'gauss'
