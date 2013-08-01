@@ -12,6 +12,9 @@ class UtilError(Exception): pass
 # input parameter missing from file
 class NoInputParamError(Exception): pass
 
+# general input parameter error
+class InputParamError(Exception): pass
+
 # input parameter is not on an allowed list
 class InputParamNotAllowedError(Exception): pass
 

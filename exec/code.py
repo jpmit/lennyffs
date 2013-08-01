@@ -9,7 +9,7 @@
 # calculation done here.  Thus, this script is mainly useful for
 # equilibration/quenching etc.  For FFS simulations, see codeffs.py
 
-import potselector
+import funcselector
 import initsim
 import writeoutput
 import energy
@@ -29,24 +29,24 @@ positions = initsim.initpositions(params)
 if params['simulation'] == 'new':
     writeoutput.writexyz('initpositions.xyz',positions,params)
 
-# from parameters file, create PotSelector object.  This will handle
+# from parameters file, create FuncSelector object.  This will handle
 # correct selection of the underlying fortran functions correctly (the
 # functions called depend on the potential, i.e. the value of
 # params['potential'], and also on the type of MC cycle wanted, i.e.
 # params['mctype']
-PotManager = potselector.PotSelector(params)
-TotalEnergy = PotManager.TotalEnergyFunc()
-RunCycle = PotManager.MCCycleFunc()
+funcman = funcselector.FuncSelector(params)
+totalenergy = funcman.TotalEnergyFunc()
+runcycle = funcman.MCCycleFunc()
 
 # compute initial energy
-epot = TotalEnergy(positions,params)
+epot = totalenergy(positions,params)
 
 # perform MC simulation
 starttime = time.time()
 params['cycle'] = params['ncycle']
 
 # run the MC cycles
-positions, epot = RunCycle(positions, params, epot)
+positions, epot = runcycle(positions, params, epot)
 
 endtime = time.time()
 
