@@ -12,6 +12,7 @@ FuncSelector - handles functions for the potential energy and MC cycle
 from lenexceptions import *
 import energy
 import mccycle
+import orderparam
 
 class FuncSelector(object):
     """Interface for selecting correct functions for:
@@ -26,9 +27,17 @@ class FuncSelector(object):
     GAUSS = 'gauss'
     # choices for mctype
     NVT = 'nvt'
-    NPT = 'npt'    
+    NPT = 'npt'
+    # choices for orderparam
+    ORDERPARAM = 'orderparam'
+    NTF = 'ntf'
+    NLD = 'nld'
+    FRACTF = 'fractf'
+    FRACLD = 'fracld'
+    NONE = 'none'
     OPTIONS = {POTENTIAL : [LEN, GAUSS],
-               MCTYPE : [NVT, NPT]}
+               MCTYPE : [NVT, NPT],
+               ORDERPARAM: [NTF, NLD, FRACTF, FRACLD, NONE]}
 
     def __init__(self, params):
         self.check_input(params)
@@ -41,12 +50,12 @@ class FuncSelector(object):
             # check that the parameter is in the dictionary
             if oname not in params:
                 raise NoInputParamError, ('{0} not found in parameter '
-                                          'dictionary'.format(cls.PARAMNAME))
+                                          'dictionary'.format(oname))
             # check that the option chosen is one of those allowed
             if params[oname] not in cls.OPTIONS[oname]:
                 raise InputParamError, ('{0} should be one of: {1}'.\
-                                        format(cls.OPTIONS[oname],
-                                               ' '.join(cls.OPTIONS)))
+                                        format(oname,
+                                               ' '.join(cls.OPTIONS[oname])))
             # store the chosen option in the class
             cls.option[oname] = params[oname]
 
@@ -74,4 +83,16 @@ class FuncSelector(object):
             elif cls.option[cls.POTENTIAL] == cls.GAUSS:
                 return mccycle.gauss_cyclenvt
 
-    
+    @classmethod
+    def OrderParamFunc(cls):
+        """Return function that computes an MC cycle"""
+        if cls.option[cls.ORDERPARAM] == cls.NTF:
+            return orderparam.ntf
+        elif cls.option[cls.ORDERPARAM] == cls.NLD:
+            return orderparam.nld
+        elif cls.option[cls.ORDERPARAM] == cls.FRACTF:
+            return orderparam.fractf
+        elif cl.option[cls.ORDERPARAM] == cls.FRACLD:
+            return orderparam.fracld
+        elif cl.option[cls.ORDERPARAM] == cls.NONE:
+            return orderparam.default

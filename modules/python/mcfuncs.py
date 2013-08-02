@@ -1,6 +1,6 @@
 # mcfuncs.py
-# 4th July 2012
 # James Mithen
+# j.mithen@surrey.ac.uk
 
 """
 Wrapper for importing correct fortran library

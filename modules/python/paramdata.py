@@ -53,6 +53,8 @@ PDICT = {# simulation params
          'maxdisp': FLOAT,
          'maxvol': FLOAT,
          # order params
+         'orderparam' : STRING,
+         'opsamp' : INT,
          'stillsep': FLOAT,
          'q6link': FLOAT,
          'q6numlinks':INT,

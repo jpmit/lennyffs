@@ -1,6 +1,6 @@
 # params.py
-# 23 April 2013
 # James Mithen
+# j.mithen@surrey.ac.uk
 
 """
 Param class for handling the parameters in simulation input file (in) nicely

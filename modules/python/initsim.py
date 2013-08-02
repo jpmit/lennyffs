@@ -1,6 +1,6 @@
 # initsim.py
-# 26th June 2012
 # James Mithen
+# j.mithen@surrey.ac.uk
 
 """
 Functions for initializing simulation by reading params from 'in',

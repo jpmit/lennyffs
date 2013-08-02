@@ -9,6 +9,7 @@
 # calculation done here.  Thus, this script is mainly useful for
 # equilibration/quenching etc.  For FFS simulations, see codeffs.py
 
+import numpy as np
 import funcselector
 import initsim
 import writeoutput
@@ -27,7 +28,7 @@ positions = initsim.initpositions(params)
 
 # write initial positions to file if new simulation
 if params['simulation'] == 'new':
-    writeoutput.writexyz('initpositions.xyz',positions,params)
+    writeoutput.writexyz('initpositions.xyz', positions, params)
 
 # from parameters file, create FuncSelector object.  This will handle
 # correct selection of the underlying fortran functions correctly (the
@@ -37,17 +38,28 @@ if params['simulation'] == 'new':
 funcman = funcselector.FuncSelector(params)
 totalenergy = funcman.TotalEnergyFunc()
 runcycle = funcman.MCCycleFunc()
+orderp = funcman.OrderParamFunc()
+
+# number of times to call MC cycle function
+ncall = int( np.ceil(params['ncycle'] / float(params['opsamp'])) )
+
+# number of cycles each time we call MC cycle function
+params['cycle'] = min(params['ncycle'], params['opsamp'])
 
 # compute initial energy
 epot = totalenergy(positions,params)
 
 # perform MC simulation
+opfile = open('opval.out','w')
 starttime = time.time()
-params['cycle'] = params['ncycle']
 
 # run the MC cycles
-positions, epot = runcycle(positions, params, epot)
-
+opfile.write('{0} {1}\n'.format(0, orderp(positions, params)))
+for cy in range(ncall):
+    positions, epot = runcycle(positions, params, epot)
+    opfile.write('{0} {1}\n'.format((cy + 1)*params['cycle'],
+                                    orderp(positions, params)))
+    opfile.flush()
 endtime = time.time()
 
 # write final positions to file
