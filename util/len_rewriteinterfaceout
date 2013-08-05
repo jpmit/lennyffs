@@ -1,0 +1,39 @@
+#! /usr/bin/env python
+
+# len_rewriteinterfaceout
+# James Mithen
+# j.mithen@surrey.ac.uk
+#
+# Rewrite interface*.out file from interface*.pkl file, useful for
+# when Alex deletes the interface*.out file!  By default the .out file
+# gets the same name as the .pkl file but with the ending changed from
+# .pkl to .out.
+
+import re
+import pickle
+import sys
+
+# first argument is name of interface.pkl file
+if len(sys.argv) != 2:
+    sys.exit("Syntax: len_rewriteinterfaceout interface.pkl")
+
+infile = sys.argv[1]
+
+# read shot dictionary from interface.pkl file
+sfile = open(infile, 'rb')
+shotdict = pickle.load(sfile)
+sfile.close()
+
+# get data from shotdict
+nshots = shotdict['nshots']
+nshotseff = shotdict['nshotseff']
+nsuccess = shotdict['nsuccess']
+nsuccesseff = shotdict['nsuccesseff']
+
+# name of output file
+fout = open(infile.replace('.pkl','.out'),'w')
+fout.write('SUMMARY\nshots nsuccess P(success) nshotseff nsuccesseff P(successeff)\n')
+fout.write('%d %d %.6f %.6f %.6f %.6f\n'
+           %(nshots,nsuccess, float(nsuccess)/float(nshots),
+             nshotseff,nsuccesseff,nsuccesseff/nshotseff))
+fout.close()

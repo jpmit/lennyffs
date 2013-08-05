@@ -13,7 +13,7 @@ import graph
 from ffsfunctions import getpickparams
 
 if len(sys.argv) != 3:
-    sys.exit("Syntax largestcluster infile.xyz outfile")
+    sys.exit("Syntax len_largestcluster infile.xyz outfile")
 
 infile = sys.argv[1]
 outfile = sys.argv[2]

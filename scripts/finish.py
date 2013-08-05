@@ -119,8 +119,10 @@ fout.close()
 
 # now create the dictionary with shot information
 # this is pickled and read by shots at the subsequent interface
-shotdict = {'nshots': nshots,'nshotseff': nshotseff, 'nsuccess': nsuccess,
-            'nsuccesseff' : nsuccesseff, 'successnumbers' : np.array(successnumbers),
+shotdict = {'nshots': nshots,'nshotseff': nshotseff,
+            'nsuccess': nsuccess,
+            'nsuccesseff' : nsuccesseff,
+            'successnumbers' : np.array(successnumbers),
             'successweights': np.array(successweights)}
 # write out to pickle file
 fout = open('interface%d.pkl' %(intfrom+1), 'wb')
