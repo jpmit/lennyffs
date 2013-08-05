@@ -104,10 +104,12 @@ nshotseff = nsuccesseff + (nshots - nsuccess)
 # for more info on pruning.
 
 fout = open('interface%d.out' %(intfrom+1),'w')
-fout.write('SUMMARY\nshots nsuccess P(success) nshotseff nsuccesseff P(successeff)\n')
+fout.write(('SUMMARY\nshots nsuccess P(success) nshotseff nsuccesseff '
+            'P(successeff)\n'))
 fout.write('%d %d %.6f %.6f %.6f %.6f\n'
            %(nshots,nsuccess, float(nsuccess)/float(nshots),
              nshotseff,nsuccesseff,nsuccesseff/nshotseff))
+
 # Write a detailed breakdown of every shot
 fout.write('----------\nDETAILED BREAKDOWN\nshotnum from time success\n')
 fstr = ''
