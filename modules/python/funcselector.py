@@ -2,7 +2,7 @@
 # James Mithen
 # j.mithen@surrey.ac.uk
 
-""" Classes for handing out energy and mccycle functions correctly,
+""" Class for handing out energy and mccycle functions correctly,
 according to the potential.
 
 CLASSES:
@@ -44,7 +44,8 @@ class FuncSelector(object):
     
     @classmethod
     def check_input(cls, params):
-        """Make sure the params dictionary contains all options correctly"""
+        """Make sure the params dictionary contains all options
+        correctly"""
         cls.option = {}
         for oname in cls.OPTIONS:
             # check that the parameter is in the dictionary

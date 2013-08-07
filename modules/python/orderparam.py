@@ -54,7 +54,7 @@ def fractf(positions, params):
     xpars = opfunctions.getxpars(positions,params)
     nxtal = len(xpars)
     
-    return nxtal / (params['npartot'] - params['nparsurf'])
+    return float(nxtal) / (params['npartot'] - params['nparsurf'])
 
 def fracld(positions, params):
     """Fraction of solid particles in system, according to
