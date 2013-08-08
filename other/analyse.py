@@ -1,9 +1,11 @@
 # analyse.py
-# 23rd August 2012
+# James Mithen
+# j.mithen@surrey.ac.uk
+
 # functions for analysing FFS results
 
 import os
-import numpy as N
+import numpy as np
 
 def ancestry(fname,names=True):
     """Return ancestry of FFS configuration"""
@@ -14,8 +16,7 @@ def ancestry(fname,names=True):
     shotnum = int(ns[1])
 
     # open each interface file in turn
-    #interfaces = N.empty(intnum,dtype=int)
-    shotnums = N.zeros(intnum+1,dtype=int)
+    shotnums = np.zeros(intnum+1,dtype=int)
     shotnums[-1] = shotnum
 
     for i in range(intnum):
@@ -34,5 +35,3 @@ def ancestry(fname,names=True):
     for i in range(intnum):
         fnames[i] = 'pos%d_%d.xyz' %(i,shotnums[i])
     return fnames
-
-
