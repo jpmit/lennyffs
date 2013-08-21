@@ -34,10 +34,11 @@ class FuncSelector(object):
     NLD = 'nld'
     FRACTF = 'fractf'
     FRACLD = 'fracld'
+    ALLFRACLD = 'allfracld'
     NONE = 'none'
     OPTIONS = {POTENTIAL : [LEN, GAUSS],
                MCTYPE : [NVT, NPT],
-               ORDERPARAM: [NTF, NLD, FRACTF, FRACLD, NONE]}
+               ORDERPARAM: [NTF, NLD, FRACTF, FRACLD, ALLFRACLD, NONE]}
 
     def __init__(self, params):
         self.check_input(params)
@@ -88,12 +89,14 @@ class FuncSelector(object):
     def OrderParamFunc(cls):
         """Return function that computes an MC cycle"""
         if cls.option[cls.ORDERPARAM] == cls.NTF:
-            return orderparam.ntf
+            return orderparam.ntf_cpp
         elif cls.option[cls.ORDERPARAM] == cls.NLD:
-            return orderparam.nld
+            return orderparam.nld_cpp
         elif cls.option[cls.ORDERPARAM] == cls.FRACTF:
-            return orderparam.fractf
-        elif cl.option[cls.ORDERPARAM] == cls.FRACLD:
-            return orderparam.fracld
-        elif cl.option[cls.ORDERPARAM] == cls.NONE:
+            return orderparam.fractf_cpp
+        elif cls.option[cls.ORDERPARAM] == cls.FRACLD:
+            return orderparam.fracld_cpp
+        elif cls.option[cls.ORDERPARAM] == cls.ALLFRACLD:
+            return orderparam.allfracld_cpp
+        elif cls.option[cls.ORDERPARAM] == cls.NONE:
             return orderparam.default

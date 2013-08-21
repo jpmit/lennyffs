@@ -31,8 +31,8 @@ if params['simulation'] == 'new':
     writeoutput.writexyz('initpositions.xyz', positions, params)
 
 # from parameters file, create FuncSelector object.  This will handle
-# correct selection of the underlying fortran functions correctly (the
-# functions called depend on the potential, i.e. the value of
+# correct selection of the underlying fortran/C++ functions correctly
+# (the functions called depend on the potential, i.e. the value of
 # params['potential'], and also on the type of MC cycle wanted, i.e.
 # params['mctype']
 funcman = funcselector.FuncSelector(params)
@@ -63,7 +63,7 @@ for cy in range(ncall):
 endtime = time.time()
 
 # write final positions to file
-writeoutput.writexyz('finalpositions.xyz',positions,params)
+writeoutput.writexyz('finalpositions.xyz', positions, params)
 
 # write runtime to stderr
 sys.stderr.write("runtime in s: %.3f\n" %(endtime - starttime))

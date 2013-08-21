@@ -3,27 +3,23 @@
 # j.mithen@surrey.ac.uk
 
 """
-Local bond order parameters for FFS code
-the xtal particles are identified in a Fortran routine
-which is wrapped by the function getxpars() below.
-The code for computing BopxBulk, the largest xtal cluster, is implemented here
-This uses the Graph class (see graph.py)
+Order parameters for FFS code.  These use the extension modules
+written in Fortran and in C++.
+
 FUNCTIONS:
-bopxbulk - return size of largest xtal cluster using local bond order params
-           see ten Wolde,Ruiz-Montero and Frenkel, Faraday Discuss. 104, 93
-getxpars - return array of particle numbers that are xtal,
-           according to local bond order parameters
-getxgraph - return Graph of xtal particles, with nodes that are xtal pars, and
-            edges between any two pars that are neighbours.
+
 """
 
+import numpy as np
 import graph
 import opfunctions
 import mcfuncs
 
-def ntf(positions, params):
+# Functions using Fortran extension module
+
+def nclustf_fort(positions, params):
     """Number of particles in largest cluster, according to Ten-Wolde Frenkel
-    criterion"""
+    criterion.  This uses the Fortran extension module"""
     # get all xtal particles
     xpars = opfunctions.getxpars(positions,params)
     nxtal = len(xpars)
@@ -41,27 +37,122 @@ def ntf(positions, params):
         ntf = 0
     return ntf
 
-def nld(positions, params):
-    """Number of particles in largest cluster, according to
-    Lechner-Dellago criterion"""
-    # to do
-    return 0
 
-def fractf(positions, params):
-    """Fraction of solid particles in system, according to
-    Ten-Wolde Frenkel criterion"""
+def fractf_fort(positions, params):
+    """Fraction of solid particles in system, according to Ten-Wolde
+    Frenkel criterion.  This uses the Fortran extension module."""
     # get all xtal particles
     xpars = opfunctions.getxpars(positions,params)
     nxtal = len(xpars)
     
     return float(nxtal) / (params['npartot'] - params['nparsurf'])
 
-def fracld(positions, params):
+# Functions using C++ extension module
+# Mapping from C++ enum type LDCLASS to int
+LDNUMPOLY = 6
+LDFCC = 0
+LDHCP = 1
+LDBCC = 2
+LDLIQUID = 3
+LDICOS = 4
+LDSURFACE = 5
+
+def nclustf_cpp(positions, params):
+    """Number of particles in largest cluster, according to Ten-Wolde
+    Frenkel criterion.  This uses the C++ extension module"""
+    npar = params['npartot']
+    nsep = params['stillsep']
+    nparsurf = params['nparsurf']
+    zperiodic = params['zperiodic']
+    thresh = params['q6link']
+    minlinks = params['q6numlinks']
+
+    nclus = mcfuncs.nclustf(positions[:,0], positions[:,1],
+                            positions[:,2], npar, nparsurf,
+                            params['lboxx'], params['lboxy'],
+                            params['lboxz'],zperiodic, nsep,
+                            minlinks,thresh)
+
+    return nclus
+
+def fractf_cpp(positions, params):
+    """Fract of particles in largest cluster, according to Ten-Wolde
+    Frenkel criterion.  This uses the C++ extension module"""
+    npar = params['npartot']
+    nsep = params['stillsep']
+    nparsurf = params['nparsurf']
+    zperiodic = params['zperiodic']
+    thresh = params['q6link']
+    minlinks = params['q6numlinks']
+
+    nclus = mcfuncs.fracsolidtf(positions[:,0], positions[:,1],
+                                positions[:,2], npar, nparsurf,
+                                params['lboxx'], params['lboxy'],
+                                params['lboxz'],zperiodic, nsep,
+                                minlinks,thresh)
+
+    return nclus
+
+def nclusld_cpp(positions, params):
+    """Number of particles in largest cluster, according to
+    Lechner-Dellago criterion.  This uses the C++ extension module"""
+    npar = params['npartot']
+    nsep = params['stillsep']
+    nparsurf = params['nparsurf']
+    zperiodic = params['zperiodic']
+    thresh = params['q6link']
+    minlinks = params['q6numlinks']
+
+    nclus = mcfuncs.nclusld(positions[:,0], positions[:,1],
+                            positions[:,2], npar, nparsurf,
+                            params['lboxx'], params['lboxy'],
+                            params['lboxz'],zperiodic, nsep)
+
+    return nclus
+
+def fracld_cpp(positions, params):
     """Fraction of solid particles in system, according to
     Lechner-Dellago criterion"""
-    # to do
-    return 0.0
+    npar = params['npartot']
+    nsep = params['stillsep']
+    nparsurf = params['nparsurf']
+    zperiodic = params['zperiodic']
+    thresh = params['q6link']
+    minlinks = params['q6numlinks']
+
+    frac = mcfuncs.fracsolidld(positions[:,0], positions[:,1],
+                               positions[:,2], npar, nparsurf,
+                               params['lboxx'], params['lboxy'],
+                               params['lboxz'],zperiodic, nsep)
+    
+    return frac
+
+def allfracld_cpp(positions, params):
+    """Return fractions of all polymorphs"""
+    # get LD classification of all particles, ignore surface particles
+    pclass = _ldclass(positions, params)[params['nparsurf']:]
+    fracs = np.zeros(LDNUMPOLY)
+    for p in pclass:
+        fracs[p] += 1
+    # return string representation for writing to file; may have to
+    # change this at some point
+    return ' '.join(['{:.3f}'.format(i) for i in fracs / (params['npartot'] - params['nparsurf'])])
 
 def default(positions, params):
     """Default is no order parameter"""
     return 0.0
+
+def _ldclass(positions, params):
+    """List of particle classifications"""
+    npar = params['npartot']
+    nsep = params['stillsep']
+    nparsurf = params['nparsurf']
+    zperiodic = params['zperiodic']
+    thresh = params['q6link']
+    minlinks = params['q6numlinks']
+
+    parclass = mcfuncs.ldclass(positions[:,0], positions[:,1],
+                               positions[:,2], npar, nparsurf,
+                               params['lboxx'], params['lboxy'],
+                               params['lboxz'],zperiodic, nsep)
+    return parclass

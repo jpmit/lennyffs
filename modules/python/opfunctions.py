@@ -2,6 +2,19 @@
 # James Mithen
 # j.mithen@surrey.ac.uk
 
+"""
+The xtal particles are identified in a Fortran routine which is
+wrapped by the function getxpars() below.  The code for computing the
+largest xtal cluster, is implemented here. This uses the Graph class
+(see graph.py)
+
+FUNCTIONS:
+getxpars  - Return array of particle numbers that are xtal,
+            according to local bond order parameters
+getxgraph - Return Graph of xtal particles, with nodes that are xtal
+            pars, and edges between any two pars that are neighbours.
+"""
+
 import mcfuncs
 import graph
 
@@ -28,7 +41,8 @@ def getxpars(positions,params):
     return (xpars[:nxtal] - 1)
 
 def getxgraph(positions,params,xpars):
-    """Create graph with xtal pars as nodes, edges between neighbouring pars"""
+    """Create graph with xtal pars as nodes, edges between
+    neighbouring pars"""
     xgraph = graph.Graph(xpars)
     stillsep = params['stillsep']
     stillsepsq = stillsep**2.0
