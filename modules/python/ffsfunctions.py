@@ -20,7 +20,7 @@ import potselector
 import initsim
 import readwrite
 from bops import bopxbulk
-from writeoutput import writexyz
+from writeoutput import writexyztf
 
 def getshotdict(nint):
     """Get shot dictionary from pickle file at interface nint"""
@@ -103,11 +103,11 @@ def takeshot(initfile,nint,params):
             break
                 
         # make some trial moves
-        positions,epot = mccyclefunc(positions,params,epot)
+        positions,epot = mccyclefunc(positions, params, epot)
         ttot = ttot + lamsamp
 
         # evaluate OP
-        nxtal, bopx = bopxbulk(positions,params)
+        nxtal, bopx = bopxbulk(positions, params)
         print "BOPX: %d" %bopx
 
     # if bopx >= lamint (we have hit the next interface)
@@ -119,7 +119,7 @@ def takeshot(initfile,nint,params):
 
     return success, weight, ttot, positions
 
-def savelambda0config(qhits,thit,positions,params):
+def savelambda0config(qhits, thit, positions, params):
     """Save configuration at lambda0"""
     fnametime = 'times.out'
     fnamepos = 'pos0_%d.xyz' %qhits
@@ -127,15 +127,15 @@ def savelambda0config(qhits,thit,positions,params):
         fout = open(fnametime,'w')
         fout.write('#Time nxtal BOPx\n')
     else:
-        fout = open(fnametime,'a')
+        fout = open(fnametime, 'a')
 
     # get all xtal particles and bopxbulk
-    nxtal,bopx = bopxbulk(positions,params)
+    nxtal,bopx = bopxbulk(positions, params)
 
     # write to file
-    fout.write('%d %d %d \n' %(thit,nxtal,bopx))
+    fout.write('%d %d %d \n' %(thit, nxtal, bopx))
     fout.close()
 
     # write out positions at the interface lambda_0
-    writexyz(fnamepos, positions,params)        
+    writexyztf(fnamepos, positions, params)        
     return

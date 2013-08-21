@@ -37,7 +37,6 @@ def nclustf_fort(positions, params):
         ntf = 0
     return ntf
 
-
 def fractf_fort(positions, params):
     """Fraction of solid particles in system, according to Ten-Wolde
     Frenkel criterion.  This uses the Fortran extension module."""
@@ -136,7 +135,13 @@ def allfracld_cpp(positions, params):
         fracs[p] += 1
     # return string representation for writing to file; may have to
     # change this at some point
-    return ' '.join(['{:.3f}'.format(i) for i in fracs / (params['npartot'] - params['nparsurf'])])
+    return ' '.join(['{:.3f}'.format(i) for i in
+                     fracs / (params['npartot'] - params['nparsurf'])])
+
+def allfracldtf_cpp(positions, params):
+    """Fractions of all polymorphs and TF crystal fraction"""
+    return allfracld_cpp(positions, params) + ' {:.3f}'.\
+           format(fractf_cpp(positions, params))
 
 def default(positions, params):
     """Default is no order parameter"""

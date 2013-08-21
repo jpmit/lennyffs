@@ -3,7 +3,7 @@
 # j.mithen@surrey.ac.uk
 
 """
-Wrapper for importing correct fortran library
+Wrapper for importing fortran library and C++ library.
 """
 
 import os

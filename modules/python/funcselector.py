@@ -35,10 +35,12 @@ class FuncSelector(object):
     FRACTF = 'fractf'
     FRACLD = 'fracld'
     ALLFRACLD = 'allfracld'
+    ALLFRAC = 'allfrac'
     NONE = 'none'
     OPTIONS = {POTENTIAL : [LEN, GAUSS],
                MCTYPE : [NVT, NPT],
-               ORDERPARAM: [NTF, NLD, FRACTF, FRACLD, ALLFRACLD, NONE]}
+               ORDERPARAM: [NTF, NLD, FRACTF, FRACLD, ALLFRACLD, ALLFRAC,
+                            NONE]}
 
     def __init__(self, params):
         self.check_input(params)
@@ -98,5 +100,7 @@ class FuncSelector(object):
             return orderparam.fracld_cpp
         elif cls.option[cls.ORDERPARAM] == cls.ALLFRACLD:
             return orderparam.allfracld_cpp
+        elif cls.option[cls.ORDERPARAM] == cls.ALLFRAC:
+            return orderparam.allfracldtf_cpp        
         elif cls.option[cls.ORDERPARAM] == cls.NONE:
             return orderparam.default

@@ -212,11 +212,11 @@ vector<LDCLASS> classifyparticlesld(const int nsurf,
 						  if (abs(w6[i]) > 0.05) {
 								 parclass[i] = ICOS;
 						  }
-						  else if (abs(w6[i]) > 0.0) {
+						  else if (w6[i] > 0.0) {
 								 parclass[i] = BCC;
 						  }
 						  else { // either HCP or FCC
-								 if (q4[i] > 0.0) {
+								 if (w4[i] > 0.0) {
 										parclass[i] = HCP;
 								 }
 								 else {
