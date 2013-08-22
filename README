@@ -1,7 +1,8 @@
 lennyffs
 
-A code for performing Forward Flux Sampling (FFS) simulations of systems
-of particles interacting via Lennard-Jones (LJ) potentials.
+A code for performing Forward Flux Sampling (FFS) simulations of
+systems of particles interacting via Lennard-Jones (LJ) potential and
+Gaussian potential.
 
 Copyright (c) 2012-2013 James Mithen
 j.mithen@surrey.ac.uk
