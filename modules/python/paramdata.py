@@ -52,6 +52,8 @@ PDICT = {# simulation params
          'nsamp': INT,
          'maxdisp': FLOAT,
          'maxvol': FLOAT,
+         # parameter for saving
+         'nsave': INT,
          # order params
          'orderparam' : STRING,
          'opsamp' : INT,

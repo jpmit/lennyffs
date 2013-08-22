@@ -54,12 +54,20 @@ opfile = open('opval.out','w')
 starttime = time.time()
 
 # run the MC cycles
+cyclesdone = 0
 opfile.write('{0} {1}\n'.format(0, orderp(positions, params)))
 for cy in range(ncall):
     positions, epot = runcycle(positions, params, epot)
-    opfile.write('{0} {1}\n'.format((cy + 1)*params['cycle'],
-                                    orderp(positions, params)))
+    cyclesdone += params['cycle']
+    # write out order parameter
+    opfile.write('{0} {1}\n'.format(cyclesdone, orderp(positions,
+                                                       params)))
     opfile.flush()
+    # write out pos file if required
+    if (cyclesdone % params['nsave'] == 0):
+        writeoutput.writexyzld('pos{0}.xyz'.format(cy), positions,
+                               params)
+        
 endtime = time.time()
 
 # write final positions to file
