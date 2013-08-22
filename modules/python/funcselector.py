@@ -37,13 +37,14 @@ class FuncSelector(object):
     ALLFRACLD = 'allfracld'
     ALLFRAC = 'allfrac'
     NONE = 'none'
+    # note the first option is taken as the default in each case
     OPTIONS = {POTENTIAL : [LEN, GAUSS],
                MCTYPE : [NVT, NPT],
                ORDERPARAM: [NTF, NLD, FRACTF, FRACLD, ALLFRACLD,
                             ALLFRAC, NONE]}
 
     def __init__(self, params):
-        #self.check_input(params)
+        self.check_input(params)
     
     @classmethod
     def check_input(cls, params):
@@ -52,16 +53,21 @@ class FuncSelector(object):
         cls.option = {}
         for oname in cls.OPTIONS:
             # check that the parameter is in the dictionary
-            if oname not in params:
-                raise NoInputParamError, ('{0} not found in parameter '
-                                          'dictionary'.format(oname))
+            #if oname not in params:
+            #    raise NoInputParamError, ('{0} not found in parameter '
+            #                              'dictionary'.format(oname))
             # check that the option chosen is one of those allowed
-            if params[oname] not in cls.OPTIONS[oname]:
-                raise InputParamError, ('{0} should be one of: {1}'.\
-                                        format(oname,
-                                               ' '.join(cls.OPTIONS[oname])))
+            #if params[oname] not in cls.OPTIONS[oname]:
+            #    raise InputParamError, ('{0} should be one of: {1}'.\
+            #                            format(oname,
+            #                                   ' '.join(cls.OPTIONS[oname])))
             # store the chosen option in the class
-            cls.option[oname] = params[oname]
+            try:
+                cls.option[oname] = params[oname]
+            except:
+                # didn't get option: default to the first one
+                cls.option[oname] = cls.OPTIONS[oname][0]
+                pass
 
     @classmethod
     def TotalEnergyFunc(cls):

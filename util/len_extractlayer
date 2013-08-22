@@ -6,8 +6,14 @@
 
 import sys
 import readwrite
-import numpy as N
+import numpy as np
 from ffsfunctions import getpickparams
+
+# symbols identified as being crystal
+XTALPARS = ['S', # FCC (or all TF)
+            'P', # HCP
+            'F', # BCC
+            'B'] # ICOS
 
 # if the final argument is set to 'yes', we will output top layer of
 # surface along with the particles in the relevant layer.
@@ -40,14 +46,15 @@ fin.close()
 npar = len(positions)
 
 # keep only crystal atoms
-cpositions = N.array([positions[i] for i in range(npar)
-                      if symbols[i] == 'S'])
+cindexes = [i for i in range(npar) if symbols[i] in XTALPARS]
+cpositions = np.array([positions[i] for i in cindexes])
+csymbols = np.array([symbols[i] for i in cindexes])
 nc = len(cpositions)
 
 # work out which crystal atoms are on the desired layer
 # first work out the max z value of the surface atoms
-spositions = N.array([positions[i] for i in range(npar)
-                      if symbols[i] == 'O'])
+spositions = np.array([positions[i] for i in range(npar)
+                       if symbols[i] == 'O'])
 zmax = max(spositions[:,2])
 
 # Work out where the layer should be, and allow for +- delta in z-coord
@@ -111,8 +118,10 @@ zlayermax = zlayerpos + 0.5*layspace
 
 # list of the particle positions for particles in the layer we are
 # interested in
-layeratoms = [pos for pos in cpositions if (pos[2] > zlayermin)
-              and (pos[2] < zlayermax)]
+layerindices = [i for i in range(nc) if (cpositions[i][2] > zlayermin)
+                and (cpositions[i][2] < zlayermax)]
+layeratoms = [cpositions[i] for i in layerindices]
+layersymbols = [csymbols[i] for i in layerindices]
 
 # write the data to the output file
 if surface:
@@ -120,8 +129,8 @@ if surface:
     # particles along with the particles in the layer.
     surfatoms = [positions[i] for i in range(npar) if
                  (symbols[i] == 'O' and positions[i][2] == zmax)]
-    readwrite.wxyz(outfile,surfatoms+layeratoms,['O']*len(surfatoms)
-                   + ['S']*len(layeratoms))
+    readwrite.wxyz(outfile,surfatoms + layeratoms,
+                   ['O']*len(surfatoms) + layersymbols)
 else:
     # we only write the layer particles
-    readwrite.wxyz(outfile,layeratoms,['S']*len(layeratoms))
+    readwrite.wxyz(outfile,layeratoms,layersymbols)

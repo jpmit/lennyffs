@@ -18,6 +18,12 @@ from ffsfunctions import getpickparams
 import numpy as np
 import sys
 
+# symbols identified as being crystal
+XTALPARS = ['S', # FCC (or all TF)
+            'P', # HCP
+            'F', # BCC
+            'B'] # ICOS
+
 # note that the first layer can either be 100 or closepacked, if
 # closepacked, the holes we measure the distance from can be one of two
 # choices, 1 ('fcc holes') or 2 ('hcp holes').
@@ -43,7 +49,7 @@ spositions = np.array([positions[i] for i in range(npar)
 
 # crystal atoms
 cpositions = np.array([positions[i] for i in range(npar)
-                       if symbols[i] == 'S'])
+                       if symbols[i] in XTALPARS])
 nc = len(cpositions)
 
 # create lattice of hole positions from surface atoms

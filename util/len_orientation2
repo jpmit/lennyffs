@@ -11,6 +11,12 @@ import readwrite
 import numpy as np
 import sys
 
+# symbols identified as being crystal
+XTALPARS = ['S', # FCC (or all TF)
+            'P', # HCP
+            'F', # BCC
+            'B'] # ICOS
+
 if len(sys.argv) != 2 and len(sys.argv) != 3:
     sys.exit("Syntax uniaxial infile.xyz [allownegative]")
 
@@ -36,9 +42,8 @@ positions, symbols = readwrite.rxyz(infile,True)
 npar = len(positions)
 
 # crystal atoms
-cnums = [i+1 for i in range(npar) if symbols[i] == 'S']
 cpositions = np.array([positions[i] for i in range(npar)
-                       if symbols[i] == 'S'])
+                       if symbols[i] in XTALPARS])
 nc = len(cpositions)
 
 lboxx = params['lboxx']

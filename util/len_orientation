@@ -13,6 +13,12 @@ import sys
 import numpy as np
 from copy import deepcopy
 
+# symbols identified as being crystal
+XTALPARS = ['S', # FCC (or all TF)
+            'P', # HCP
+            'F', # BCC
+            'B'] # ICOS
+
 if len(sys.argv) != 2:
     sys.exit("Syntax orientation infile.xyz")    
 
@@ -24,7 +30,7 @@ sepsq = sep**2
 # get crystalline particles
 positions,symbols = readwrite.rxyz(infile,True)
 cpositions = [positions[i] for i in range(len(positions))
-              if symbols[i] == 'S']
+              if symbols[i] in XTALPARS]
 
 # for each particle on layer, get neighbours
 nc = len(cpositions)

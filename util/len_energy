@@ -33,14 +33,7 @@ esurftot = 0.0
 nparsurf = params['nparsurf']
 surfpositions = positions[:nparsurf]
 for i in range(nparsurf):
-    #eij = mcfuncs.len_energyipar(i+1,surfpositions[i][0],surfpositions[i][1],
-    #                         surfpositions[i][2],surfpositions[:,0],
-    #                         surfpositions[:,1],surfpositions[:,2],params['rcut'],
-    #                         params['rcsq'],params['lboxx'],params['lboxy'],
-    #                         params['lboxz'],params['vrc'],params['vrc2'],
-    #                         params['nparsurf'],params['zperiodic'],
-    #                         params['r6mult'],params['r12mult'])
-    eij = energyipar(i, positions, params)
+    eij = energyipar(i, surfpositions, params)
         
     esurftot = esurftot + eij
 # double counting!
@@ -51,14 +44,7 @@ efltot = 0.0
 nparfl = params['nparfl']
 flpositions = positions[nparsurf:]
 for i in range(nparfl):
-    #eij = mcfuncs.len_energyipar(i+1,flpositions[i][0],flpositions[i][1],
-    #                         flpositions[i][2],flpositions[:,0],
-    #                         flpositions[:,1],flpositions[:,2],params['rcut'],
-    #                         params['rcsq'],params['lboxx'],params['lboxy'],
-    #                         params['lboxz'],params['vrc'],params['vrc2'],
-    #                         0,params['zperiodic'],
-    #                         params['r6mult'],params['r12mult'])
-    eij = energyipar(i, flpositions, params)    
+    eij = energyipar(i, flpositions, params, nparsurf = 0)    
         
     efltot = efltot + eij
 # double counting!    
@@ -69,13 +55,6 @@ eflsurftot = 0.0
 for i in range(nparfl):
     # positions should consist of surface positions plus one fluid particle each time
     npositions = np.append(positions[:nparsurf],[positions[nparsurf+i]],axis=0)
-    #eij = mcfuncs.len_energyipar(nparsurf+1,npositions[-1][0],npositions[-1][1],
-    #                             npositions[-1][2],npositions[:,0],
-    #                             npositions[:,1],npositions[:,2],params['rcut'],
-    #                             params['rcsq'],params['lboxx'],params['lboxy'],
-    #                             params['lboxz'],params['vrc'],params['vrc2'],
-    #                             params['nparsurf'],params['zperiodic'],
-    #                             params['r6mult'],params['r12mult'])
     eij = energyipar(nparsurf, npositions, params)
     
     eflsurftot = eflsurftot + eij

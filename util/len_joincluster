@@ -13,6 +13,12 @@ import bops
 import graph
 from lenexceptions import UtilError
 
+# symbols identified as being crystal
+XTALPARS = ['S', # FCC (or all TF)
+            'P', # HCP
+            'F', # BCC
+            'B'] # ICOS
+
 if len(sys.argv) != 3:
     sys.exit("Syntax joincluster infile.xyz outfile")
 
@@ -33,8 +39,9 @@ positions,symbols = readwrite.rxyz(infile,True)
 npar = len(positions)
 
 # get crystal atoms
-cpositions = np.array([positions[i] for i in range(npar) if
-                       symbols[i] == 'S'])
+cindexes = [i for i in range(npar) if symbols[i] in XTALPARS]
+cpositions = np.array([positions[i] for i in cindexes])
+clsymbols = [symbols[i] for i in cindexes]
 nc = len(cpositions)
 
 # get largest cluster in the periodic system
@@ -152,8 +159,8 @@ if nc != npar: # i.e. we have some surface atoms in the xyz file
 
     # write out file
     allpositions = np.vstack((surfpositions,clpositions))
-    readwrite.wxyz(outfile,allpositions,['O']*ns + ['S']*ncl)
+    readwrite.wxyz(outfile,allpositions,['O']*ns + clsymbols)
  # no surface atoms in the xyz file    
 else:
     # write out file
-    readwrite.wxyz(outfile,clpositions,['S']*ncl)            
+    readwrite.wxyz(outfile, clpositions, clsymbols)            
