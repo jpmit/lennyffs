@@ -1,0 +1,10 @@
+# ignore this file
+*.nfs*
+*~
+*.pyc
+lennypackage.sh
+deploy.sh
+versions
+*.tar.gz
+test
+boost
