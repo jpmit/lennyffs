@@ -34,6 +34,29 @@ def len_totalenergy(positions,params):
                                    zperiodic,r6mult,r12mult)
     return etot
 
+
+def len_energyipar(ipar, positions, params):
+    """Compute total energy of system, including surface"""
+    rcut = params['rcut']
+    rcsq = params['rcsq']
+    lboxx = params['lboxx']
+    lboxy = params['lboxy']
+    lboxz = params['lboxz']
+    vrc = params['vrc']
+    vrc2 = params['vrc2']
+    nparsurf = params['nparsurf']
+    zperiodic = params['zperiodic']
+    r6mult = params['r6mult']
+    r12mult = params['r12mult']
+
+    etot = mcfuncs.len_energyipar(positions[ipar][0], positions[ipar][2],
+                                  positions[ipar][3],
+                                  positions[:,0],positions[:,1],
+                                  positions[:,2],rcut,rcsq,lboxx,
+                                  lboxy,lboxz,vrc,vrc2, nparsurf,
+                                  zperiodic,r6mult,r12mult)
+    return etot
+
 def gauss_totalenergy(positions,params):
     """Compute total energy of system, including surface"""
     npartot = params['npartot']
@@ -51,4 +74,26 @@ def gauss_totalenergy(positions,params):
                                      positions[:,2],rcut,rcsq,lboxx,
                                      lboxy,lboxz,vrc,vrc2, nparsurf,
                                      zperiodic)
+    return etot
+
+def gauss_energyipar(ipar, positions, params):
+    """Compute total energy of system, including surface"""
+    rcut = params['rcut']
+    rcsq = params['rcsq']
+    lboxx = params['lboxx']
+    lboxy = params['lboxy']
+    lboxz = params['lboxz']
+    vrc = params['vrc']
+    vrc2 = params['vrc2']
+    nparsurf = params['nparsurf']
+    zperiodic = params['zperiodic']
+    r6mult = params['r6mult']
+    r12mult = params['r12mult']
+
+    etot = mcfuncs.gauss_energyipar(positions[ipar][0], positions[ipar][2],
+                                    positions[ipar][3],
+                                    positions[:,0],positions[:,1],
+                                    positions[:,2],rcut,rcsq,lboxx,
+                                    lboxy,lboxz,vrc,vrc2, nparsurf,
+                                    zperiodic,r6mult,r12mult)
     return etot

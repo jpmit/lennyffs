@@ -39,11 +39,11 @@ class FuncSelector(object):
     NONE = 'none'
     OPTIONS = {POTENTIAL : [LEN, GAUSS],
                MCTYPE : [NVT, NPT],
-               ORDERPARAM: [NTF, NLD, FRACTF, FRACLD, ALLFRACLD, ALLFRAC,
-                            NONE]}
+               ORDERPARAM: [NTF, NLD, FRACTF, FRACLD, ALLFRACLD,
+                            ALLFRAC, NONE]}
 
     def __init__(self, params):
-        self.check_input(params)
+        #self.check_input(params)
     
     @classmethod
     def check_input(cls, params):
@@ -70,6 +70,14 @@ class FuncSelector(object):
             return energy.len_totalenergy
         elif cls.option[cls.POTENTIAL] == cls.GAUSS:
             return energy.gauss_totalenergy
+
+    @classmethod
+    def EnergyIparFunc(cls):
+        """Return function that evaluates total energy"""
+        if cls.option[cls.POTENTIAL] == cls.LEN:
+            return energy.len_energyipar
+        elif cls.option[cls.POTENTIAL] == cls.GAUSS:
+            return energy.gauss_energyipar
 
     @classmethod
     def MCCycleFunc(cls):

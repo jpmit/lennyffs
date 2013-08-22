@@ -12,6 +12,12 @@ import bops
 import graph
 from ffsfunctions import getpickparams
 
+# symbols identified as being crystal
+XTALPARS = ['S', # FCC (or all TF)
+            'P', # HCP
+            'F', # BCC
+            'B'] # ICOS
+
 if len(sys.argv) != 3:
     sys.exit("Syntax len_largestcluster infile.xyz outfile")
 
@@ -33,8 +39,9 @@ spositions = np.array([positions[i] for i in range(npar)
 ns = len(spositions)
 
 # crystal atoms
-cpositions = np.array([positions[i] for i in range(npar)
-                       if symbols[i] == 'S'])
+cindexes = [i for i in range(npar) if symbols[i] in XTALPARS]
+cpositions = np.array([positions[i] for i in cindexes])
+csymbols = np.array([symbols[i] for i in cindexes])
 nc = len(cpositions)
 
 # get graph of connections
@@ -45,12 +52,14 @@ comps = graph.connected_comps(xgraph)
 cluster = max(comps,key=len)
 ncl = len(cluster)
 clpositions = np.empty([ncl,3])
+clsymbols = [None]*ncl
 i = 0
 for j in cluster:
     clpositions[i] = cpositions[j]
+    clsymbols[i] = csymbols[i]
     i = i + 1
 
 # write out surface and largest cluster atoms
-symbols = ['O']*ns + ['S']*ncl
+symbols = ['O']*ns + clsymbols
 positions = np.append(spositions,clpositions,axis=0)
 readwrite.wxyz(outfile,positions,symbols)

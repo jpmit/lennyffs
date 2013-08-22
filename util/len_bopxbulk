@@ -4,8 +4,7 @@
 # James Mithen
 # Return size of largest crystalline cluster in system.
 # Note that the crystalline particles must already be identified in
-# the .xyz file, these are the particles with symbol 'S' (yellow in
-# jmol).
+# the .xyz file, these are the particles with symbols in XTALPARS
 
 import sys
 import os
@@ -14,6 +13,12 @@ import readwrite
 import bops
 import graph
 from ffsfunctions import getpickparams
+
+# symbols identified as being crystal
+XTALPARS = ['S', # FCC (or all TF)
+            'P', # HCP
+            'F', # BCC
+            'B'] # ICOS
 
 if len(sys.argv) != 2:
     sys.exit("Syntax bopxbulk infile.xyz")
@@ -33,7 +38,7 @@ npar = len(positions)
 
 # crystal atoms
 cpositions = np.array([positions[i] for i in range(npar)
-                       if symbols[i] == 'S'])
+                       if symbols[i] in XTALPARS])
 nc = len(cpositions)
 
 # get graph of connections
