@@ -2,7 +2,8 @@
 # James Mithen
 # j.mithen@surrey.ac.uk
 
-""" Class for handing out energy and mccycle functions correctly,
+"""
+Class for handing out energy and mccycle functions correctly,
 according to the potential.
 
 CLASSES:

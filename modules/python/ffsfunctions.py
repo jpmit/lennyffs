@@ -5,10 +5,10 @@
 """
 FFS specific functions
 FUNCTIONS:
-getshotdict - return shot dictionary at a given interface
+getshotdict   - return shot dictionary at a given interface
 getpickparams - return dictionary of parameters
 getnumsuccess - return number of successful shots at a given interface
-takeshot - take FFS shot from a given configuration 
+takeshot      - take FFS shot from a given configuration 
 """
 
 import os
@@ -16,7 +16,7 @@ import sys
 import glob
 import pickle
 import numpy as np
-import potselector
+import funcselector
 import initsim
 import readwrite
 from bops import bopxbulk
@@ -50,14 +50,15 @@ def takeshot(initfile,nint,params):
     params['restartfile'] = initfile
     positions = readwrite.rxyz(params['restartfile'])
     # get correct functions for total energy and mccycle
-    pman = potselector.PotSelector(params)
-    totalenergyfunc = pman.TotalEnergyFunc()
-    mccyclefunc = pman.MCCycleFunc()
+    fsel = funcselector.FuncSelector(params)
+    totalenergyfunc = fsel.TotalEnergyFunc()
+    mccyclefunc = fsel.MCCycleFunc()
+    opfunc = fsel.OrderParamFunc()
     # get initial potential energy
     epot = totalenergyfunc(positions,params)
-    # get bopxbulk, which is the OP)
-    nxtal,bopx = bopxbulk(positions,params)
-    print "Initial BOPX: %d" %bopx
+    # get order parameter
+    oparam = opfunc(positions,params)
+    print "Initial BOPX: {0}".format(oparam)
     # num cycles before computing bopx
     lamsamp = params['lambdasamp']
     params['cycle'] = lamsamp
@@ -67,14 +68,14 @@ def takeshot(initfile,nint,params):
     lowlambda = params['lambdas'][lowint]
     ttot = 0
     pruned = False
-    while (bopx >= lamA) and (bopx < lamint):
+    while (oparam >= lamA) and (bopx < oparam):
 
         # pruning->test if we have gone through an interface below
         if params['pruning']:
             # check if we have hit the next interface in turn
             # note while loop since we may have gone though more
             # than a single interface since last check of bopx
-            while (bopx <= lowlambda):
+            while (oparam <= lowlambda):
                 # we can only prune if the lower interface is at least lambda0
                 if (lowint >= 0):
                     # kill with prob prunprob
@@ -107,12 +108,12 @@ def takeshot(initfile,nint,params):
         ttot = ttot + lamsamp
 
         # evaluate OP
-        nxtal, bopx = bopxbulk(positions, params)
-        print "BOPX: %d" %bopx
+        oparam = bopxbulk(positions, params)
+        print "BOPX: {0}".format(oparam)
 
-    # if bopx >= lamint (we have hit the next interface)
-    # otherwise we have failed
-    if (bopx >= lamint):
+    # if oparam >= lamint, we have hit the next interface, otherwise
+    # we have failed.
+    if (oparam >= lamint):
         success = True
     else:
         success = False
