@@ -161,3 +161,20 @@ def _ldclass(positions, params):
                                params['lboxx'], params['lboxy'],
                                params['lboxz'],zperiodic, nsep)
     return parclass
+
+def _ldclusnums(positions,params):
+    """Return indices of particles in largest ld cluster"""
+    # get all xtal classifications
+    ldclass = _ldclass(positions, params)
+
+    # get indices of crystal particles
+    xtalnums = []
+    for (i, cl) in enumerate(ldclass):
+        if cl in [LDFCC, LDHCP, LDBCC, LDICOS]:
+            xtalnums.append(i)
+    print len(xtalnums)
+    # graph for computing largest cluster
+    xgraph = opfunctions.getxgraph(positions,params,xtalnums)
+    comps = graph.connected_comps(xgraph)
+
+    return comps[0]
