@@ -106,9 +106,9 @@ class FuncSelector(object):
     def OrderParamFunc(cls):
         """Return function that computes an MC cycle"""
         if cls.option[cls.ORDERPARAM] == cls.NTF:
-            return orderparam.ntf_cpp
+            return orderparam.nclustf_cpp
         elif cls.option[cls.ORDERPARAM] == cls.NLD:
-            return orderparam.nld_cpp
+            return orderparam.nclusld_cpp
         elif cls.option[cls.ORDERPARAM] == cls.FRACTF:
             return orderparam.fractf_cpp
         elif cls.option[cls.ORDERPARAM] == cls.FRACLD:
