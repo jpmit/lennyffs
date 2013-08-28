@@ -8,3 +8,4 @@ versions
 *.tar.gz
 test
 boost
+*.so
