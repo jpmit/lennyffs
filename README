@@ -9,6 +9,7 @@ j.mithen@surrey.ac.uk
 
 INTRODUCTION
 ------------
+
 lennyffs is a code for FFS simulations of LJ systems.  
 It was designed to investigate crystal nucleation of LJ systems
 on surfaces.
@@ -18,18 +19,21 @@ simulations of LJ fluids / solids.  It will do either NVT or NPT.
 
 REQUIREMENTS
 ------------
+
 Python 2.x
 Numpy
 Fortran compiler
 
 INSTALLATION
 ------------
+
 Navigate to ./modules/fortran and run 'make' to compile fortran library
 Add path to ./modules/python and ./modules/fortran to your PYTHONPATH 
 environment variable
 
 RUNNING CODE
 -------------
+
 The following scripts are in the exec directory:
 code.py - for normal NVT/NPT Monte-Carlo
 codeffs.py - for FFS simulation with NVT/NPT Monte-Carlo dynamics
