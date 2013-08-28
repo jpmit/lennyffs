@@ -58,15 +58,16 @@ def writexyzld(fname, positions, params):
     """Write positions in xyz format with symbols as atom types, using
     LD approach for identifying crystalline particles"""
     # lookup table for symbols
-    stable = {1 : 'S', # FCC (yellow in jmol)
-              2 : 'P', # HCP (orange in jmol)
-              3 : 'F', # BCC (green in jmol)
-              4 : 'N', # LIQUID (blue in jmol)
-              5 : 'B', # ICOS (pink in jmol)
-              6 : 'O'  # SURFACE (red in jmol)
+    stable = {0 : 'S', # FCC (yellow in jmol)
+              1 : 'P', # HCP (orange in jmol)
+              2 : 'F', # BCC (green in jmol)
+              3 : 'N', # LIQUID (blue in jmol)
+              4 : 'B', # ICOS (pink in jmol)
+              5 : 'O'  # SURFACE (red in jmol)
               }
     # get LD classification
     ldclass = orderparam._ldclass(positions, params)
+    assert len(ldclass) == len(positions)
     # give each atom the correct symbol using lookup table
     symbols = [stable[i] for i in ldclass]
     # write the file
