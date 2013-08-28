@@ -1,6 +1,6 @@
-# location of the Python header files
 
-PYTHON_VERSION = 2.7
+PYTHON_VERSION := $(shell python -c \
+'import sys; print str(sys.version_info[0]) + "." + str(sys.version_info[1])')
 PYTHON_INCLUDE = /usr/include/python$(PYTHON_VERSION)
 
 # location of the Boost Python include files and library
@@ -44,4 +44,4 @@ pyutil.o: pyutil.cpp particle.h
 #	g++ -fPIC -c $(SRC)
 
 clean:
-	rm $(TARGET).so $(OBJDIR)/*.o
+	rm $(LIBNAME).so $(OBJDIR)/*.o
