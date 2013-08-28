@@ -67,7 +67,6 @@ def writexyzld(fname, positions, params):
               }
     # get LD classification
     ldclass = orderparam._ldclass(positions, params)
-    assert len(ldclass) == len(positions)
     # give each atom the correct symbol using lookup table
     symbols = [stable[i] for i in ldclass]
     # write the file
