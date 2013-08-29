@@ -38,7 +38,7 @@ subroutine gauss_executecyclesnpt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,&
   real(kind=db) :: rsc,xposi,yposi,zposi,xposinew,yposinew,zposinew,eold,enew
   real(kind=db) :: lboxnew, lboxxold, lboxyold, lboxzold
   real(kind=db) :: vboxold, lnvold, lnvnew, vboxnew
-  real(kind=db) :: scalefac, arg, etotnew
+  real(kind=db) :: scalefacx, scalefacy, scalefacz, arg, etotnew
   real(kind=db), dimension(3) :: rvec
   logical :: accept
   
@@ -65,28 +65,46 @@ subroutine gauss_executecyclesnpt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,&
 
         if (ipar > npar) then ! volume move
            atmovvol = atmovvol + 1
+
            ! old box volume
            lboxxold = lboxx
            lboxyold = lboxy
            lboxzold = lboxz
            vboxold = lboxx*lboxy*lboxz
            lnvold = log(vboxold)
-           
+
+           ! random number between 0 and 1 for attempted volume move
+           call random_number(rsc)
+              
            ! new box volume
-           call random_number(rsc)           
            lnvnew = lnvold + maxvol*(rsc - 0.5_db)
            vboxnew = exp(lnvnew)
 
-           ! scale factor for multiplying each dimension of simulation box
-           scalefac = (vboxnew / vboxold) ** (1.0_db/3.0_db)
-           lboxx = lboxx*scalefac
-           lboxy = lboxy*scalefac
-           lboxz = lboxz*scalefac
+           ! scale factor for multiplying each dimension of simulation
+           ! box. If z is periodic we multiply each of the three box
+           ! dimensions by the same scale factor.  Otherwise, if z is
+           ! not periodic, we make the box larger/smaller in the z
+           ! direction only.
+           
+           if (zperiodic) then
+              scalefacx = (vboxnew / vboxold) ** (1.0_db/3.0_db)
+              scalefacy = scalefacx
+              scalefacz = scalefacx
+           else
+              scalefacx = 1.0_db
+              scalefacy = 1.0_db
+              scalefacz = (vboxnew / vboxold)
+           end if
+
+           ! new box dimensions
+           lboxx = lboxx*scalefacx
+           lboxy = lboxy*scalefacy
+           lboxz = lboxz*scalefacz
 
            ! rescale particle positions to new volume
-           xpos = xpos*scalefac
-           ypos = ypos*scalefac
-           zpos = zpos*scalefac
+           xpos = xpos*scalefacx
+           ypos = ypos*scalefacy
+           zpos = zpos*scalefacz
 
            call gauss_totalenergy(xpos,ypos,zpos,rc,rcsq,lboxx,lboxy,&
                                   lboxz,vrc,vrc2,npar,nsurf,zperiodic,&
@@ -109,9 +127,9 @@ subroutine gauss_executecyclesnpt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,&
                  lboxx = lboxxold
                  lboxy = lboxyold
                  lboxz = lboxzold
-                 xpos = xpos / scalefac
-                 ypos = ypos / scalefac
-                 zpos = zpos / scalefac
+                 xpos = xpos / scalefacx
+                 ypos = ypos / scalefacy
+                 zpos = zpos / scalefacz
               end if
            end if
 
