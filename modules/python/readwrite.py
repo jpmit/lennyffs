@@ -104,10 +104,9 @@ def r3col(fname,sep=None):
         if '#' in line:
             continue
         splin = line.split(sep)
-        if len(splin) == 3:
-            col1.append(float(splin[0]))
-            col2.append(float(splin[1]))
-            col3.append(float(splin[2]))
+        col1.append(float(splin[0]))
+        col2.append(float(splin[1]))
+        col3.append(float(splin[2]))
     return np.array(col1), np.array(col2), np.array(col3)
 
 def r4col(fname,sep=None):
