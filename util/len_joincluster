@@ -41,7 +41,6 @@ npar = len(positions)
 # get crystal atoms
 cindexes = [i for i in range(npar) if symbols[i] in XTALPARS]
 cpositions = np.array([positions[i] for i in cindexes])
-clsymbols = [symbols[i] for i in cindexes]
 nc = len(cpositions)
 
 # get largest cluster in the periodic system
@@ -54,6 +53,9 @@ i = 0
 for j in cluster:
     clpositions[i] = cpositions[j]
     i = i + 1
+
+# cluster symbols in non-periodic system
+csymbols = [symbols[cindexes[j]] for j in cluster]
 
 # replicate the largest cluster a total of nine times
 allpositions = np.vstack((clpositions,)*9)
@@ -78,6 +80,11 @@ params['lboxy'] = 1000000
 xgraph = bops.getxgraph(allpositions,params,range(9*ncl))
 comps = graph.connected_comps(xgraph)
 cluster = max(comps,key=len)
+
+# get symbols of particles in cluster
+allsymbols = csymbols*9
+clsymbols = [allsymbols[i] for i in cluster]
+
 # check that the cluster size computed in periodic boundaries is same
 # as without periodic boundaries, if not, then the cluster is percolating
 if len(cluster) != ncl:
