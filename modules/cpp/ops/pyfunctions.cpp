@@ -24,6 +24,7 @@
 #include "constants.h"
 #include "particle.h"
 #include "pyutil.h"
+#include "neighbours.h"
 
 using std::vector;
 using std::cout;
@@ -99,6 +100,10 @@ double py_fracsolidtf(boost::python::numeric::array xpos,
 	  vector<vector<int> > lneigh(npartot); // vector of neighbour particle nums for
 	                                        // each par
 
+	  // fill up numneigh and lneigh, we can use either neighcut of
+	  // neighnearest for this
+	  neighcut(allpars, simbox, numneigh, lneigh);
+
 	  // matrix of qlm values, for l = 6 only
 	  array2d q6lm(boost::extents[npartot][13]);
 	  q6lm = qlms(allpars, simbox, numneigh, lneigh, 6);
@@ -138,21 +143,23 @@ double py_nclusld(boost::python::numeric::array xpos,
 	  Box simbox(lboxx, lboxy, lboxz, nsep, zperiodic);
 
 	  // store number of neighbours and neighbour list
-  	  vector<int> numneigh4(npartot, 0); // num neighbours for each particle
-  	  vector<int> numneigh6(npartot, 0); // num neighbours for each particle	  
-	  vector<vector<int> > lneigh6(npartot); // vector of neighbour particle nums for
+  	  vector<int> numneigh(npartot, 0); // num neighbours for each particle
+	  vector<vector<int> > lneigh(npartot); // vector of neighbour particle nums for
 	                                         // each par
-	  vector<vector<int> > lneigh4(npartot); 
+
+	  // fill up numneigh and lneigh, we can use either neighcut of
+	  // neighnearest for this
+	  neighcut(allpars, simbox, numneigh, lneigh);
 
 	  // matrix of qlm values, for l = 4 and l = 6
 	  array2d q4lm(boost::extents[npartot][9]);
 	  array2d q6lm(boost::extents[npartot][13]);
-	  q4lm = qlms(allpars, simbox, numneigh4, lneigh4, 4);	  
-	  q6lm = qlms(allpars, simbox, numneigh6, lneigh6, 6);
+	  q4lm = qlms(allpars, simbox, numneigh, lneigh, 4);	  
+	  q6lm = qlms(allpars, simbox, numneigh, lneigh, 6);
 	  
 	  // Lechner dellago eq 6, for l = 4 and l = 6
-	  array2d q4lmb = qlmbars(q4lm, lneigh4, 4);
-	  array2d q6lmb = qlmbars(q6lm, lneigh6, 6);
+	  array2d q4lmb = qlmbars(q4lm, lneigh, 4);
+	  array2d q6lmb = qlmbars(q6lm, lneigh, 6);
 
 	  // lechner dellago eq 5, for l = 4 and l = 6
 	  vector<double> q4lbar = qls(q4lmb);
@@ -189,21 +196,23 @@ double py_fracsolidld(boost::python::numeric::array xpos,
 	  Box simbox(lboxx, lboxy, lboxz, nsep, zperiodic);
 
 	  // store number of neighbours and neighbour list
-  	  vector<int> numneigh4(npartot, 0); // num neighbours for each particle
-  	  vector<int> numneigh6(npartot, 0); // num neighbours for each particle	  
-	  vector<vector<int> > lneigh6(npartot); // vector of neighbour particle nums for
+  	  vector<int> numneigh(npartot, 0); // num neighbours for each particle
+	  vector<vector<int> > lneigh(npartot); // vector of neighbour particle nums for
 	                                         // each par
-	  vector<vector<int> > lneigh4(npartot); 
+
+	  // fill up numneigh and lneigh, we can use either neighcut of
+	  // neighnearest for this
+	  neighnearest(allpars, simbox, numneigh, lneigh, 12);
 
 	  // matrix of qlm values, for l = 4 and l = 6
 	  array2d q4lm(boost::extents[npartot][9]);
 	  array2d q6lm(boost::extents[npartot][13]);
-	  q4lm = qlms(allpars, simbox, numneigh4, lneigh4, 4);	  
-	  q6lm = qlms(allpars, simbox, numneigh6, lneigh6, 6);
+	  q4lm = qlms(allpars, simbox, numneigh, lneigh, 4);	  
+	  q6lm = qlms(allpars, simbox, numneigh, lneigh, 6);
 	  
 	  // Lechner dellago eq 6, for l = 4 and l = 6
-	  array2d q4lmb = qlmbars(q4lm, lneigh4, 4);
-	  array2d q6lmb = qlmbars(q6lm, lneigh6, 6);
+	  array2d q4lmb = qlmbars(q4lm, lneigh, 4);
+	  array2d q6lmb = qlmbars(q6lm, lneigh, 6);
 
 	  // lechner dellago eq 5, for l = 4 and l = 6
 	  vector<double> q4lbar = qls(q4lmb);
@@ -236,21 +245,24 @@ vector<LDCLASS> py_ldclass(boost::python::numeric::array xpos,
 	  Box simbox(lboxx, lboxy, lboxz, nsep, zperiodic);
 
 	  // store number of neighbours and neighbour list
-  	  vector<int> numneigh4(npartot, 0); // num neighbours for each particle
-  	  vector<int> numneigh6(npartot, 0); // num neighbours for each particle	  
-	  vector<vector<int> > lneigh6(npartot); // vector of neighbour particle nums for
-	                                         // each par
-	  vector<vector<int> > lneigh4(npartot); 
+  	  vector<int> numneigh(npartot, 0); // num neighbours for each particle
+	  vector<vector<int> > lneigh(npartot); // vector of neighbour
+														 // particle nums for each
+														 // par
+
+	  // fill up numneigh and lneigh, we can use either neighcut of
+	  // neighnearest for this
+	  neighnearest(allpars, simbox, numneigh, lneigh, 12);
 
 	  // matrix of qlm values, for l = 4 and l = 6
 	  array2d q4lm(boost::extents[npartot][9]);
 	  array2d q6lm(boost::extents[npartot][13]);
-	  q4lm = qlms(allpars, simbox, numneigh4, lneigh4, 4);	  
-	  q6lm = qlms(allpars, simbox, numneigh6, lneigh6, 6);
+	  q4lm = qlms(allpars, simbox, numneigh, lneigh, 4);	  
+	  q6lm = qlms(allpars, simbox, numneigh, lneigh, 6);
 	  
 	  // Lechner dellago eq 6, for l = 4 and l = 6
-	  array2d q4lmb = qlmbars(q4lm, lneigh4, 4);
-	  array2d q6lmb = qlmbars(q6lm, lneigh6, 6);
+	  array2d q4lmb = qlmbars(q4lm, lneigh, 4);
+	  array2d q6lmb = qlmbars(q6lm, lneigh, 6);
 
 	  // lechner dellago eq 5, for l = 4 and l = 6
 	  vector<double> q4lbar = qls(q4lmb);

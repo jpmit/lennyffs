@@ -453,7 +453,7 @@ array2d qlms(const vector<Particle>& particles, const Box& simbox,
 				 vector<int>& numneigh, vector<vector<int> >& lneigh,
 				 const int lval)
 {
-	  vector<Particle>::size_type npar = particles.size();
+	  const vector<Particle>::size_type npar = particles.size();
 	  
      // 2d array of complex numbers to store qlm for each particle
 	  array2d qlm(boost::extents[npar][2*lval + 1]);
@@ -465,47 +465,44 @@ array2d qlms(const vector<Particle>& particles, const Box& simbox,
 	  vector<Particle>::size_type i,j;
 	  
 	  for (i = 0; i != npar; ++i) {
-			 for (j = 0; j != npar; ++j) {
-					if (i != j) {
-						  simbox.sep(particles[i],particles[j], sep);
-						  if (simbox.isneigh(sep,r2)) {
-								 // particles i and j are neighbours
-								 ++numneigh[i];
-								 lneigh[i].push_back(j);
+			 for (j = 0; j != numneigh[i]; ++j) {
+					// get sep and r^2 for neighbouring particle
+					simbox.sep(particles[i],particles[lneigh[i][j]], sep);
+					simbox.isneigh(sep, r2);
 
-								 // compute angles cos(theta) and phi in
-								 // spherical coords
-								 r = sqrt(r2);
-								 costheta = sep[2]/r;
-								 rh = sqrt(sep[0]*sep[0] + sep[1]*sep[1]);
-								 if ((sep[0] == 0.0) && (sep[1] == 0.0)) {
-										phi = 0.0;
-								 }
-								 else if (sep[1] > 0.0) {
-										phi = acos(sep[0]/rh);
-								 }
-								 else {
-										phi = 2.0*PI - acos(sep[0]/rh);
-								 }
+					// compute angles cos(theta) and phi in
+					// spherical coords
+					r = sqrt(r2);
+					costheta = sep[2]/r;
+					rh = sqrt(sep[0]*sep[0] + sep[1]*sep[1]);
+					if ((sep[0] == 0.0) && (sep[1] == 0.0)) {
+						  phi = 0.0;
+					}
+					else if (sep[1] > 0.0) {
+						  phi = acos(sep[0]/rh);
+					}
+					else {
+						  phi = 2.0*PI - acos(sep[0]/rh);
+					}
 
-								 // compute contribution of particle j to qlm of
-								 // particle i
-								 for (k = 0; k != 2*lval + 1; ++k) {
-										m = -lval + k;
-										// spherical harmonic
-										qlm[i][k] += ylm(lval, m, costheta, phi);
-								 }
-						  }
+					// compute contribution of particle j to qlm of
+					// particle i
+					for (k = 0; k != 2*lval + 1; ++k) {
+						  m = -lval + k;
+						  // spherical harmonic
+						  qlm[i][k] += ylm(lval, m, costheta, phi);
 					}
 			 }
 
 			 // We now have N_b(i)*qlm(i) for particle i stored in qlm[i][k]
 			 // Now divide by N_b(i)
 			 if (numneigh[i] >= 1) {
-					for (int k = 0; k != 2*lval + 1; ++k) 
+					for (int k = 0; k != 2*lval + 1; ++k){
 						  qlm[i][k] = qlm[i][k]/(static_cast<double>
 														 (numneigh[i]));
-			 }			 
+					}
+			 }
+			 
 	  } // next particle i
 
 	  // the array we are returning is qlm(i), see comments in qdata.cpp
