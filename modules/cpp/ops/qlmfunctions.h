@@ -13,8 +13,9 @@
 #include "constants.h"
 
 // Compute the spherical harmonics etc.
-array2d qlms(const std::vector<Particle>&, const Box&, std::vector<int>&,
-				 std::vector<std::vector<int> >&, const int);
+array2d qlms(const std::vector<Particle>&, const Box&,
+				 const std::vector<int>&,
+				 const std::vector<std::vector<int> >&, const int);
 
 // Get normalised qlm matrix 
 array2d qlmtildes(const array2d&, const std::vector<int>&,

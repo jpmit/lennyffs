@@ -52,6 +52,10 @@ double py_nclustf(boost::python::numeric::array xpos,
 	  vector<vector<int> > lneigh(npartot); // vector of neighbour particle nums for
 	                                        // each par
 
+	  // fill up numneigh and lneigh, we can use either neighcut of
+	  // neighnearest for this
+	  neighnearest(allpars, simbox, numneigh, lneigh, 12);
+
 	  // matrix of qlm values, for l = 6 only
 	  array2d q6lm(boost::extents[npartot][13]);
 	  q6lm = qlms(allpars, simbox, numneigh, lneigh, 6);
@@ -102,7 +106,7 @@ double py_fracsolidtf(boost::python::numeric::array xpos,
 
 	  // fill up numneigh and lneigh, we can use either neighcut of
 	  // neighnearest for this
-	  neighcut(allpars, simbox, numneigh, lneigh);
+	  neighnearest(allpars, simbox, numneigh, lneigh, 12);
 
 	  // matrix of qlm values, for l = 6 only
 	  array2d q6lm(boost::extents[npartot][13]);
@@ -149,7 +153,7 @@ double py_nclusld(boost::python::numeric::array xpos,
 
 	  // fill up numneigh and lneigh, we can use either neighcut of
 	  // neighnearest for this
-	  neighcut(allpars, simbox, numneigh, lneigh);
+	  neighnearest(allpars, simbox, numneigh, lneigh, 12);
 
 	  // matrix of qlm values, for l = 4 and l = 6
 	  array2d q4lm(boost::extents[npartot][9]);
@@ -223,6 +227,7 @@ double py_fracsolidld(boost::python::numeric::array xpos,
 	  // classify particles using q4lbar etc.
 	  vector<LDCLASS> ldclass = classifyparticlesld(nparsurf, q4lbar,
 																	q6lbar, w4lbar, w6lbar);
+	  
 	  return fracsolidld(ldclass, nparsurf);
 }
 
@@ -252,6 +257,7 @@ vector<LDCLASS> py_ldclass(boost::python::numeric::array xpos,
 
 	  // fill up numneigh and lneigh, we can use either neighcut of
 	  // neighnearest for this
+	  //neighcut(allpars, simbox, numneigh, lneigh);	  
 	  neighnearest(allpars, simbox, numneigh, lneigh, 12);
 
 	  // matrix of qlm values, for l = 4 and l = 6

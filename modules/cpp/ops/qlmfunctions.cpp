@@ -201,6 +201,10 @@ vector<LDCLASS> classifyparticlesld(const int nsurf,
 	  vector<LDCLASS> parclass(npar);
 
 	  for (unsigned int i = 0; i != npar; ++i) {
+			 // debug, output q4, q6, w4, w6
+			 //std::cout << q4[i] << " " << q6[i] << " " << w4[i] << " "
+			 //			  << w6[i] << std::endl;
+			 
 			 if (i < nsurf) {
 					parclass[i] = SURFACE;
 			 }
@@ -450,7 +454,8 @@ array2d qlmbars(const array2d& qlm, const vector<vector<int> >& lneigh,
 // Return matrix of qlm(i).  The matrix has dimensions [i,(2l + 1)]
 
 array2d qlms(const vector<Particle>& particles, const Box& simbox,
-				 vector<int>& numneigh, vector<vector<int> >& lneigh,
+				 const vector<int>& numneigh,
+				 const vector<vector<int> >& lneigh,
 				 const int lval)
 {
 	  const vector<Particle>::size_type npar = particles.size();
@@ -467,8 +472,10 @@ array2d qlms(const vector<Particle>& particles, const Box& simbox,
 	  for (i = 0; i != npar; ++i) {
 			 for (j = 0; j != numneigh[i]; ++j) {
 					// get sep and r^2 for neighbouring particle
-					simbox.sep(particles[i],particles[lneigh[i][j]], sep);
-					simbox.isneigh(sep, r2);
+					// the class method here takes into account the
+					// periodic bcs
+					simbox.sep(particles[i], particles[lneigh[i][j]], sep);
+					r2 = sep[0]*sep[0] + sep[1]*sep[1] + sep[2]*sep[2];
 
 					// compute angles cos(theta) and phi in
 					// spherical coords
