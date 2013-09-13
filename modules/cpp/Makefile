@@ -18,7 +18,7 @@ OBJDIR = ops
 LIBNAME = op_ext
 # the Boost.Python wrapper code
 TARGET = $(addprefix $(OBJDIR)/, op_ext)
-OBJ = $(addprefix $(OBJDIR)/, conncomponents.o opfunctions.o pyfunctions.o qlmfunctions.o pyutil.o)
+OBJ = $(addprefix $(OBJDIR)/, conncomponents.o opfunctions.o pyfunctions.o qlmfunctions.o pyutil.o neighbours.o)
 
 $(TARGET).so: $(TARGET).o $(OBJ)
 	g++ -shared -Wl,--export-dynamic $(TARGET).o $(OBJ) -L$(BOOST_LIB) -l:libboost_python.so -L/usr/lib/python$(PYTHON_VERSION)/config -lpython$(PYTHON_VERSION) -o $(LIBNAME).so
@@ -37,6 +37,8 @@ pyfunctions.o: pyfunctions.cpp qlmfunctions.h box.h constants.h particle.h\
 
 qlmfunctions.o: qlmfunctions.cpp particle.h box.h constants.h opfunctions.h\
                 conncomponents.h utility.h	
+
+neighbours.o: neighbours.cpp particle.h box.h constants.h
 
 pyutil.o: pyutil.cpp particle.h
 
