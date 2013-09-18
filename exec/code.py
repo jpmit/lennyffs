@@ -30,15 +30,15 @@ class MCProgram(object):
 
         # read input parameters and write to file
         self.params = initsim.getparams()
-        writeoutput.writepickparams(params)
-        writeoutput.writeparams(params)
+        writeoutput.writepickparams(self.params)
+        writeoutput.writeparams(self.params)
 
         # initialize positions
-        self.positions = initsim.initpositions(params)
+        self.positions = initsim.initpositions(self.params)
 
         # write initial positions to file if new simulation
         if self.params['simulation'] == 'new':
-            writeoutput.writexyzld('initpositions.xyz', positions,
+            writeoutput.writexyzld('initpositions.xyz', self.positions,
                                    self.params)
 
         # From params dictionary create FuncSelector object.  This
@@ -47,57 +47,63 @@ class MCProgram(object):
         # potential, i.e. the value of params['potential'], and also
         # on the type of MC cycle wanted, i.e.  params['mctype'], and
         # on the order parameter desired, params['orderparam'].
-        funcman = funcselector.FuncSelector(params)
+        funcman = funcselector.FuncSelector(self.params)
         self.totalenergy = funcman.TotalEnergyFunc()
         self.runcycle = funcman.MCCycleFunc()
         self.orderp = funcman.OrderParamFunc()
 
         # number of times to call MC cycle function
-        self.ncall = int( np.ceil(params['ncycle'] /
-                                  float(params['opsamp'])) )
+        self.ncall = int( np.ceil(self.params['ncycle'] /
+                                  float(self.params['opsamp'])) )
 
         # number of cycles each time we call MC cycle function
         self.params['cycle'] = min(self.params['ncycle'],
                                    self.params['opsamp'])
 
-        def run(self):
-            """Perform the MC simulation."""
+    def run(self):
+        """Perform the MC simulation."""
 
-            # compute initial energy
-            epot = totalenergy(self.positions, self.params)
+        # compute initial energy
+        epot = self.totalenergy(self.positions, self.params)
 
-            # file for writing order parameter
-            opfile = open('opval.out','w')
-            starttime = time.time()
+        # file for writing order parameter
+        opfile = open('opval.out','w')
+        starttime = time.time()
 
-            # run the MC cycles
-            cyclesdone = 0
-            opfile.write('{0} {1}\n'.format(0, orderp(self.positions,
-                                                      self.params)))
-            for cy in range(ncall):
-                self.positions, epot = self.runcycle(self.positions,
-                                                     self.params,
-                                                     self.epot)
-                cyclesdone += self.params['cycle']
-                # write out order parameter
-                opfile.write('{0} {1}\n'.format(cyclesdone,
-                                                self.orderp(self.positions,
-                                                            self.params)))
-                opfile.flush()
-                # write out pos file if required
-                if (cyclesdone % self.params['nsave'] == 0):
-                    writeoutput.writexyzld('pos{0}.xyz'.format(cy), self.positions,
-                                           self.params)
-        
-        endtime = time.time()
+        # run the MC cycles
+        cyclesdone = 0
+        opfile.write('{0} {1}\n'.format(0, self.orderp(self.positions,
+                                                       self.params)))
+        for cy in range(self.ncall):
+            self.positions, epot = self.runcycle(self.positions,
+                                                 self.params,
+                                                 epot)
+            cyclesdone += self.params['cycle']
+            # write out order parameter
+            opfile.write('{0} {1}\n'.format(cyclesdone,
+                                            self.orderp(self.positions,
+                                                        self.params)))
+            opfile.flush()
+            # write out pos file if required
+            if (cyclesdone % self.params['nsave'] == 0):
+                writeoutput.writexyzld('pos{0}.xyz'.format(cy), self.positions,
+                                       self.params)
+
+            endtime = time.time()
 
         # write final positions to file
         writeoutput.writexyzld('finalpositions.xyz', self.positions,
-                               self.params)
+                                   self.params)
 
         # write runtime to stderr
         sys.stderr.write("runtime in s: %.3f\n" %(endtime - starttime))
 
-if __name__ == '__main':
+        # if we were npt, print new box volume
+        if self.params['mctype'] == 'npt':
+            print 'new box volume: {0}'.format(self.params['lboxx']*\
+                                               self.params['lboxy']*\
+                                               self.params['lboxz'])
+
+if __name__ == '__main__':
     mcprog = MCProgram()
     mcprog.run()
