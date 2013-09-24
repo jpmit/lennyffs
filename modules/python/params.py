@@ -10,8 +10,9 @@ import sys
 from paramdata import *
 
 class Param(object):
-    def __init__(self,name,svalue):
+    def __init__(self, name, svalue):
         """Create Param object from name and value, both strings"""
+        
         assert isinstance(name,str) and isinstance(svalue,str),(""
                 "name and value of parameter need to be passed as string")
         self.name = name
@@ -20,6 +21,7 @@ class Param(object):
 
     def getvalue(self):
         """Return svalue, which is a string, as proper type e.g. int"""
+        
         if self.name not in PDICT:
             print "Error: parameter '%s' not allowed" %self.name
         else:

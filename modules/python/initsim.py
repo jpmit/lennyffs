@@ -159,6 +159,14 @@ def addparamssurf(pdict):
             pdict['lboxx'] = alat*pdict['lxsurf']
             pdict['lboxy'] = (alat/2.0**0.5)*pdict['lysurf']
             pdict['dzsurf'] = alat/2.0**(3.0/2.0)
+    elif pdict['surftype'] == 'bcc':
+        # alat is the conventional (cubic) unit cell
+        alat = 2.0**(1.0/3.0)/ pdict['nlatt']**(1.0/3.0)
+        pdict['alat'] = alat
+        if pdict['plane'] == '100':
+            pdict['lboxx'] = alat*pdict['lxsurf']
+            pdict['lboxy'] = alat*pdict['lysurf']
+            pdict['dzsurf'] = alat/2.0
     elif pdict['surftype'] == 'hcp':
         # conventional (hexagonal) unit cell
         alat = 2.0**(1.0/6.0)/pdict['nlatt']**(1.0/3.0)
@@ -285,7 +293,7 @@ def initlatticepositions(params,nlayers):
     if params['surftype'] == 'fcc':
 
         if params['plane'] == '111':
-            surf = ase.fcc111('O',a=alat,size=(lxsurf,lysurf,nlayers),
+            surf = ase.fcc111('O', a=alat, size=(lxsurf,lysurf,nlayers),
                               orthogonal=True)
             positions = surf.positions
             positions[:,0] = positions[:,0] + (alat/2.0**0.5)/4.0
@@ -303,6 +311,14 @@ def initlatticepositions(params,nlayers):
             positions = surf.positions
             positions[:,0] = positions[:,0] + alat/4.0
             positions[:,1] = positions[:,1] + (alat/2.0**0.5)/4.0
+
+    elif params['surftype'] == 'bcc':
+
+        if params['plane'] == '100':
+            surf = ase.bcc100('O', a=alat, size=(lxsurf,lysurf,nlayers))
+            positions = surf.positions
+            positions[:,0] = positions[:,0] + alat/2.0
+            positions[:,1] = positions[:,1] + alat/2.0
 
     elif params['surftype'] == 'hcp':
 
