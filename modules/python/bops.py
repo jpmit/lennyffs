@@ -3,16 +3,17 @@
 # j.mithen@surrey.ac.uk
 
 """
-Local bond order parameters for FFS code
-the xtal particles are identified in a Fortran routine
-which is wrapped by the function getxpars() below.
-The code for computing BopxBulk, the largest xtal cluster, is implemented here
-This uses the Graph class (see graph.py)
+Local bond order parameters for FFS code. The xtal particles are
+identified in a Fortran routine which is wrapped by the function
+getxpars() below.  The code for computing BopxBulk, the largest xtal
+cluster, is implemented here. This uses the Graph class (see graph.py)
+
 FUNCTIONS:
-bopxbulk - return size of largest xtal cluster using local bond order params
-           see ten Wolde,Ruiz-Montero and Frenkel, Faraday Discuss. 104, 93
-getxpars - return array of particle numbers that are xtal,
-           according to local bond order parameters
+bopxbulk  - return size of largest xtal cluster using local bond order
+            params see ten Wolde,Ruiz-Montero and Frenkel,
+            Faraday Discuss. 104, 93
+getxpars  - return array of particle numbers that are xtal,
+            according to local bond order parameters
 getxgraph - return Graph of xtal particles, with nodes that are xtal pars, and
             edges between any two pars that are neighbours.
 """
@@ -21,17 +22,20 @@ import graph
 import mcfuncs
 
 def bopxbulk(positions,params):
-    """Return number of xtal particles (according to q6 criterion)
-    and BOPxBulk, which is the largest cluster of xtal particles."""
+    """
+    Return number of xtal particles (according to q6 criterion)
+    and BOPxBulk, which is the largest cluster of xtal particles.
+    """
+
     # get all xtal particles
     xpars = getxpars(positions,params)
     nxtal = len(xpars)
     
-    # To compute BOPxBulk, we first create a graph with the xtal particles as
-    # nodes.  Edges of the graph are then drawn between neighbouring particles
-    # i.e. particles whose separation is less than the cutoff distance,
-    # which is params['stillsep'].
-    # Bopxbulk is the largest connected component of the graph.
+    # To compute BOPxBulk, we first create a graph with the xtal
+    # particles as nodes.  Edges of the graph are then drawn between
+    # neighbouring particles i.e. particles whose separation is less
+    # than the cutoff distance, which is params['stillsep'].  Bopxbulk
+    # is the largest connected component of the graph.
     xgraph = getxgraph(positions,params,xpars)
     comps = graph.connected_comps(xgraph)
     if nxtal > 0:
@@ -42,6 +46,7 @@ def bopxbulk(positions,params):
 
 def getxpars(positions,params):
     """Return array of xtal particle numbers."""
+
     npar = params['npartot']
     nsep = params['stillsep']
     nparsurf = params['nparsurf']
@@ -63,7 +68,11 @@ def getxpars(positions,params):
     return (xpars[:nxtal] - 1)
 
 def getxgraph(positions,params,xpars):
-    """Create graph with xtal pars as nodes, edges between neighbouring pars"""
+    """
+    Create graph with xtal pars as nodes, edges between
+    neighbouring pars.
+    """
+
     xgraph = graph.Graph(xpars)
     stillsep = params['stillsep']
     stillsepsq = stillsep**2.0

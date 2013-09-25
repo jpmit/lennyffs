@@ -3,7 +3,8 @@
 # j.mithen@surrey.ac.uk
 
 """
-Param class for handling the parameters in simulation input file (in) nicely
+Param class for handling the parameters in simulation input file (in)
+nicely.
 """
 
 import sys

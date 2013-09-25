@@ -1,24 +1,30 @@
 # readwrite.py
-# 10th September 2010
 # James Mithen
+# j.mithen@surrey.ac.uk
 
 """
-Functions for reading / writing files
+Functions for reading / writing files of i) numeric data, ii) particle
+positions in the XYZ file format.
+
 FUNCTIONS:
-rxyz - read file in XYZ format
-wxyz - write file in XYZ format
-r2col - read 2 column file
-r3col - read 3 column file
-r4col - read 4 column file
-r5col -read 5 column file
-rncol -read n column file
-w2col - write 2 column file
+rxyz  - Read file in XYZ format.
+wxyz  - Write file in XYZ format.
+r2col - Read 2 column file.
+r3col - Read 3 column file.
+r4col - Read 4 column file.
+r5col - Read 5 column file.
+rncol - Read n column file.
+w2col - Write 2 column file.
 """
 
 import numpy as np
 
-def rxyz(fname,retsymbols=False,splines=1):
-    """Read a .xyz coordinate file."""
+def rxyz(fname, retsymbols=False, splines=1):
+    """
+    Read a .xyz coordinate file, return particle positions and
+    symbols if flag set.
+    """
+    
     fin = open(fname,'r')
     lines = fin.readlines()
     fin.close()
@@ -39,8 +45,9 @@ def rxyz(fname,retsymbols=False,splines=1):
     else:
         return positions
 
-def wxyz(fname,positions,symbols):
-    """Write a .xyz coordinate file"""
+def wxyz(fname, positions, symbols):
+    """Write an .xyz coordinate file."""
+    
     fout = open(fname,'w')
     npar = len(positions)
     fstr = '%d\n\n' %npar
@@ -52,7 +59,8 @@ def wxyz(fname,positions,symbols):
     return
 
 def r1col(fname):
-    """Read 1 column file of numeric data and return as numpy array"""
+    """Read 1 column file of numeric data and return as numpy array."""
+    
     fin = open(fname,'r')
     lines = fin.readlines()
     nlines = len(lines)
@@ -69,10 +77,12 @@ def r1col(fname):
     return col1[:i]
     
 
-def r2col(fname,sep=None,**kwargs):
-    """Read 2 column file of numeric data and return as numpy arrays"""
+def r2col(fname, sep=None, **kwargs):
+    """Read 2 column file of numeric data and return as numpy arrays."""
+    
     sskip = kwargs.get('eskip',0) # skip lines at start
     eskip = kwargs.get('eskip',0) # skip lines at end
+    
     fin = open(fname,'r')
     lines = fin.readlines()
     nlines = len(lines)
@@ -80,6 +90,7 @@ def r2col(fname,sep=None,**kwargs):
     col1 = np.empty(nlines - sskip - eskip)
     col2 = np.empty(nlines - sskip - eskip)
     i = 0 # count line num
+    
     # invariant: we have stored i lines in col1 and col2
     for line in lines[sskip:nlines-eskip]:
         if '#' in line:
@@ -94,8 +105,9 @@ def r2col(fname,sep=None,**kwargs):
 
     return col1[:i], col2[:i]
 
-def r3col(fname,sep=None):
-    """Read 3 column file of numeric data and return as numpy arrays"""
+def r3col(fname, sep=None):
+    """Read 3 column file of numeric data and return as numpy arrays."""
+    
     fin = open(fname,'r')
     lines = fin.readlines()
     fin.close()
@@ -109,8 +121,9 @@ def r3col(fname,sep=None):
         col3.append(float(splin[2]))
     return np.array(col1), np.array(col2), np.array(col3)
 
-def r4col(fname,sep=None):
-    """Read 4 column file of numeric data and return as numpy arrays"""
+def r4col(fname, sep=None):
+    """Read 4 column file of numeric data and return as numpy arrays."""
+    
     fin = open(fname,'r')
     lines = fin.readlines()
     fin.close()
@@ -125,8 +138,9 @@ def r4col(fname,sep=None):
         col4.append(float(splin[3]))
     return np.array(col1), np.array(col2), np.array(col3), np.array(col4)
 
-def r5col(fname,sep=None):
-    """Read 4 column file of numeric data and return as numpy arrays"""
+def r5col(fname, sep=None):
+    """Read 4 column file of numeric data and return as numpy arrays."""
+    
     fin = open(fname,'r')
     lines = fin.readlines()
     fin.close()
@@ -142,8 +156,9 @@ def r5col(fname,sep=None):
         col5.append(float(splin[4]))
     return np.array(col1), np.array(col2), np.array(col3), np.array(col4), np.array(col5)
 
-def rncol(fname,n,sep=None):
-    """Read n column file of numeric data and return as list of numpy arrays"""
+def rncol(fname, n, sep=None):
+    """Read n column file of numeric data and return as list of numpy arrays."""
+    
     fin = open(fname,'r')
     lines = fin.readlines()
     fin.close()
@@ -158,8 +173,9 @@ def rncol(fname,n,sep=None):
             res[i].append(float(splin[i]))
     return [np.array(col) for col in res]
  
-def w2col(fname,col1,col2,headers=[]):
-    """Write 2 column data of floats"""
+def w2col(fname, col1, col2, headers=[]):
+    """Write 2 column data of floats."""
+    
     if headers:
         fstr = '# %s %s\n' %(headers[0],headers[1])
     else:

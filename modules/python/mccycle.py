@@ -7,12 +7,21 @@ Wrapper to Fortran code for performing the Monte Carlo simulation This
 just calls the fortran subroutine 'executecycles' (see mccyclef.f90)
 for nvt simulation, and 'executecyclesnpt' (see mccyclenptf.f90) for
 npt simulation.
+
+FUNCTIONS:
+len_cyclenvt   - NVT MC for Lennard-Jones potential.
+len_cyclenpt   - NPT MC for Lennard-Jones potential.
+gauss_cyclenvt - NVT MC for Gaussian potential.
+gauss_cyclenpt - NPT MC for Gaussian potential.
 """
 
 import mcfuncs
 
 def len_cyclenvt(positions,params,etot):
-    """Performs the requested number of cycles of NVT MC"""
+    """Performs the requested number of cycles of NVT MC."""
+
+    # ncycle is the number of MC cycles we perform (one cycle consists
+    # of on average a single displacement move per moving particle).
     ncycle = params['cycle']
     nsamp = params['nsamp']
     rc = params['rcut']
@@ -31,20 +40,26 @@ def len_cyclenvt(positions,params,etot):
 
     # setup and call the fortran subroutine
     xpos,ypos,zpos = positions[:,0],positions[:,1],positions[:,2]
-    xpos,ypos,zpos,etot  = mcfuncs.len_executecyclesnvt(xpos,ypos,zpos,
-                                                        ncycle,nsamp,
-                                                        rc,rcsq,vrc,vrc2,
-                                                        lboxx,lboxy,
-                                                        lboxz,eps4,
-                                                        maxdisp,nparsurf,
-                                                        zperiodic,r6mult,
-                                                        r12mult,etot)
+    xpos,ypos,zpos,etot  = mcfuncs.\
+                           len_executecyclesnvt(xpos, ypos, zpos,
+                                                ncycle, nsamp,
+                                                rc, rcsq, vrc,
+                                                vrc2, lboxx,lboxy,
+                                                lboxz,eps4,
+                                                maxdisp,nparsurf,
+                                                zperiodic,r6mult,
+                                                r12mult,etot)
+    
     positions[:,0],positions[:,1],positions[:,2] = xpos,ypos,zpos
 
     return positions, etot
 
 def len_cyclenpt(positions,params,etot):
-    """Performs the requested number of cycles of NPT MC"""
+    """Performs the requested number of cycles of NPT MC."""
+
+    # ncycle is the number of MC cycles we perform (one cycle consists
+    # of on average a single displacement move per moving particle AND
+    # a single volume move).
     ncycle = params['cycle']
     nsamp = params['nsamp']
     rc = params['rcut']
@@ -65,16 +80,17 @@ def len_cyclenpt(positions,params,etot):
 
     # setup and call the fortran subroutine
     xpos,ypos,zpos = positions[:,0],positions[:,1],positions[:,2]
-    xpos,ypos,zpos,lx,ly,lz,etot  = mcfuncs.len_executecyclesnpt(xpos,ypos,zpos,
-                                                                 ncycle,nsamp,
-                                                                 rc,rcsq,vrc,vrc2,
-                                                                 pressure,
-                                                                 lboxx,lboxy,
-                                                                 lboxz,eps4,maxdisp,
-                                                                 maxvol,
-                                                                 nparsurf,
-                                                                 zperiodic,r6mult,
-                                                                 r12mult,etot)
+    xpos,ypos,zpos,lx,ly,lz,etot  = mcfuncs.\
+                                    len_executecyclesnpt(xpos, ypos, zpos,
+                                                         ncycle, nsamp,
+                                                         rc, rcsq, vrc, vrc2,
+                                                         pressure,
+                                                         lboxx, lboxy,
+                                                         lboxz, eps4, maxdisp,
+                                                         maxvol,
+                                                         nparsurf,
+                                                         zperiodic, r6mult,
+                                                         r12mult, etot)
     # update box dimensions
     params['lboxx'] = lx
     params['lboxy'] = ly
@@ -84,7 +100,10 @@ def len_cyclenpt(positions,params,etot):
     return positions, etot
 
 def gauss_cyclenvt(positions,params,etot):
-    """Performs the requested number of cycles of NVT MC"""
+    """Performs the requested number of cycles of NVT MC."""
+
+    # ncycle is the number of MC cycles we perform (one cycle consists
+    # of on average a single displacement move per moving particle).    
     ncycle = params['cycle']
     nsamp = params['nsamp']
     rc = params['rcut']
@@ -101,20 +120,25 @@ def gauss_cyclenvt(positions,params,etot):
 
     # setup and call the fortran subroutine
     xpos,ypos,zpos = positions[:,0],positions[:,1],positions[:,2]
-    xpos,ypos,zpos,etot  = mcfuncs.gauss_executecyclesnvt(xpos,ypos,zpos,
-                                                          ncycle,nsamp,
-                                                          rc,rcsq,vrc,vrc2,
-                                                          lboxx,lboxy,
-                                                          lboxz,epsovert,
-                                                          maxdisp,nparsurf,
-                                                          zperiodic,
-                                                          etot)
+    xpos,ypos,zpos,etot  = mcfuncs.\
+                           gauss_executecyclesnvt(xpos, ypos, zpos,
+                                                  ncycle, nsamp,
+                                                  rc, rcsq, vrc, vrc2,
+                                                  lboxx, lboxy,
+                                                  lboxz, epsovert,
+                                                  maxdisp, nparsurf,
+                                                  zperiodic,
+                                                  etot)
     positions[:,0],positions[:,1],positions[:,2] = xpos,ypos,zpos
 
     return positions, etot
 
 def gauss_cyclenpt(positions,params,etot):
-    """Performs the requested number of cycles of NPT MC"""
+    """Performs the requested number of cycles of NPT MC."""
+    
+    # ncycle is the number of MC cycles we perform (one cycle consists
+    # of on average a single displacement move per moving particle AND
+    # a single volume move).
     ncycle = params['cycle']
     nsamp = params['nsamp']
     rc = params['rcut']
@@ -133,16 +157,17 @@ def gauss_cyclenpt(positions,params,etot):
 
     # setup and call the fortran subroutine
     xpos,ypos,zpos = positions[:,0],positions[:,1],positions[:,2]
-    xpos,ypos,zpos,lx,ly,lz,etot  = mcfuncs.gauss_executecyclesnpt(xpos,ypos,zpos,
-                                                                   ncycle,nsamp,
-                                                                   rc,rcsq,vrc,vrc2,
-                                                                   pressure,
-                                                                   lboxx,lboxy,
-                                                                   lboxz,epsovert,maxdisp,
-                                                                   maxvol,
-                                                                   nparsurf,
-                                                                   zperiodic,
-                                                                   etot)
+    xpos,ypos,zpos,lx,ly,lz,etot  = mcfuncs.\
+                                    gauss_executecyclesnpt(xpos, ypos, zpos,
+                                                           ncycle, nsamp,
+                                                           rc, rcsq, vrc, vrc2,
+                                                           pressure,
+                                                           lboxx, lboxy,
+                                                           lboxz, epsovert,
+                                                           maxdisp, maxvol,
+                                                           nparsurf,
+                                                           zperiodic,
+                                                           etot)
     # update box dimensions
     params['lboxx'] = lx
     params['lboxy'] = ly

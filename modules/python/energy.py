@@ -3,18 +3,26 @@
 # j.mithen@surrey.ac.uk
 
 """
-Wrapper to Fortran function for computing total energy (see energyf.f90)
+Wrapper to Fortran function for computing total energy (see
+modules/fortran/len/len_energyf.f90 and
+modules/fortran/gauss/gauss_energyf.f90).
+
 FUNCTIONS:
-len_totalenergy - computes total potential energy of system, including
-                  surface, for Lennard-Jones interaction potential.
+len_totalenergy   - computes total potential energy of system, including
+                    surface, for Lennard-Jones potential.
+len_energyipar    - computes potential energy between a single particle
+                    and all others, for Lennard-Jones potential.
 gauss_totalenergy - computes total potential energy of system, including
-                    surface, gor Gaussian interaction potential.
+                    surface, for Gaussian potential.
+gauss_energyipar  - computes potential energy between a single particle
+                    and all others, for Gaussian potential.
 """
 
 import mcfuncs
 
 def len_totalenergy(positions,params):
-    """Compute total energy of system, including surface"""
+    """Compute total energy of system, including surface."""
+
     npartot = params['npartot']
     rcut = params['rcut']
     rcsq = params['rcsq']
@@ -34,10 +42,11 @@ def len_totalenergy(positions,params):
                                    zperiodic,r6mult,r12mult)
     return etot
 
-# this function is used for the utilites but shouldn't be needed
-# otherwise.
+# this function is used for the utilites but isn't used by the main
+# code.
 def len_energyipar(ipar, positions, params, nparsurf = None):
-    """Compute energy of particle ipar with other particles in system."""
+    """Compute energy of particle ipar with all other particles."""
+
     rcut = params['rcut']
     rcsq = params['rcsq']
     lboxx = params['lboxx']
@@ -55,16 +64,19 @@ def len_energyipar(ipar, positions, params, nparsurf = None):
 
     # ipar + 1 converts between zero indexing (Python) and one
     # indexing (Fortran).
-    etot = mcfuncs.len_energyipar(ipar+1, positions[ipar][0], positions[ipar][1],
+    etot = mcfuncs.len_energyipar(ipar+1, positions[ipar][0],
+                                  positions[ipar][1],
                                   positions[ipar][2],
-                                  positions[:,0],positions[:,1],
-                                  positions[:,2],rcut,rcsq,lboxx,
-                                  lboxy,lboxz,vrc,vrc2, nparsurf,
-                                  zperiodic,r6mult,r12mult)
+                                  positions[:,0],
+                                  positions[:,1],
+                                  positions[:,2], rcut, rcsq, lboxx,
+                                  lboxy, lboxz, vrc, vrc2, nparsurf,
+                                  zperiodic, r6mult, r12mult)
     return etot
 
 def gauss_totalenergy(positions,params):
-    """Compute total energy of system, including surface"""
+    """Compute total energy of system, including surface."""
+    
     npartot = params['npartot']
     rcut = params['rcut']
     rcsq = params['rcsq']
@@ -76,16 +88,17 @@ def gauss_totalenergy(positions,params):
     nparsurf = params['nparsurf']
     zperiodic = params['zperiodic']
 
-    etot = mcfuncs.gauss_totalenergy(positions[:,0],positions[:,1],
-                                     positions[:,2],rcut,rcsq,lboxx,
-                                     lboxy,lboxz,vrc,vrc2, nparsurf,
+    etot = mcfuncs.gauss_totalenergy(positions[:,0], positions[:,1],
+                                     positions[:,2], rcut, rcsq, lboxx,
+                                     lboxy,lboxz, vrc, vrc2, nparsurf,
                                      zperiodic)
     return etot
 
 # this function is used for the utilites but shouldn't be needed
 # otherwise.
 def gauss_energyipar(ipar, positions, params, nparsurf = None):
-    """Compute total energy of system, including surface"""
+    """Compute energy of particle ipar with all other particles."""
+    
     rcut = params['rcut']
     rcsq = params['rcsq']
     lboxx = params['lboxx']
@@ -96,16 +109,18 @@ def gauss_energyipar(ipar, positions, params, nparsurf = None):
     nparsurf = params['nparsurf']
     zperiodic = params['zperiodic']
 
-    # particles {1,...nsurf} use a different potential.
+
     if nparsurf is None:
         nparsurf = params['nparsurf']
     
     # ipar + 1 converts between zero indexing (Python) and one
     # indexing (Fortran).
-    etot = mcfuncs.gauss_energyipar(ipar+1, positions[ipar][0], positions[ipar][1],
+    etot = mcfuncs.gauss_energyipar(ipar+1, positions[ipar][0],
+                                    positions[ipar][1],
                                     positions[ipar][2],
-                                    positions[:,0],positions[:,1],
-                                    positions[:,2],rcut,rcsq,lboxx,
-                                    lboxy,lboxz,vrc,vrc2, nparsurf,
+                                    positions[:,0],
+                                    positions[:,1],
+                                    positions[:,2], rcut, rcsq, lboxx,
+                                    lboxy, lboxz, vrc, vrc2, nparsurf,
                                     zperiodic)
     return etot

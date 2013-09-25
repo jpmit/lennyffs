@@ -7,7 +7,8 @@ Class for handing out energy and mccycle functions correctly,
 according to the potential.
 
 CLASSES:
-FuncSelector - handles functions for the potential energy and MC cycle
+FuncSelector - handles function selection for the potential energy,
+               MC cycle and order parameter.
 """
 
 from lenexceptions import *
@@ -45,23 +46,16 @@ class FuncSelector(object):
                             ALLFRAC, NONE]}
 
     def __init__(self, params):
-        self.check_input(params)
+        self.store_input(params)
     
     @classmethod
-    def check_input(cls, params):
-        """Make sure the params dictionary contains all options
-        correctly"""
+    def store_input(cls, params):
+        """
+        Store the chosen options for interaction potential, MC cycle
+        type, and order parameter in the instance.
+        """
         cls.option = {}
         for oname in cls.OPTIONS:
-            # check that the parameter is in the dictionary
-            #if oname not in params:
-            #    raise NoInputParamError, ('{0} not found in parameter '
-            #                              'dictionary'.format(oname))
-            # check that the option chosen is one of those allowed
-            #if params[oname] not in cls.OPTIONS[oname]:
-            #    raise InputParamError, ('{0} should be one of: {1}'.\
-            #                            format(oname,
-            #                                   ' '.join(cls.OPTIONS[oname])))
             # store the chosen option in the class
             try:
                 cls.option[oname] = params[oname]
@@ -72,7 +66,7 @@ class FuncSelector(object):
 
     @classmethod
     def TotalEnergyFunc(cls):
-        """Return function that evaluates total energy"""
+        """Return function that evaluates total energy."""
         if cls.option[cls.POTENTIAL] == cls.LEN:
             return energy.len_totalenergy
         elif cls.option[cls.POTENTIAL] == cls.GAUSS:
@@ -80,7 +74,7 @@ class FuncSelector(object):
 
     @classmethod
     def EnergyIparFunc(cls):
-        """Return function that evaluates total energy"""
+        """Return function that evaluates total energy."""
         if cls.option[cls.POTENTIAL] == cls.LEN:
             return energy.len_energyipar
         elif cls.option[cls.POTENTIAL] == cls.GAUSS:
@@ -88,7 +82,7 @@ class FuncSelector(object):
 
     @classmethod
     def MCCycleFunc(cls):
-        """Return function that computes an MC cycle"""
+        """Return function that computes an MC cycle."""
         if cls.option[cls.MCTYPE] == cls.NPT:
             # functions for NPT MC for each different potential            
             if cls.option[cls.POTENTIAL] == cls.LEN:
@@ -104,7 +98,7 @@ class FuncSelector(object):
 
     @classmethod
     def OrderParamFunc(cls):
-        """Return function that computes an MC cycle"""
+        """Return function that computes an MC cycle."""
         if cls.option[cls.ORDERPARAM] == cls.NTF:
             return orderparam.nclustf_cpp
         elif cls.option[cls.ORDERPARAM] == cls.NLD:

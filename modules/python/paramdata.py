@@ -1,10 +1,10 @@
 # paramdata.py
-# 23 April 2013
 # James Mithen
+# j.mithen@surrey.ac.uk
 
 """
-Information on the allowed parameters,
-and functions to convert them from a string to desired type
+Information on the allowed parameters, and functions to convert them
+from a string to desired type.
 """
 
 INT = 'int'
@@ -76,13 +76,15 @@ PDICT = {# simulation params
          'prunprob': FLOAT
          }
 
-def __strtointlist(s):
-    """Converts string e.g. '[0,2,3,4,6]' to a Python list of integers"""
+def _strtointlist(s):
+    """Converts string e.g. '[0,2,3,4,6]' to a Python list of integers."""
+    
     return [int(i) for i in s.split(',')]
 
-def __strtobool(s):
+def _strtobool(s):
     """Converts string to bool, note that we want to allow 'yes' and 'no'
-    only, and throw an exception otherwise"""
+    only, and throw an exception otherwise."""
+    
     if s == 'yes':
         return True
     elif s == 'no':
@@ -90,8 +92,8 @@ def __strtobool(s):
     else:
         raise ValueError
         
-# functions for converting from string to another type
-# note that 'int', 'float', 'str' and 'bool' are built-in
+# functions for converting from string to another type.  Note that
+# 'int', 'float', 'str' and 'bool' are built-in.
     
-FUNCS = {INT: int, FLOAT: float, STRING: str, BOOL: __strtobool,
-         INTLIST: __strtointlist}
+FUNCS = {INT: int, FLOAT: float, STRING: str, BOOL: _strtobool,
+         INTLIST: _strtointlist}

@@ -3,7 +3,7 @@
 # j.mithen@surrey.ac.uk
 
 """
-Exception classes used globally.
+Exception classes used globally.  These are currently empty.
 """
 
 # error with a utility (see util/ folder)

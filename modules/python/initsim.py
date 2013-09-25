@@ -8,20 +8,25 @@ making box, initialising positions etc.
 This module uses the Atomic Simulation Environment (ASE) package
 in order to initialize positions on a lattice.
 See https://wiki.fysik.dtu.dk/ase/
-FUNCTIONS
-readparams - read parameters from 'in' and return as dictionary
-getparams - read params, make them numerical, add any missing
-checkparams - a few sanity checks on the parameters we read
-addparams - add useful parameters to params dictionary
-addparamssurf - add parameters to params dictionary if have surface
-addparamsnosurf - add parameters to params dictionary if no surface
-initpositions - wrapper for initialising particle positions
-restartpositions - return positions of pars from restart file
-initpositionsnosurf - init particle positions if no surface
-initlatticepositions - init particle positions on a lattice
-initflpositionsrandom - init fluid positions randomly above surface
-initflpositionslayer - init fluid positions in layers above surface
-initpositionssurf - init particle positions if have surface
+
+FUNCTIONS:
+readparams            - read parameters from 'in' and return as
+                        dictionary.
+getparams             - read params, make them numerical, add any
+                        missing.
+checkparams           - a few sanity checks on the parameters we read.
+addparams             - add useful parameters to params dictionary.
+addparamssurf         - add parameters to params dictionary if have
+                        surface.
+addparamsnosurf       - add parameters to params dictionary if no
+                        surface.
+initpositions         - wrapper for initialising particle positions.
+restartpositions      - return positions of pars from restart file.
+initpositionsnosurf   - init particle positions if no surface.
+initlatticepositions  - init particle positions on a lattice.
+initflpositionsrandom - init fluid positions randomly above surface.
+initflpositionslayer  - init fluid positions in layers above surface.
+initpositionssurf     - init particle positions if have surface.
 """
 
 import sys
@@ -34,23 +39,27 @@ import params
 import ase.lattice.surface as ase
 
 def readparams():
-    """Read simulation parameters from 'in' file"""
+    """Read simulation parameters from 'in' file."""
+    
     pdict = {} # dictionary containing params
     fname = os.getcwd() + '/in'
     f = open(fname,'r')
     flines = f.readlines()
     rerror = False
+    
     for line in flines:
-        # skip comments
+        # skip comments (rudimentary method)
         if '#' in line:
             continue
+
         line = line.split()
         if line:
-            # note that this interface should handle
-            # conversion from string to e.g. int correctly
+            # note that this interface should handle conversion from
+            # string to e.g. int correctly
             p = params.Param(line[0],line[1])
             if p.value is None:
-                # something went wrong, we should have had an error msg
+                # something went wrong, we should have had an error
+                # msg on stdout
                 rerror = True
             else:
                 pdict[p.name] = p.value
@@ -60,17 +69,21 @@ def readparams():
 
 def getparams():
     """
-    Read simulation parameters from in file and compute other
-    useful parameters from these.  Returns a dictionary containing
-    names and values of these parameters"""
+    Read simulation parameters from in file and compute other useful
+    parameters from these.  Returns a dictionary containing names and
+    values of these parameters.
+    """
+    
     # read parameters from 'in' file
     pdict = readparams()
     if not pdict:
         # something went wrong reading params file
         sys.exit("Error: I couldn't read the 'in' file properly")
-    # check that the input actually makes sense,
-    # can we actually do a simulation with this info?
+        
+    # check that the input actually makes sense, can we actually do a
+    # simulation with this info?
     pdict = checkparams(pdict) 
+
     # add some parameters to the dictionary that are useful
     pdict = addparams(pdict)
     return pdict
@@ -78,6 +91,7 @@ def getparams():
 def checkparams(pdict):
     """Some sanity checks on the parameters in the input file."""
 
+    # only one simple check at the moment, this should be added to
     if 'useffs' in pdict and pdict['useffs']:
         if (len(pdict['lambdas']) != pdict['numint'] + 1):
             sys.exit('Error: num interfaces and lambdas given do not match up')
@@ -85,17 +99,20 @@ def checkparams(pdict):
     return pdict
 
 def addparams(pdict):
-    """Add some useful parameters to the dictionary"""
+    """Add some useful parameters to the dictionary."""
+    
     # if type of mc simulation not specified, default to nvt
     if 'mctype' not in pdict:
         pdict['mctype'] = 'nvt'
+        
     # eps/k_bT
     pdict['epsovert'] = 1.0 / pdict['Tstar']
     # 4eps/k_bT
     pdict['eps4'] = 4.0 / pdict['Tstar'] 
     # cutoff radius
     rc2 = pdict['rcut']**2
-    pdict['rcsq'] = rc2        
+    pdict['rcsq'] = rc2
+    
     # potentials at cutoff
     if pdict['potential'] == 'len':
         rc2i = 1.0/rc2
@@ -104,10 +121,13 @@ def addparams(pdict):
         # particle-particle
         vrc = rc12i - rc6i
         # particle-surface
+        
         if not pdict['surface']:
             # r6mult and r12 mult are redundant, set to 1
             pdict['r6mult'] = pdict['r12mult'] = 1.0
+            
         vrc2 = pdict['r12mult']*rc12i - pdict['r6mult']*rc6i
+
     elif pdict['potential'] == 'gauss':
         vrc = np.exp(-rc2)
         vrc2 = vrc
@@ -121,10 +141,12 @@ def addparams(pdict):
         pdict = addparamssurf(pdict)
     else:
         pdict = addparamsnosurf(pdict)
+        
     return pdict
 
 def addparamssurf(pdict):
-    """Add parameters to dictionary for surface"""
+    """Add parameters to dictionary for surface."""
+    
     # since we have a surface, we are not periodic in z
     pdict['zperiodic'] = False
 
@@ -144,6 +166,7 @@ def addparamssurf(pdict):
     # get lattice parameters and set dimensions of simulation
     # box in x and y
     if pdict['surftype'] == 'fcc':
+        
         # alat is for the conventional (cubic) unit cell
         alat = 2.0**(2.0/3.0)/pdict['nlatt']**(1.0/3.0)
         pdict['alat'] = alat
@@ -159,6 +182,7 @@ def addparamssurf(pdict):
             pdict['lboxx'] = alat*pdict['lxsurf']
             pdict['lboxy'] = (alat/2.0**0.5)*pdict['lysurf']
             pdict['dzsurf'] = alat/2.0**(3.0/2.0)
+            
     elif pdict['surftype'] == 'bcc':
         # alat is the conventional (cubic) unit cell
         alat = 2.0**(1.0/3.0)/ pdict['nlatt']**(1.0/3.0)
@@ -167,6 +191,7 @@ def addparamssurf(pdict):
             pdict['lboxx'] = alat*pdict['lxsurf']
             pdict['lboxy'] = alat*pdict['lysurf']
             pdict['dzsurf'] = alat/2.0
+            
     elif pdict['surftype'] == 'hcp':
         # conventional (hexagonal) unit cell
         alat = 2.0**(1.0/6.0)/pdict['nlatt']**(1.0/3.0)
@@ -185,13 +210,16 @@ def addparamssurf(pdict):
 
     # get number of fluid particles
     if pdict['flinit'] == 'random':
-        # init fluid particles to random positions, using nparfl for number
+        # init fluid particles to random positions, using nparfl for
+        # number
         pdict['nparfl'] = int(pdict['nparfl'])
         pdict['rcinit'] = float(pdict['rcinit'])
+        
     elif pdict['flinit'] == 'layer':
-        # initialise fluid particles in layers, using nlayerfl for number
-        # nb we change lboxz in this case from what is given in boxvol in 'in'
-        # and we make fllayerspace the spacing between initial fluid layers
+        # initialise fluid particles in layers, using nlayerfl for
+        # number nb we change lboxz in this case from what is given in
+        # boxvol in 'in' and we make fllayerspace the spacing between
+        # initial fluid layers
         nparfl = nparlayer * pdict['nlayerfl']
         pdict['nparfl'] = nparfl
         pdict['npartot'] = nparsurf + nparfl
@@ -201,14 +229,17 @@ def addparamssurf(pdict):
         zsurf = (pdict['nlayersurf'] - 1)*pdict['dzsurf']
         # z space not 'occupied' by surface
         zfluid = lboxz - zsurf
-        pdict['fllayerspace'] = (zfluid / (pdict['nlayerfl'] + 1))/pdict['dzsurf']
+        pdict['fllayerspace'] = (zfluid /
+                                 (pdict['nlayerfl'] + 1))/pdict['dzsurf']
 
     # total number of particles
     pdict['npartot'] = pdict['nparsurf'] + pdict['nparfl']
+    
     return pdict
 
 def addparamsnosurf(pdict):
-    """Add parameters to dictionary for no surface"""
+    """Add parameters to dictionary for no surface."""
+    
     # obviously zero particles in surface
     pdict['nparsurf'] = 0
     
@@ -245,18 +276,20 @@ def addparamsnosurf(pdict):
         else:
             # we haven't set the box size (!)
             print "Warning, box size has not been set properly!"
+            
     return pdict
 
 def initpositions(params):
     """
-    Initialize positions.
-    The length of the box in the x and y directions are determined from
-    the number of surface particles in each direction (lxsurf and lysurf)
-    and the lattice parameter of the surface.
-    The fluid particles are placed above the surface.
-    The spacing between planes of fluid particles is determined by ensuring
-    that N/V_box = n*, where N is the number of fluid particles and V_box is
-    the box volume EXCLUDING the volume of the surface."""
+    Initialize positions.  The length of the box in the x and y
+    directions are determined from the number of surface particles in
+    each direction (lxsurf and lysurf) and the lattice parameter of
+    the surface.  The fluid particles are placed above the surface.
+    The spacing between planes of fluid particles is determined by
+    ensuring that N/V_box = n*, where N is the number of fluid
+    particles and V_box is the box volume EXCLUDING the volume of the
+    surface.
+    """
 
     if params['simulation'] == 'restart':
         return readwrite.rxyz(params['restartfile'])
@@ -267,7 +300,8 @@ def initpositions(params):
             return initpositionsnosurf(params)
 
 def initpositionsnosurf(params):
-    """Initialize positions of fluid particles with no surface"""
+    """Initialize positions of fluid particles with no surface."""
+    
     nparfl = params['nparfl']
     lboxx = params['lboxx']
     lboxy = params['lboxy']
@@ -276,16 +310,19 @@ def initpositionsnosurf(params):
     rcinitsq = rcinit**2.0
     pos = np.empty([nparfl,3])
 
-    pos[:,0],pos[:,1],pos[:,2] = mcfuncs.initpositionsnosurff(nparfl,lboxx,
-                                                              lboxy,lboxz,
-                                                              rcinitsq)
+    pos[:,0],pos[:,1],pos[:,2] = mcfuncs.\
+                                 initpositionsnosurff(nparfl,lboxx,
+                                                      lboxy,lboxz,
+                                                      rcinitsq)
 
     return pos
 
 def initlatticepositions(params,nlayers):
     """
     Return nlayers of positions according to lattice type/plane and shift
-    positions so that no atoms are on the edges of the box"""
+    positions so that no atoms are on the edges of the box.
+    """
+
     lxsurf = params['lxsurf']
     lysurf = params['lysurf']
     alat = params['alat']
@@ -339,7 +376,8 @@ def initlatticepositions(params,nlayers):
     return positions
 
 def initflpositionsrandom(params):
-    """Initialise fluid positions randomly above surface"""
+    """Initialise fluid positions randomly above surface."""
+    
     nparfl = params['nparfl']
     lboxx = params['lboxx']
     lboxy = params['lboxy']
@@ -352,15 +390,17 @@ def initflpositionsrandom(params):
     zspace = params['nlayersurf']*(params['clat']/2.0)
     lboxzfl = params['lboxz'] - zspace
 
-    pos[:,0],pos[:,1],pos[:,2] = mcfuncs.initpositionsnosurff(nparfl,lboxx,
-                                                              lboxy,lboxzfl,
-                                                              rcinitsq)
+    pos[:,0],pos[:,1],pos[:,2] = mcfuncs.\
+                                 initpositionsnosurff(nparfl,lboxx,
+                                                      lboxy,lboxzfl,
+                                                      rcinitsq)
     pos[:,2] = pos[:,2] + zspace
 
     return pos
 
 def initflpositionslayer(params):
-    """Initialise fluid positions in layers commensurate with surface"""
+    """Initialise fluid positions in layers commensurate with surface."""
+    
     alat = params['alat']
     lxfl = params['lxsurf']
     lyfl = params['lysurf']
@@ -378,7 +418,8 @@ def initflpositionslayer(params):
     return flpositions
     
 def initpositionssurf(params):
-    """Initialize positions with surface present"""
+    """Initialize positions with surface present."""
+    
     # surface positions
     surfpositions = initlatticepositions(params,params['nlayersurf'])    
 
