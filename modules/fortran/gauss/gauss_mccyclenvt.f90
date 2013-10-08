@@ -34,8 +34,7 @@ subroutine gauss_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp,&
   !f2py intent(in,out) :: xpos, ypos, zpos, etot
 
   integer :: ipar, atmov, acmov, cy, it, nparfl
-  real(kind=db) :: rsc, xposi, yposi, zposi, xposinew, yposinew,&
-                   zposinew, eold, enew
+  real(kind=db) :: rsc, xposi, yposi, zposi, xposinew, yposinew, zposinew, eold, enew
   real(kind=db), dimension(3) :: rvec
   logical :: accept
   ! these are for cell lists
@@ -50,6 +49,15 @@ subroutine gauss_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp,&
   ncelx = int(lboxx / rc)
   ncely = int(lboxy / rc)
   ncelz = int(lboxz / rc)
+  
+  ! if fewer than 3 cells in any direction, make box a single cell
+  if (ncelx < 3 .or. ncely < 3 .or. ncelz < 3) then
+     ncelx = 1
+     ncely = 1
+     ncelz = 1
+  end if
+  
+  write(*,*) 'num cells', ncelx, ncely, ncelz
   allocate( hoc(ncelx, ncely, ncelx) )
   call new_nlist(xpos, ypos, zpos, rc, lboxx, lboxy, lboxz, npar,&
                  ncelx, ncely, ncelz, ll, hoc, rnx, rny, rnz)
@@ -116,7 +124,7 @@ subroutine gauss_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp,&
            call gauss_enlist(ll, hoc, ncelx, ncely, ncelz, ipar,&
                              xposinew, yposinew, zposinew, xpos, ypos, zpos,&
                              rc, rcsq, lboxx, lboxy, lboxz, vrc, vrc2, npar,&
-                             nsurf, zperiodic, eold)
+                             nsurf, zperiodic, enew)
 
            ! choose whether to accept the move or not
            accept = .True.
@@ -131,10 +139,11 @@ subroutine gauss_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp,&
               ypos(ipar) = yposinew
               zpos(ipar) = zposinew
               ! new potential energy
+              !write(*, *) eold, enew
               etot = etot - eold + enew
               acmov = acmov + 1
 
-              ! update the cell list
+              ! update the cell list - should only do this if we moved out of box
               call new_nlist(xpos, ypos, zpos, rc, lboxx, lboxy, lboxz, npar,&
                              ncelx, ncely, ncelz, ll, hoc, rnx, rny, rnz)
               

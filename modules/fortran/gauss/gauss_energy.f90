@@ -193,6 +193,7 @@ subroutine gauss_eij(ipar, jpar, xposi, yposi, zposi, xposj, yposj, zposj,&
 
   real(kind=db) :: sepx, sepy, sepz, sepsq
 
+  eij = 0.0_db
   sepx = xposi - xposj
   ! periodic boundary conditions
   if (sepx > 0.5*lboxx) then
@@ -215,7 +216,7 @@ subroutine gauss_eij(ipar, jpar, xposi, yposi, zposi, xposj, yposj, zposj,&
         if (zperiodic) then
            ! periodic boundary conditions
            if (sepz > 0.5*lboxz) then
-              sepz = sepz - 0.5*lboxz
+              sepz = sepz - lboxz
            else if (sepz < -0.5*lboxz) then
               sepz = sepz + lboxz
            end if
@@ -261,7 +262,7 @@ subroutine gauss_enlist(ll, hoc, ncelx, ncely, ncelz, ipar, xposi,&
   real(kind=db), intent(out) :: epot
 
   real(kind=db) :: rnx, rny, rnz, eij
-  integer :: icelx, icely, icelz, cellnum, i, j, celx, cely, celz
+  integer :: icelx, icely, icelz, cellnum, jpar, celx, cely, celz, nceltot
   epot = 0
 
   ! cell dimension in x, y and z directions
@@ -270,30 +271,45 @@ subroutine gauss_enlist(ll, hoc, ncelx, ncely, ncelz, ipar, xposi,&
   rnz = lboxz / ncelz
 
   ! determine cell that particle i is in
-  icelx = int(xposi / rnx)
-  icely = int(yposi / rny)
-  icelz = int(zposi / rnz)
+  icelx = int(xposi / rnx) + 1
+  icely = int(yposi / rny) + 1
+  icelz = int(zposi / rnz) + 1
 
+  !write (*, *) 'particle i cell', icelx, icely, icelz
+  
   ! go through each cell in turn (27 in total in three dimensions),
   ! and add pot energy between particle i and all particles in the
-  ! cell
-  do cellnum = 1, 27
+  ! cell.  Note if
+  if (ncelx == 1) then
+     nceltot = 1
+  else
+     nceltot = 27
+  end if
+  
+  do cellnum = 1, nceltot
+     
      ! get the next cell indexes (ncelx, ncely, ncelz)
      call cellindx(cellnum, icelx, icely, icelz,& ! cell of particle i
                    ncelx, ncely, ncelz,&          ! total num cells in each dim
-                   celx, cely, celz)             ! cell index we want
+                   celx, cely, celz)              ! cell index we want
 
-     j = hoc(celx, cely, celz)
-
-     do while (j /= 0)
-        if (i /= j) then
+     ! debug
+     !write(*, *) 'cell index', celx, cely, celz
+     
+     jpar = hoc(celx, cely, celz)
+     
+     do while (jpar /= 0)
+        if (ipar /= jpar) then
+           ! debug
+           !write(*, *) 'particle', j
+           
            ! get p.e. between particles i and j
-           call gauss_eij(i, j, xposi, yposi, zposi, xpos(j), ypos(j), zpos(j),&
+           call gauss_eij(ipar, jpar, xposi, yposi, zposi, xpos(jpar), ypos(jpar), zpos(jpar),&
                           lboxx, lboxy, lboxz, rc, rcsq, vrc, vrc2, npar, nsurf,&
                           zperiodic, eij)           
            epot = epot + eij
         end if
-        j = ll(j)
+        jpar = ll(jpar)
      end do
   enddo
 

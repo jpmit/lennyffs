@@ -75,39 +75,46 @@ subroutine cellindx(celnum, icelx, icely, icelz, ncelx, ncely, ncelz,&
   !f2py intent(out) :: celx, cely, celz
   
   integer :: bcelx, bcely, bcelz, zcelnum, dcelx, dcely, dcelz
-  
-  ! base cell is the bottom left of the 27 cells
-  bcelx = icelx - 1
-  bcely = icely - 1
-  bcelz = icelz - 1
 
-  ! numbers to add to base cell index
-  zcelnum = celnum - 1
-  dcelx = mod(zcelnum, 3)
-  dcely = mod(zcelnum / 3, 3)
-  dcelz = mod(zcelnum / 9, 3)
+  ! handle case of ncelx, ncely, ncelz = 1
+  if (ncelx == 1) then
+     celx = 1
+     cely = 1
+     celz = 1
+  else
+     
+     ! base cell is the bottom left of the 27 cells
+     bcelx = icelx - 1
+     bcely = icely - 1
+     bcelz = icelz - 1
 
-  celx = bcelx + dcelx
-  cely = bcely + dcely
-  celz = bcelz + dcelz
+     ! numbers to add to base cell index
+     zcelnum = celnum - 1
+     dcelx = mod(zcelnum, 3)
+     dcely = mod(zcelnum / 3, 3)
+     dcelz = mod(zcelnum / 9, 3)
 
-  ! periodic boundary conditions
-  if (celx <= 0) then
-     celx = celx + ncelx
-  else if (celx > ncelx) then
-     celx = celx - ncelx
+     celx = bcelx + dcelx
+     cely = bcely + dcely
+     celz = bcelz + dcelz
+
+     ! periodic boundary conditions
+     if (celx <= 0) then
+        celx = celx + ncelx
+     else if (celx > ncelx) then
+        celx = celx - ncelx
+     end if
+
+     if (cely <= 0) then
+        cely = cely + ncely
+     else if (cely > ncely) then
+        cely = cely - ncely
+     end if
+
+     if (celz <= 0) then
+        celz = celz + ncelz
+     else if (celz > ncelz) then
+        celz = celz - ncelz
+     end if
   end if
-
-  if (cely <= 0) then
-     cely = cely + ncely
-  else if (cely > ncely) then
-     cely = cely - ncely
-  end if
-
-  if (celz <= 0) then
-     celz = celz + ncelz
-  else if (celz > ncelz) then
-     celz = celz - ncelz
-  end if
-
 end subroutine cellindx
