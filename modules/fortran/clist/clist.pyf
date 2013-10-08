@@ -1,0 +1,37 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module clist ! in 
+    interface  ! in :clist
+        subroutine new_nlist(xpos,ypos,zpos,rc,lboxx,lboxy,lboxz,npar,ll,hoc,rnx,rny,rnz) ! in :clist:clist.f90
+            real(kind=8) dimension(npar),intent(in) :: xpos
+            real(kind=8) dimension(npar),intent(in),depend(npar) :: ypos
+            real(kind=8) dimension(npar),intent(in),depend(npar) :: zpos
+            real(kind=8) intent(in) :: rc
+            real(kind=8) intent(in) :: lboxx
+            real(kind=8) intent(in) :: lboxy
+            real(kind=8) intent(in) :: lboxz
+            integer, optional,intent(in),check(len(xpos)>=npar),depend(xpos) :: npar=len(xpos)
+            integer dimension(npar),intent(out),depend(npar) :: ll
+            integer, allocatable,dimension(:,:,:),intent(out) :: hoc
+            real(kind=8) intent(out) :: rnx
+            real(kind=8) intent(out) :: rny
+            real(kind=8) intent(out) :: rnz
+        end subroutine new_nlist
+        subroutine cellindx(celnum,icelx,icely,icelz,ncelx,ncely,ncelz,celx,cely,celz) ! in :clist:clist.f90
+            integer intent(in) :: celnum
+            integer intent(in) :: icelx
+            integer intent(in) :: icely
+            integer intent(in) :: icelz
+            integer intent(in) :: ncelx
+            integer intent(in) :: ncely
+            integer intent(in) :: ncelz
+            integer intent(out) :: celx
+            integer intent(out) :: cely
+            integer intent(out) :: celz
+        end subroutine cellindx
+    end interface 
+end python module clist
+
+! This file was auto-generated with f2py (version:2).
+! See http://cens.ioc.ee/projects/f2py2e/

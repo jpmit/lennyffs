@@ -10,9 +10,10 @@
 ! gauss_executecyclesnvt - execute ncycles monte carlo cycles
 !                          note xpos,ypos,zpos and etot are returned 
 
-subroutine gauss_executecyclesnvt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,vrc,vrc2,&
-                                  lboxx,lboxy,lboxz,epsovert,maxdisp,npar,nsurf,&
-                                  zperiodic,etot)
+subroutine gauss_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp,&
+                                  rc, rcsq, vrc, vrc2, lboxx, lboxy,&
+                                  lboxz, epsovert, maxdisp, npar, nsurf,&
+                                  zperiodic, etot)
   ! execute ncycles MD cycles
 
   implicit none
@@ -20,33 +21,47 @@ subroutine gauss_executecyclesnvt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,vrc,vrc2,
 
   ! subroutine arguments
   ! inputs
-  integer, intent(in) :: ncycles,nsamp,npar,nsurf
-  real(kind=db), intent(in) :: rc,rcsq,vrc,vrc2,lboxx,lboxy,lboxz
-  real(kind=db), intent(in) :: epsovert,maxdisp
+  integer, intent(in) :: ncycles, nsamp, npar, nsurf
+  real(kind=db), intent(in) :: rc, rcsq, vrc, vrc2, lboxx, lboxy, lboxz
+  real(kind=db), intent(in) :: epsovert, maxdisp
   logical, intent(in) :: zperiodic
   ! outputs (note inout intent)
-  real(kind=db), dimension(npar), intent(inout) :: xpos,ypos,zpos
+  real(kind=db), dimension(npar), intent(inout) :: xpos, ypos, zpos
   real(kind=db), intent(inout) :: etot
 
-  !f2py intent(in) :: ncycles,nsamp,rc,rcsq,vrc,vrc2,lboxx,lboxy,lboxz
-  !f2py intent(in) :: epsovert,maxdisp,npar,nparsuf,zperiodic
-  !f2py intent(in,out) :: xpos,ypos,zpos,etot
+  !f2py intent(in) :: ncycles, nsamp, rc, rcsq, vrc, vrc2, lboxx, lboxy, lboxz
+  !f2py intent(in) :: epsovert, maxdisp, npar, nparsuf, zperiodic
+  !f2py intent(in,out) :: xpos, ypos, zpos, etot
 
-  integer :: ipar,atmov,acmov,cy,it,nparfl
-  real(kind=db) :: rsc,xposi,yposi,zposi,xposinew,yposinew,zposinew,eold,enew
+  integer :: ipar, atmov, acmov, cy, it, nparfl
+  real(kind=db) :: rsc, xposi, yposi, zposi, xposinew, yposinew,&
+                   zposinew, eold, enew
   real(kind=db), dimension(3) :: rvec
   logical :: accept
+  ! these are for cell lists
+  integer :: rnx, rny, rnz, ncelx, ncely, ncelz
+  integer, dimension(npar) :: ll
+  integer, allocatable, dimension(:,:,:) :: hoc
   
   ! initialize random number generator
   call init_random_seed()
 
+  ! build the cell list, this will fill ll, hoc, ncelx, ncely, ncelz
+  ncelx = int(lboxx / rc)
+  ncely = int(lboxy / rc)
+  ncelz = int(lboxz / rc)
+  allocate( hoc(ncelx, ncely, ncelx) )
+  call new_nlist(xpos, ypos, zpos, rc, lboxx, lboxy, lboxz, npar,&
+                 ncelx, ncely, ncelz, ll, hoc, rnx, rny, rnz)
+
+  ! counters for attempted and accepted moves
   atmov = 0
   acmov = 0
   nparfl = npar - nsurf
-
-  write(*,*) 0,etot
-  do cy=1,ncycles
-     do it=1,nparfl
+  
+  write(*,*) 0, etot
+  do cy = 1, ncycles
+     do it = 1, nparfl
         atmov = atmov + 1
 
         ! pick a particle at random from fluid particles
@@ -56,10 +71,16 @@ subroutine gauss_executecyclesnvt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,vrc,vrc2,
         yposi = ypos(ipar)
         zposi = zpos(ipar)
 
+        ! if we accepted the previous move, rebuild the cell list
+        if (accept) then
+           
+        endif
+
         ! find old energy
-        call gauss_energyipar(ipar,xposi,yposi,zposi,xpos,ypos,zpos,&
-                              rc,rcsq,lboxx,lboxy,lboxz,vrc,vrc2,npar,&
-                              nsurf,zperiodic,eold)
+        call gauss_enlist(ll, hoc, ncelx, ncely, ncelz, ipar,&
+                          xposi, yposi, zposi, xpos, ypos, zpos,&
+                          rc, rcsq, lboxx, lboxy, lboxz, vrc, vrc2, npar,&
+                          nsurf, zperiodic, eold)
 
         ! displace particle
         call random_number(rvec)
@@ -90,11 +111,12 @@ subroutine gauss_executecyclesnvt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,vrc,vrc2,
            else if (yposinew > lboxy) then
               yposinew = yposinew - lboxy
            end if
-
+           
            ! find new energy
-           call gauss_energyipar(ipar,xposinew,yposinew,zposinew,xpos,ypos,zpos,&
-                                 rc,rcsq,lboxx,lboxy,lboxz,vrc,vrc2,npar,nsurf,&
-                                 zperiodic,enew)
+           call gauss_enlist(ll, hoc, ncelx, ncely, ncelz, ipar,&
+                             xposinew, yposinew, zposinew, xpos, ypos, zpos,&
+                             rc, rcsq, lboxx, lboxy, lboxz, vrc, vrc2, npar,&
+                             nsurf, zperiodic, eold)
 
            ! choose whether to accept the move or not
            accept = .True.
@@ -108,8 +130,14 @@ subroutine gauss_executecyclesnvt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,vrc,vrc2,
               xpos(ipar) = xposinew
               ypos(ipar) = yposinew
               zpos(ipar) = zposinew
+              ! new potential energy
               etot = etot - eold + enew
               acmov = acmov + 1
+
+              ! update the cell list
+              call new_nlist(xpos, ypos, zpos, rc, lboxx, lboxy, lboxz, npar,&
+                             ncelx, ncely, ncelz, ll, hoc, rnx, rny, rnz)
+              
            end if
         end if
 
@@ -121,6 +149,6 @@ subroutine gauss_executecyclesnvt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,vrc,vrc2,
   end do
 
   ! write out acceptance ratio
-  write(*,'("acceptance ratio", I7, I7, F7.3)') acmov,atmov,real(acmov)/atmov
+  write(*,'("acceptance ratio", I7, I7, F7.3)') acmov, atmov, real(acmov) / atmov
 
 end subroutine gauss_executecyclesnvt
