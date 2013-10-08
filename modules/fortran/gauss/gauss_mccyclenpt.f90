@@ -35,8 +35,8 @@ subroutine gauss_executecyclesnpt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,&
   !f2py intent(in,out) :: xpos,ypos,zpos,lboxx,lboxy,lboxz,etot
 
   integer :: ipar,atmovdisp,acmovdisp,atmovvol,acmovvol,cy,it,nparfl,i,j
-  real(kind=db) :: rsc,xposi,yposi,zposi,xposinew,yposinew,zposinew,eold,enew
-  real(kind=db) :: lboxnew, lboxxold, lboxyold, lboxzold
+  real(kind=db) :: rsc, xposi, yposi, zposi, xposinew, yposinew, zposinew
+  real(kind=db) :: eold, enew, lboxnew, lboxxold, lboxyold, lboxzold
   real(kind=db) :: vboxold, lnvold, lnvnew, vboxnew
   real(kind=db) :: scalefacx, scalefacy, scalefacz, arg, etotnew
   real(kind=db), dimension(3) :: rvec
