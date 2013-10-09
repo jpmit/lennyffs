@@ -325,8 +325,8 @@ def initpositionsnosurf(params):
 
 def initlatticepositions(params,nlayers):
     """
-    Return nlayers of positions according to lattice type/plane and shift
-    positions so that no atoms are on the edges of the box.
+    Return nlayers of positions according to lattice type/plane and
+    shift positions so that no atoms are on the edges of the box.
     """
 
     lxsurf = params['lxsurf']
