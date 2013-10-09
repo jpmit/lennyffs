@@ -38,7 +38,7 @@ subroutine gauss_executecyclesnvt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,vrc,vrc2,
   logical :: accept
   
   ! initialize random number generator
-  call init_random_seed()
+  call init_random_seed(.False.)
 
   atmov = 0
   acmov = 0

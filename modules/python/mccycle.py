@@ -17,7 +17,7 @@ gauss_cyclenpt - NPT MC for Gaussian potential.
 
 import mcfuncs
 
-def len_cyclenvt(positions,params,etot):
+def len_cyclenvt(positions, params, etot):
     """Performs the requested number of cycles of NVT MC."""
 
     # ncycle is the number of MC cycles we perform (one cycle consists
@@ -54,7 +54,7 @@ def len_cyclenvt(positions,params,etot):
 
     return positions, etot
 
-def len_cyclenpt(positions,params,etot):
+def len_cyclenpt(positions, params, etot):
     """Performs the requested number of cycles of NPT MC."""
 
     # ncycle is the number of MC cycles we perform (one cycle consists
@@ -99,7 +99,7 @@ def len_cyclenpt(positions,params,etot):
 
     return positions, etot
 
-def gauss_cyclenvt(positions,params,etot):
+def gauss_cyclenvt(positions, params, etot):
     """Performs the requested number of cycles of NVT MC."""
 
     # ncycle is the number of MC cycles we perform (one cycle consists
@@ -117,23 +117,24 @@ def gauss_cyclenvt(positions,params,etot):
     maxdisp = params['maxdisp']
     nparsurf = params['nparsurf']
     zperiodic = params['zperiodic']
+    ss = params['sameseed']
 
     # setup and call the fortran subroutine
-    xpos,ypos,zpos = positions[:,0],positions[:,1],positions[:,2]
-    xpos,ypos,zpos,etot  = mcfuncs.\
-                           gauss_executecyclesnvt(xpos, ypos, zpos,
-                                                  ncycle, nsamp,
-                                                  rc, rcsq, vrc, vrc2,
-                                                  lboxx, lboxy,
-                                                  lboxz, epsovert,
-                                                  maxdisp, nparsurf,
-                                                  zperiodic,
-                                                  etot)
-    positions[:,0],positions[:,1],positions[:,2] = xpos,ypos,zpos
+    xpos, ypos, zpos = positions[:,0], positions[:,1], positions[:,2]
+    xpos, ypos, zpos, etot  = mcfuncs.\
+                              gauss_executecyclesnvt(xpos, ypos, zpos,
+                                                     ncycle, nsamp,
+                                                     rc, rcsq, vrc, vrc2,
+                                                     lboxx, lboxy,
+                                                     lboxz, epsovert,
+                                                     maxdisp, nparsurf,
+                                                     zperiodic, ss,
+                                                     etot)
+    positions[:,0], positions[:,1], positions[:,2] = xpos, ypos, zpos
 
     return positions, etot
 
-def gauss_cyclenpt(positions,params,etot):
+def gauss_cyclenpt(positions, params, etot):
     """Performs the requested number of cycles of NPT MC."""
     
     # ncycle is the number of MC cycles we perform (one cycle consists
