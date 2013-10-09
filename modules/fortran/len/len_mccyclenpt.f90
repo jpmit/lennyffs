@@ -11,9 +11,11 @@
 !                        note xpos,ypos,zpos,lboxx,lboxy,lboxz and
 !                        etot are returned. 
 
-subroutine len_executecyclesnpt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,vrc,vrc2,&
-                            press,lboxx,lboxy,lboxz,eps4,maxdisp,maxvol,npar,&
-                            nsurf,zperiodic,r6mult,r12mult,etot)
+subroutine len_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp, rc,&
+                                rcsq, vrc, vrc2, press, lboxx, lboxy,&
+                                lboxz, eps4, maxdisp, maxvol, npar,&
+                                nsurf, zperiodic, sameseed, r6mult,&
+                                r12mult, etot)
   ! execute ncycles MC cycles
 
   implicit none
@@ -21,20 +23,22 @@ subroutine len_executecyclesnpt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,vrc,vrc2,&
 
   ! subroutine arguments
   ! inputs
-  integer, intent(in) :: ncycles,nsamp,npar,nsurf
-  real(kind=db), intent(in) :: rc,rcsq,vrc,vrc2,press
-  real(kind=db), intent(in) :: eps4,maxdisp,maxvol,r6mult,r12mult
-  logical, intent(in) :: zperiodic
+  integer, intent(in) :: ncycles, nsamp, npar, nsurf
+  real(kind=db), intent(in) :: rc, rcsq, vrc, vrc2, press
+  real(kind=db), intent(in) :: eps4, maxdisp, maxvol, r6mult, r12mult
+  logical, intent(in) :: zperiodic, sameseed
   ! outputs (note inout intent)
-  real(kind=db), dimension(npar), intent(inout) :: xpos,ypos,zpos
-  real(kind=db), intent(inout) :: lboxx,lboxy,lboxz,etot
+  real(kind=db), dimension(npar), intent(inout) :: xpos, ypos, zpos
+  real(kind=db), intent(inout) :: lboxx, lboxy, lboxz, etot
 
-  !f2py intent(in) :: ncycles,nsamp,rc,rcsq,vrc,vrc2,eps4
-  !f2py intent(in) :: maxdisp,npar,nparsuf,zperiodic,r6mult, r12mult
-  !f2py intent(in,out) :: xpos,ypos,zpos,lboxx,lboxy,lboxz,etot
+  !f2py intent(in) :: ncycles, nsamp, rc, rcsq, vrc, vrc2, eps4
+  !f2py intent(in) :: maxdisp, npar, nparsuf, zperiodic, sameseed, r6mult, r12mult
+  !f2py intent(in,out) :: xpos, ypos, zpos, lboxx, lboxy, lboxz, etot
 
-  integer :: ipar,atmovdisp,acmovdisp,atmovvol,acmovvol,cy,it,nparfl,i,j
-  real(kind=db) :: rsc,xposi,yposi,zposi,xposinew,yposinew,zposinew,eold,enew
+  integer :: ipar, atmovdisp, acmovdisp, atmovvol, acmovvol, cy, it,&
+             nparfl, i, j
+  real(kind=db) :: rsc, xposi, yposi, zposi, xposinew, yposinew,&
+                   zposinew,eold,enew
   real(kind=db) :: lboxnew, lboxxold, lboxyold, lboxzold
   real(kind=db) :: vboxold, lnvold, lnvnew, vboxnew
   real(kind=db) :: scalefac, arg, etotnew
@@ -42,7 +46,7 @@ subroutine len_executecyclesnpt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,vrc,vrc2,&
   logical :: accept
   
   ! initialize random number generator
-  call init_random_seed()
+  call init_random_seed(sameseed)
 
   atmovdisp = 0
   acmovdisp = 0

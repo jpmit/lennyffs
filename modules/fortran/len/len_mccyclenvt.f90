@@ -10,9 +10,10 @@
 ! len_executecyclesnvt - execute ncycles monte carlo cycles
 !                        note xpos,ypos,zpos and etot are returned 
 
-subroutine len_executecyclesnvt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,vrc,vrc2,&
-                                lboxx,lboxy,lboxz,eps4,maxdisp,npar,nsurf,&
-                                zperiodic,r6mult,r12mult,etot)
+subroutine len_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp, rc,&
+                                rcsq, vrc, vrc2, lboxx, lboxy, lboxz,&
+                                eps4, maxdisp, npar, nsurf, zperiodic,&
+                                sameseed, r6mult,r12mult, etot)
   ! execute ncycles MD cycles
 
   implicit none
@@ -20,17 +21,17 @@ subroutine len_executecyclesnvt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,vrc,vrc2,&
 
   ! subroutine arguments
   ! inputs
-  integer, intent(in) :: ncycles,nsamp,npar,nsurf
-  real(kind=db), intent(in) :: rc,rcsq,vrc,vrc2,lboxx,lboxy,lboxz
-  real(kind=db), intent(in) :: eps4,maxdisp,r6mult,r12mult
-  logical, intent(in) :: zperiodic
+  integer, intent(in) :: ncycles, nsamp, npar, nsurf
+  real(kind=db), intent(in) :: rc, rcsq, vrc, vrc2, lboxx, lboxy, lboxz
+  real(kind=db), intent(in) :: eps4, maxdisp, r6mult, r12mult
+  logical, intent(in) :: zperiodic, sameseed
   ! outputs (note inout intent)
-  real(kind=db), dimension(npar), intent(inout) :: xpos,ypos,zpos
+  real(kind=db), dimension(npar), intent(inout) :: xpos, ypos, zpos
   real(kind=db), intent(inout) :: etot
 
-  !f2py intent(in) :: ncycles,nsamp,rc,rcsq,vrc,vrc2,lboxx,lboxy,lboxz,eps4
-  !f2py intent(in) :: maxdisp,npar,nparsuf,zperiodic,r6mult, r12mult
-  !f2py intent(in,out) :: xpos,ypos,zpos,etot
+  !f2py intent(in) :: ncycles, nsamp, rc, rcsq, vrc, vrc2, lboxx, lboxy, lboxz, eps4
+  !f2py intent(in) :: maxdisp, npar, nparsuf, zperiodic, sameseed, r6mult, r12mult
+  !f2py intent(in,out) :: xpos, ypos, zpos, etot
 
   integer :: ipar,atmov,acmov,cy,it,nparfl
   real(kind=db) :: rsc,xposi,yposi,zposi,xposinew,yposinew,zposinew,eold,enew
@@ -38,7 +39,7 @@ subroutine len_executecyclesnvt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,vrc,vrc2,&
   logical :: accept
   
   ! initialize random number generator
-  call init_random_seed()
+  call init_random_seed(sameseed)
 
   atmov = 0
   acmov = 0

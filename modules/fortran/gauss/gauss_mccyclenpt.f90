@@ -11,10 +11,11 @@
 !                          note xpos,ypos,zpos,lboxx,lboxy,lboxz and
 !                          etot are returned. 
 
-subroutine gauss_executecyclesnpt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,&
-                                  vrc,vrc2,press,lboxx,lboxy,lboxz,&
-                                  epsovert,maxdisp,maxvol,npar,&
-                                  nsurf,zperiodic,etot)
+subroutine gauss_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp,&
+                                  rc, rcsq, vrc, vrc2, press, lboxx,&
+                                  lboxy, lboxz, epsovert, maxdisp,&
+                                  maxvol, npar, nsurf, zperiodic,&
+                                  sameseed, etot)
   ! execute ncycles MC cycles
 
   implicit none
@@ -22,19 +23,19 @@ subroutine gauss_executecyclesnpt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,&
 
   ! subroutine arguments
   ! inputs
-  integer, intent(in) :: ncycles,nsamp,npar,nsurf
-  real(kind=db), intent(in) :: rc,rcsq,vrc,vrc2,press
-  real(kind=db), intent(in) :: epsovert,maxdisp,maxvol
-  logical, intent(in) :: zperiodic
+  integer, intent(in) :: ncycles, nsamp, npar, nsurf
+  real(kind=db), intent(in) :: rc, rcsq, vrc, vrc2, press
+  real(kind=db), intent(in) :: epsovert, maxdisp, maxvol
+  logical, intent(in) :: zperiodic, sameseed
   ! outputs (note inout intent)
-  real(kind=db), dimension(npar), intent(inout) :: xpos,ypos,zpos
-  real(kind=db), intent(inout) :: lboxx,lboxy,lboxz,etot
+  real(kind=db), dimension(npar), intent(inout) :: xpos, ypos, zpos
+  real(kind=db), intent(inout) :: lboxx, lboxy, lboxz, etot
 
-  !f2py intent(in) :: ncycles,nsamp,rc,rcsq,vrc,vrc2
-  !f2py intent(in) :: epsovert, maxdisp,npar,nparsuf,zperiodic
-  !f2py intent(in,out) :: xpos,ypos,zpos,lboxx,lboxy,lboxz,etot
+  !f2py intent(in) :: ncycles, nsamp, rc, rcsq, vrc, vrc2
+  !f2py intent(in) :: epsovert, maxdisp, npar, nparsuf, zperiodic, sameseed
+  !f2py intent(in,out) :: xpos, ypos, zpos, lboxx, lboxy, lboxz, etot
 
-  integer :: ipar,atmovdisp,acmovdisp,atmovvol,acmovvol,cy,it,nparfl,i,j
+  integer :: ipar, atmovdisp, acmovdisp, atmovvol, acmovvol, cy, it, nparfl, i, j
   real(kind=db) :: rsc, xposi, yposi, zposi, xposinew, yposinew, zposinew
   real(kind=db) :: eold, enew, lboxnew, lboxxold, lboxyold, lboxzold
   real(kind=db) :: vboxold, lnvold, lnvnew, vboxnew
@@ -43,7 +44,7 @@ subroutine gauss_executecyclesnpt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,&
   logical :: accept
   
   ! initialize random number generator
-  call init_random_seed()
+  call init_random_seed(sameseed)
 
   atmovdisp = 0
   acmovdisp = 0

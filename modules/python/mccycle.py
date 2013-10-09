@@ -37,20 +37,21 @@ def len_cyclenvt(positions, params, etot):
     zperiodic = params['zperiodic']
     r6mult = params['r6mult']
     r12mult = params['r12mult']
+    ss = params['sameseed']
 
     # setup and call the fortran subroutine
     xpos,ypos,zpos = positions[:,0],positions[:,1],positions[:,2]
-    xpos,ypos,zpos,etot  = mcfuncs.\
+    xpos, ypos, zpos, etot  = mcfuncs.\
                            len_executecyclesnvt(xpos, ypos, zpos,
                                                 ncycle, nsamp,
                                                 rc, rcsq, vrc,
-                                                vrc2, lboxx,lboxy,
-                                                lboxz,eps4,
-                                                maxdisp,nparsurf,
-                                                zperiodic,r6mult,
-                                                r12mult,etot)
+                                                vrc2, lboxx, lboxy,
+                                                lboxz, eps4,
+                                                maxdisp, nparsurf,
+                                                zperiodic, ss, r6mult,
+                                                r12mult, etot)
     
-    positions[:,0],positions[:,1],positions[:,2] = xpos,ypos,zpos
+    positions[:,0], positions[:,1], positions[:,2] = xpos, ypos, zpos
 
     return positions, etot
 
@@ -77,6 +78,7 @@ def len_cyclenpt(positions, params, etot):
     r6mult = params['r6mult']
     r12mult = params['r12mult']
     pressure = params['pressure']
+    ss = params['sameseed']
 
     # setup and call the fortran subroutine
     xpos,ypos,zpos = positions[:,0],positions[:,1],positions[:,2]
@@ -89,13 +91,14 @@ def len_cyclenpt(positions, params, etot):
                                                          lboxz, eps4, maxdisp,
                                                          maxvol,
                                                          nparsurf,
-                                                         zperiodic, r6mult,
+                                                         zperiodic, ss,
+                                                         r6mult,
                                                          r12mult, etot)
     # update box dimensions
     params['lboxx'] = lx
     params['lboxy'] = ly
     params['lboxz'] = lz
-    positions[:,0],positions[:,1],positions[:,2] = xpos,ypos,zpos
+    positions[:,0],positions[:,1],positions[:,2] = xpos, ypos, zpos
 
     return positions, etot
 
@@ -155,6 +158,7 @@ def gauss_cyclenpt(positions, params, etot):
     nparsurf = params['nparsurf']
     zperiodic = params['zperiodic']
     pressure = params['pressure']
+    ss = params['sameseed']
 
     # setup and call the fortran subroutine
     xpos,ypos,zpos = positions[:,0],positions[:,1],positions[:,2]
@@ -168,11 +172,11 @@ def gauss_cyclenpt(positions, params, etot):
                                                            maxdisp, maxvol,
                                                            nparsurf,
                                                            zperiodic,
-                                                           etot)
+                                                           ss, etot)
     # update box dimensions
     params['lboxx'] = lx
     params['lboxy'] = ly
     params['lboxz'] = lz
-    positions[:,0],positions[:,1],positions[:,2] = xpos,ypos,zpos
+    positions[:,0], positions[:,1], positions[:,2] = xpos, ypos, zpos
 
     return positions, etot
