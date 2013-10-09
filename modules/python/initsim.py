@@ -104,6 +104,10 @@ def addparams(pdict):
     # if type of mc simulation not specified, default to nvt
     if 'mctype' not in pdict:
         pdict['mctype'] = 'nvt'
+
+    # if sameseed not given, default to false (use random seed)
+    if 'sameseed' not in pdict:
+        pdict['sameseed'] = False
         
     # eps/k_bT
     pdict['epsovert'] = 1.0 / pdict['Tstar']
@@ -307,20 +311,22 @@ def initpositionsnosurf(params):
     lboxy = params['lboxy']
     lboxz = params['lboxz']
     rcinit = params['rcinit']
+    sameseed = params['sameseed']    
     rcinitsq = rcinit**2.0
     pos = np.empty([nparfl,3])
 
-    pos[:,0],pos[:,1],pos[:,2] = mcfuncs.\
-                                 initpositionsnosurff(nparfl,lboxx,
-                                                      lboxy,lboxz,
-                                                      rcinitsq)
+    pos[:,0], pos[:,1], pos[:,2] = mcfuncs.\
+                                   initpositionsnosurff(nparfl, lboxx,
+                                                        lboxy, lboxz,
+                                                        rcinitsq,
+                                                        sameseed)
 
     return pos
 
 def initlatticepositions(params,nlayers):
     """
-    Return nlayers of positions according to lattice type/plane and shift
-    positions so that no atoms are on the edges of the box.
+    Return nlayers of positions according to lattice type/plane and
+    shift positions so that no atoms are on the edges of the box.
     """
 
     lxsurf = params['lxsurf']
@@ -383,6 +389,7 @@ def initflpositionsrandom(params):
     lboxy = params['lboxy']
     lboxz = params['lboxz']
     rcinit = params['rcinit']
+    sameseed = params['sameseed']
     rcinitsq = rcinit**2.0
     pos = np.empty([nparfl,3])
 
@@ -391,9 +398,10 @@ def initflpositionsrandom(params):
     lboxzfl = params['lboxz'] - zspace
 
     pos[:,0],pos[:,1],pos[:,2] = mcfuncs.\
-                                 initpositionsnosurff(nparfl,lboxx,
-                                                      lboxy,lboxzfl,
-                                                      rcinitsq)
+                                 initpositionsnosurff(nparfl, lboxx,
+                                                      lboxy, lboxzfl,
+                                                      rcinitsq,
+                                                      sameseed)
     pos[:,2] = pos[:,2] + zspace
 
     return pos
