@@ -13,7 +13,7 @@
 subroutine gauss_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp,&
                                   rc, rcsq, vrc, vrc2, lboxx, lboxy,&
                                   lboxz, epsovert, maxdisp, npar, nsurf,&
-                                  zperiodic, etot)
+                                  zperiodic, sameseed, etot)
   ! execute ncycles MD cycles
 
   implicit none
@@ -24,17 +24,18 @@ subroutine gauss_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp,&
   integer, intent(in) :: ncycles, nsamp, npar, nsurf
   real(kind=db), intent(in) :: rc, rcsq, vrc, vrc2, lboxx, lboxy, lboxz
   real(kind=db), intent(in) :: epsovert, maxdisp
-  logical, intent(in) :: zperiodic
+  logical, intent(in) :: zperiodic, sameseed
   ! outputs (note inout intent)
   real(kind=db), dimension(npar), intent(inout) :: xpos, ypos, zpos
   real(kind=db), intent(inout) :: etot
 
   !f2py intent(in) :: ncycles, nsamp, rc, rcsq, vrc, vrc2, lboxx, lboxy, lboxz
-  !f2py intent(in) :: epsovert, maxdisp, npar, nparsuf, zperiodic
+  !f2py intent(in) :: epsovert, maxdisp, npar, nparsuf, zperiodic, sameseed
   !f2py intent(in,out) :: xpos, ypos, zpos, etot
 
   integer :: ipar, atmov, acmov, cy, it, nparfl
-  real(kind=db) :: rsc, xposi, yposi, zposi, xposinew, yposinew, zposinew, eold, enew
+  real(kind=db) :: rsc, xposi, yposi, zposi, xposinew, yposinew,&
+                   zposinew, eold, enew
   real(kind=db), dimension(3) :: rvec
   logical :: accept
   ! these are for cell lists
@@ -43,7 +44,7 @@ subroutine gauss_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp,&
   integer, allocatable, dimension(:,:,:) :: hoc
   
   ! initialize random number generator
-  call init_random_seed()
+  call init_random_seed(sameseed)
 
   ! build the cell list, this will fill ll, hoc, ncelx, ncely, ncelz
   ncelx = int(lboxx / rc)
