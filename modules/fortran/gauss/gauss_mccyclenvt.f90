@@ -39,9 +39,11 @@ subroutine gauss_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp,&
   real(kind=db), dimension(3) :: rvec
   logical :: accept
   ! these are for cell lists
-  integer :: rnx, rny, rnz, ncelx, ncely, ncelz
+  integer :: ncelx, ncely, ncelz
+  real(kind=db) :: rnx, rny, rnz
   integer, dimension(npar) :: ll
   integer, allocatable, dimension(:,:,:) :: hoc
+  logical :: newlist
   
   ! initialize random number generator
   call init_random_seed(sameseed)
@@ -79,11 +81,6 @@ subroutine gauss_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp,&
         xposi = xpos(ipar)
         yposi = ypos(ipar)
         zposi = zpos(ipar)
-
-        ! if we accepted the previous move, rebuild the cell list
-        if (accept) then
-           
-        endif
 
         ! find old energy
         call gauss_enlist(ll, hoc, ncelx, ncely, ncelz, ipar,&
@@ -123,19 +120,36 @@ subroutine gauss_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp,&
            
            ! find new energy
            call gauss_enlist(ll, hoc, ncelx, ncely, ncelz, ipar,&
-                             xposinew, yposinew, zposinew, xpos, ypos, zpos,&
-                             rc, rcsq, lboxx, lboxy, lboxz, vrc, vrc2, npar,&
-                             nsurf, zperiodic, enew)
+                             xposinew, yposinew, zposinew, xpos,&
+                             ypos, zpos, rc, rcsq, lboxx, lboxy,&
+                             lboxz, vrc, vrc2, npar, nsurf,&
+                             zperiodic, enew)
 
            ! choose whether to accept the move or not
            accept = .True.
            if (enew > eold) then
               call random_number(rsc)
-              if (exp((eold - enew)*epsovert) < rsc) accept = .False.
+              if (exp((eold - enew)*epsovert) < rsc) then
+                 accept = .False.
+              end if
            end if
 
            ! update positions if move accepted
            if (accept) then
+
+              ! we don't rebuild the cell list by default.
+              newlist = .false.
+
+              ! check if the particle moved outside of its cell, if so
+              ! we need the rebuild the cell list.  Note that the
+              ! bracketed terms are in fact the cell number minus one,
+              ! but there is clearly no point in adding the one here.
+              if ((int(xpos(ipar) / rnx) .ne. int(xposinew / rnx)) .or.&
+                  (int(ypos(ipar) / rny) .ne. int(yposinew / rny)) .or.&
+                  (int(zpos(ipar) / rnz) .ne. int(zposinew / rnz))) then
+                 newlist = .true.
+              end if
+              
               xpos(ipar) = xposinew
               ypos(ipar) = yposinew
               zpos(ipar) = zposinew
@@ -144,9 +158,12 @@ subroutine gauss_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp,&
               etot = etot - eold + enew
               acmov = acmov + 1
 
-              ! update the cell list - should only do this if we moved out of box
-              call new_nlist(xpos, ypos, zpos, rc, lboxx, lboxy, lboxz, npar,&
-                             ncelx, ncely, ncelz, ll, hoc, rnx, rny, rnz)
+              if (newlist) then
+                 ! update the cell list
+                 call new_nlist(xpos, ypos, zpos, rc, lboxx, lboxy, &
+                                lboxz, npar, ncelx, ncely, ncelz, ll, &
+                                hoc, rnx, rny, rnz)
+              end if
               
            end if
         end if
@@ -154,7 +171,7 @@ subroutine gauss_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp,&
      end do
      
      ! write out energy after every nsamp cycles
-     if (mod(cy,nsamp) == 0) write(*,*) cy,etot
+     if (mod(cy,nsamp) == 0) write(*,*) cy, etot
      
   end do
 
