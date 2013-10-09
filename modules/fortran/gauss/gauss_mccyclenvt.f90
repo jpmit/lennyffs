@@ -12,7 +12,7 @@
 
 subroutine gauss_executecyclesnvt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,vrc,vrc2,&
                                   lboxx,lboxy,lboxz,epsovert,maxdisp,npar,nsurf,&
-                                  zperiodic,etot)
+                                  zperiodic, sameseed, etot)
   ! execute ncycles MD cycles
 
   implicit none
@@ -23,7 +23,7 @@ subroutine gauss_executecyclesnvt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,vrc,vrc2,
   integer, intent(in) :: ncycles,nsamp,npar,nsurf
   real(kind=db), intent(in) :: rc,rcsq,vrc,vrc2,lboxx,lboxy,lboxz
   real(kind=db), intent(in) :: epsovert,maxdisp
-  logical, intent(in) :: zperiodic
+  logical, intent(in) :: zperiodic, sameseed
   ! outputs (note inout intent)
   real(kind=db), dimension(npar), intent(inout) :: xpos,ypos,zpos
   real(kind=db), intent(inout) :: etot
@@ -38,7 +38,7 @@ subroutine gauss_executecyclesnvt(xpos,ypos,zpos,ncycles,nsamp,rc,rcsq,vrc,vrc2,
   logical :: accept
   
   ! initialize random number generator
-  call init_random_seed(.False.)
+  call init_random_seed(sameseed)
 
   atmov = 0
   acmov = 0
