@@ -48,18 +48,8 @@ subroutine gauss_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp,&
   ! initialize random number generator
   call init_random_seed(sameseed)
 
-  ! build the cell list, this will fill ll, hoc, ncelx, ncely, ncelz
-  ncelx = int(lboxx / rc)
-  ncely = int(lboxy / rc)
-  ncelz = int(lboxz / rc)
-  
-  ! if fewer than 3 cells in any direction, make box a single cell
-  if (ncelx < 3 .or. ncely < 3 .or. ncelz < 3) then
-     ncelx = 1
-     ncely = 1
-     ncelz = 1
-  end if
-  
+  ! get the number of cells and build the cell list
+  call getnumcells(lboxx, lboxy, lboxz, rc, ncelx, ncely, ncelz)
   write(*,*) 'num cells', ncelx, ncely, ncelz
   allocate( hoc(ncelx, ncely, ncelx) )
   call new_nlist(xpos, ypos, zpos, rc, lboxx, lboxy, lboxz, npar,&

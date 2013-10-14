@@ -58,9 +58,39 @@ subroutine new_nlist(xpos, ypos, zpos, rc, lboxx, lboxy, lboxz, npar,&
 
 end subroutine new_nlist
 
+subroutine getnumcells(lboxx, lboxy, lboxz, rc, ncelx, ncely, ncelz)
+  !!! from box dimensions, get the number of cells in each dim.
+
+  implicit none
+  integer, parameter :: db = 8 !selected_real_kind(13)
+  
+  ! subroutine arguments
+  ! inputs
+  real(kind=db), intent(in) :: lboxx, lboxy, lboxz, rc
+
+  ! outputs
+  integer, intent(out) :: ncelx, ncely, ncelz
+
+  !f2py intent(in) :: lboxx, lboxy, lboxz, rc
+  !f2py intent(out) :: ncelx, ncely, ncelz
+
+  ! build the cell list, this will fill ll, hoc, ncelx, ncely, ncelz
+  ncelx = int(lboxx / rc)
+  ncely = int(lboxy / rc)
+  ncelz = int(lboxz / rc)
+  
+  ! if fewer than 3 cells in any direction, make box a single cell
+  if (ncelx < 3 .or. ncely < 3 .or. ncelz < 3) then
+     ncelx = 1
+     ncely = 1
+     ncelz = 1
+  end if
+
+end subroutine getnumcells
+
 subroutine cellindx(celnum, icelx, icely, icelz, ncelx, ncely, ncelz,&
                     celx, cely, celz)
-  !!! get cell indices ncelx, ncely, ncelz.
+  !!! get cell indices celx, cely, celz.
   
   implicit none
   integer, parameter :: db = 8 !selected_real_kind(13)
