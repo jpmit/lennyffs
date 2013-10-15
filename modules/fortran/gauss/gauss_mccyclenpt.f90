@@ -43,10 +43,10 @@ subroutine gauss_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp,&
   real(kind=db), dimension(3) :: rvec
   logical :: accept
   ! these are for cell lists
-  integer :: ncelx, ncely, ncelz
-  real(kind=db) :: rnx, rny, rnz
-  integer, dimension(npar) :: ll
-  integer, allocatable, dimension(:,:,:) :: hoc
+  integer :: ncelx, ncely, ncelz, ncelxold, ncelyold, ncelzold
+  real(kind=db) :: rnx, rny, rnz, rnxold, rnyold, rnzold
+  integer, dimension(npar) :: ll, llold
+  integer, allocatable, dimension(:,:,:) :: hoc, hocold
   logical :: newlist
   
   ! initialize random number generator
@@ -120,15 +120,30 @@ subroutine gauss_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp,&
            ypos = ypos*scalefacy
            zpos = zpos*scalefacz
 
-           call gauss_totalenergy(xpos,ypos,zpos,rc,rcsq,lboxx,lboxy,&
-                                  lboxz,vrc,vrc2,npar,nsurf,zperiodic,&
-                                  etotnew)
+           ! save old cell list info
+           llold = ll
+           hocold = hoc
+           ncelxold = ncelx
+           ncelyold = ncely
+           ncelzold = ncelz
+           rnxold = rnx
+           rnyold = rny
+           rnzold = rnz
+           
+           ! get the number of cells and build the cell list
+           call getnumcells(lboxx, lboxy, lboxz, rc, ncelx, ncely, ncelz)
+           deallocate(hoc)
+           allocate( hoc(ncelx, ncely, ncelx) )
+           call new_nlist(xpos, ypos, zpos, rc, lboxx, lboxy, lboxz, npar,&
+                          ncelx, ncely, ncelz, ll, hoc, rnx, rny, rnz)           
+      
+           ! new energy, note we are using new box dimensions
+           call gauss_totalenlist(ll, hoc, ncelx, ncely, ncelz, rnx,&
+                                  rny, rnz, xpos, ypos, zpos, rc, rcsq,&
+                                  lboxx, lboxy, lboxz, vrc, vrc2, npar,&
+                                  nsurf, zperiodic, etotnew)
 
            ! See FS p122 (Algorithm 11) for this acceptance rule
-           ! ignore - (Note that the factor in front of lnvnew - lnvold
-           ! is 1 and not nparfl + 1.  This is since we are not using
-           ! rescaled position coordinates and so the integral in
-           ! FS Eq. (5.4.12) has a factor of V rather than V^{N+1})
            
            arg = epsovert*(etot - etotnew + press*(vboxold - vboxnew)) + &
                  (nparfl + 1)*(lnvnew - lnvold)
@@ -144,6 +159,15 @@ subroutine gauss_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp,&
                  xpos = xpos / scalefacx
                  ypos = ypos / scalefacy
                  zpos = zpos / scalefacz
+                 ! old cell list info
+                 llold = ll
+                 hocold = hoc
+                 ncelxold = ncelx
+                 ncelyold = ncely
+                 ncelzold = ncelz
+                 rnxold = rnx
+                 rnyold = rny
+                 rnzold = rnz
               end if
            end if
 

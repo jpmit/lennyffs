@@ -269,16 +269,18 @@ subroutine gauss_totalencreatelist(xpos, ypos, zpos, rc, rcsq,&
   call getnumcells(lboxx, lboxy, lboxz, rc, ncelx, ncely, ncelz)
   allocate( hoc(ncelx, ncely, ncelx) )
   call new_nlist(xpos, ypos, zpos, rc, lboxx, lboxy, lboxz, npar,&
-                 ncelx, ncely, ncelz, ll, hoc, rnx, rny, rnz)
-  call gauss_totalenlist(ll, hoc, ncelx, ncely, ncelz, xpos, ypos,&
-                         zpos, rc, rcsq, lboxx, lboxy, lboxz, vrc,&
-                         vrc2, npar, nsurf, zperiodic, etot)
+       ncelx, ncely, ncelz, ll, hoc, rnx, rny, rnz)
+  ! get total energy using cell list
+  call gauss_totalenlist(ll, hoc, ncelx, ncely, ncelz, rnx, rny, rnz,&
+                         xpos, ypos, zpos, rc, rcsq, lboxx, lboxy,&
+                         lboxz, vrc, vrc2, npar, nsurf, zperiodic, etot)
   ! deallocate the head of cell array
   deallocate(hoc, STAT=status)
 
 end subroutine gauss_totalencreatelist
 
-subroutine gauss_totalenlist(ll, hoc, ncelx, ncely, ncelz, &
+subroutine gauss_totalenlist(ll, hoc, ncelx, ncely, ncelz,&
+                             rnx, rny, rnz,&
                              xpos, ypos, zpos, rc, rcsq,&
                              lboxx, lboxy, lboxz, vrc, vrc2, npar, nsurf,&
                              zperiodic, etot)
@@ -289,7 +291,8 @@ subroutine gauss_totalenlist(ll, hoc, ncelx, ncely, ncelz, &
 
   ! inputs
   integer, dimension(npar), intent(in) :: ll
-  integer, intent(in) :: ncelx, ncely, ncelz  
+  integer, intent(in) :: ncelx, ncely, ncelz
+  real(kind=db), intent(in) :: rnx, rny, rnz
   integer, dimension(ncelx, ncely, ncelz), intent(in) :: hoc
   real(kind=db), dimension(npar), intent(in) :: xpos, ypos, zpos
   real(kind=db), intent(in) :: rc, rcsq, lboxx, lboxy, lboxz, vrc, vrc2
@@ -299,15 +302,10 @@ subroutine gauss_totalenlist(ll, hoc, ncelx, ncely, ncelz, &
   ! outputs
   real(kind=db), intent(out) :: etot
 
-  real(kind=db) :: rnx, rny, rnz, eij, xposi, yposi, zposi
+  real(kind=db) :: eij, xposi, yposi, zposi
   integer :: icelx, icely, icelz, cellnum, jpar, celx, cely, celz, &
              nceltot, ipar
   etot = 0.0_db
-
-  ! cell dimension in x, y and z directions
-  rnx = lboxx / ncelx
-  rny = lboxy / ncely
-  rnz = lboxz / ncelz
 
   do ipar = 1, npar
 
@@ -319,8 +317,6 @@ subroutine gauss_totalenlist(ll, hoc, ncelx, ncely, ncelz, &
      icelx = int(xposi / rnx) + 1
      icely = int(yposi / rny) + 1
      icelz = int(zposi / rnz) + 1
-
-     !write (*, *) 'particle i cell', icelx, icely, icelz
 
      ! go through each cell in turn (27 in total in three dimensions),
      ! and add pot energy between particle i and all particles in the
@@ -396,8 +392,6 @@ subroutine gauss_enlist(ll, hoc, ncelx, ncely, ncelz, ipar, xposi,&
   icelx = int(xposi / rnx) + 1
   icely = int(yposi / rny) + 1
   icelz = int(zposi / rnz) + 1
-
-  write (*, *) 'particle i cell', icelx, icely, icelz
   
   ! go through each cell in turn (27 in total in three dimensions),
   ! and add pot energy between particle i and all particles in the
