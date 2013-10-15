@@ -43,6 +43,11 @@ cindexes = [i for i in range(npar) if symbols[i] in XTALPARS]
 cpositions = np.array([positions[i] for i in cindexes])
 nc = len(cpositions)
 
+# get surface atoms
+surfpositions = np.array([positions[i] for i in range(npar)
+                          if symbols[i] == 'O'])
+ns = len(surfpositions)
+
 # get largest cluster in the periodic system
 xgraph = bops.getxgraph(cpositions,params,range(nc))
 comps = graph.connected_comps(xgraph)
@@ -99,7 +104,7 @@ for j in cluster:
 
 # next, figure out which boundaries the cluster spans and add in
 # surface (if we had surface in input file).
-if nc != npar: # i.e. we have some surface atoms in the xyz file
+if ns > 0: # i.e. we have some surface atoms in the xyz file
     xhigh = False
     xlow = False
     yhigh = False
@@ -126,9 +131,6 @@ if nc != npar: # i.e. we have some surface atoms in the xyz file
         elif (j >= 8*ncl and j < 9*ncl):
             xlowylow = True
 
-    surfpositions = np.array([positions[i] for i in range(npar)
-                              if symbols[i] == 'O'])
-    ns = len(surfpositions)
     nextra = (xlow + xhigh + ylow + yhigh + xhighyhigh + xhighylow +
               xlowyhigh + xlowylow)
     if nextra:
