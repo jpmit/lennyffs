@@ -70,12 +70,13 @@ class MCProgram(object):
 
         # file for writing order parameter
         opfile = open('opval.out','w')
-        starttime = time.time()
 
         # run the MC cycles
         cyclesdone = 0
         opfile.write('{0} {1}\n'.format(0, self.orderp(self.positions,
                                                        self.params)))
+        starttime = time.time()
+
         for cy in range(self.ncall):
             self.positions, epot = self.runcycle(self.positions,
                                                  self.params,

@@ -50,12 +50,14 @@ def wxyz(fname, positions, symbols, **kwargs):
 
     fout = open(fname,'w')
     npar = len(positions)
-    fstr = '%d\n\n' %npar
+    fstr = '%d\n' %npar
 
     if 'boxdims' in kwargs:
         # write box dimensions as comment on 2nd line
-        fstr += '# boxdims {0}'.format(' '.join([str(d) for d in
-                                                 kwargs['boxdims']]))
+        fstr += '# boxdims {0}\n'.format(' '.join([str(d) for d in
+                                                   kwargs['boxdims']]))
+    else:
+        fstr += '\n'
         
     for i in range(npar):
         fstr = '%s%s %.8f %.8f %.8f\n' %(fstr,symbols[i],positions[i][0],
@@ -160,10 +162,14 @@ def r5col(fname, sep=None):
         col3.append(float(splin[2]))
         col4.append(float(splin[3]))
         col5.append(float(splin[4]))
-    return np.array(col1), np.array(col2), np.array(col3), np.array(col4), np.array(col5)
+    return np.array(col1), np.array(col2), np.array(col3), \
+           np.array(col4), np.array(col5)
 
 def rncol(fname, n, sep=None):
-    """Read n column file of numeric data and return as list of numpy arrays."""
+    """
+    Read n column file of numeric data and return as list of numpy
+    arrays.
+    """
     
     fin = open(fname,'r')
     lines = fin.readlines()

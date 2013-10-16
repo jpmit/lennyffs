@@ -8,9 +8,10 @@ import sys
 import numpy as np
 from copy import deepcopy
 import readwrite
-from ffsfunctions import getpickparams
+from ffsfunctions import getpickparams, getboxdims
 import bops
 import graph
+import orderparam
 from lenexceptions import UtilError
 
 # symbols identified as being crystal
@@ -30,12 +31,22 @@ try:
 except IOError:
     sys.exit("Error: file params.pkl not found")
 
+# box dimensions: if these are written in the XYZ file, as they would
+# be for an NPT simulation, we use the ones in the XYZ file to
+# overwrite those in the parameters dictionary.
+boxdims = getboxdims(infile)
+if boxdims:
+    params['lboxx'] = boxdims[0]
+    params['lboxy'] = boxdims[1]
+    params['lboxz'] = boxdims[2]
+
 # save box dimensions for future use
 lboxx = params['lboxx']
-lboxy = params['lboxy']    
+lboxy = params['lboxy']
+lboxz = params['lboxz']
 
 # get particle positions
-positions,symbols = readwrite.rxyz(infile,True)
+positions, symbols = readwrite.rxyz(infile, True)
 npar = len(positions)
 
 # get crystal atoms
@@ -49,9 +60,7 @@ surfpositions = np.array([positions[i] for i in range(npar)
 ns = len(surfpositions)
 
 # get largest cluster in the periodic system
-xgraph = bops.getxgraph(cpositions,params,range(nc))
-comps = graph.connected_comps(xgraph)
-cluster = max(comps,key=len)
+cluster = orderparam._clusnums(cpositions, params)
 ncl = len(cluster)
 clpositions = np.empty([ncl,3])
 i = 0
@@ -62,8 +71,14 @@ for j in cluster:
 # cluster symbols in non-periodic system
 csymbols = [symbols[cindexes[j]] for j in cluster]
 
-# replicate the largest cluster a total of nine times
-allpositions = np.vstack((clpositions,)*9)
+if params['zperiodic']:
+    NREP = 27
+else:
+    # replicate the largest cluster a total of nine times
+    NREP = 9    
+
+allpositions = np.vstack((clpositions,)*NREP)
+# middle layer
 # horizontal and vertical replicas
 allpositions[ncl:2*ncl,0] = allpositions[ncl:2*ncl:,0] + lboxx
 allpositions[2*ncl:3*ncl,0] = allpositions[2*ncl:3*ncl,0] - lboxx
@@ -78,22 +93,72 @@ allpositions[7*ncl:8*ncl,0] = allpositions[7*ncl:8*ncl,0] - lboxx
 allpositions[7*ncl:8*ncl,1] = allpositions[7*ncl:8*ncl,1] + lboxy
 allpositions[8*ncl:9*ncl,0] = allpositions[8*ncl:9*ncl,0] - lboxx
 allpositions[8*ncl:9*ncl,1] = allpositions[8*ncl:9*ncl,1] - lboxy
-
+if params['zperiodic']:
+    # bottom layer
+    # horizontal and vertical replicas
+    allpositions[9*ncl:10*ncl,2] = allpositions[9*ncl:10*ncl,2] - lboxz
+    allpositions[10*ncl:11*ncl,2] = allpositions[10*ncl:11*ncl,2] - lboxz    
+    allpositions[10*ncl:11*ncl,0] = allpositions[10*ncl:11*ncl,0] + lboxx
+    allpositions[11*ncl:12*ncl,2] = allpositions[11*ncl:12*ncl,2] - lboxz
+    allpositions[11*ncl:12*ncl,0] = allpositions[11*ncl:12*ncl,0] - lboxx
+    allpositions[12*ncl:13*ncl,2] = allpositions[12*ncl:13*ncl,2] - lboxz    
+    allpositions[12*ncl:13*ncl,1] = allpositions[12*ncl:13*ncl,1] + lboxy
+    allpositions[13*ncl:14*ncl,2] = allpositions[13*ncl:14*ncl,2] - lboxz
+    allpositions[13*ncl:14*ncl,1] = allpositions[13*ncl:14*ncl,1] - lboxy
+    # diagonal replicas
+    allpositions[14*ncl:15*ncl,2] = allpositions[14*ncl:15*ncl,2] - lboxz    
+    allpositions[14*ncl:15*ncl,0] = allpositions[14*ncl:15*ncl,0] + lboxx
+    allpositions[14*ncl:15*ncl,1] = allpositions[14*ncl:15*ncl,1] + lboxy
+    allpositions[15*ncl:16*ncl,2] = allpositions[15*ncl:16*ncl,2] - lboxz    
+    allpositions[15*ncl:16*ncl,0] = allpositions[15*ncl:16*ncl,0] + lboxx
+    allpositions[15*ncl:16*ncl,1] = allpositions[15*ncl:16*ncl,1] - lboxy
+    allpositions[16*ncl:17*ncl,2] = allpositions[16*ncl:17*ncl,2] - lboxz    
+    allpositions[16*ncl:17*ncl,0] = allpositions[16*ncl:17*ncl,0] - lboxx
+    allpositions[16*ncl:17*ncl,1] = allpositions[16*ncl:17*ncl,1] + lboxy
+    allpositions[17*ncl:18*ncl,2] = allpositions[17*ncl:18*ncl,2] - lboxz    
+    allpositions[17*ncl:18*ncl,0] = allpositions[17*ncl:18*ncl,0] - lboxx
+    allpositions[17*ncl:18*ncl,1] = allpositions[17*ncl:18*ncl,1] - lboxy    
+    # top layer
+    # horizontal and vertical replicas
+    allpositions[18*ncl:19*ncl,2] = allpositions[18*ncl:19*ncl,2] + lboxz
+    allpositions[19*ncl:20*ncl,2] = allpositions[19*ncl:20*ncl,2] + lboxz    
+    allpositions[19*ncl:20*ncl,0] = allpositions[19*ncl:20*ncl,0] + lboxx
+    allpositions[20*ncl:21*ncl,2] = allpositions[20*ncl:21*ncl,2] + lboxz
+    allpositions[20*ncl:21*ncl,0] = allpositions[20*ncl:21*ncl,0] - lboxx
+    allpositions[21*ncl:22*ncl,2] = allpositions[21*ncl:22*ncl,2] + lboxz    
+    allpositions[21*ncl:22*ncl,1] = allpositions[21*ncl:22*ncl,1] + lboxy
+    allpositions[22*ncl:23*ncl,2] = allpositions[22*ncl:23*ncl,2] + lboxz
+    allpositions[22*ncl:23*ncl,1] = allpositions[22*ncl:23*ncl,1] - lboxy
+    # diagonal replicas
+    allpositions[23*ncl:24*ncl,2] = allpositions[23*ncl:24*ncl,2] + lboxz    
+    allpositions[23*ncl:24*ncl,0] = allpositions[23*ncl:24*ncl,0] + lboxx
+    allpositions[23*ncl:24*ncl,1] = allpositions[23*ncl:24*ncl,1] + lboxy
+    allpositions[24*ncl:25*ncl,2] = allpositions[24*ncl:25*ncl,2] + lboxz    
+    allpositions[24*ncl:25*ncl,0] = allpositions[24*ncl:25*ncl,0] + lboxx
+    allpositions[24*ncl:25*ncl,1] = allpositions[24*ncl:25*ncl,1] - lboxy
+    allpositions[25*ncl:26*ncl,2] = allpositions[25*ncl:26*ncl,2] + lboxz    
+    allpositions[25*ncl:26*ncl,0] = allpositions[25*ncl:26*ncl,0] - lboxx
+    allpositions[25*ncl:26*ncl,1] = allpositions[25*ncl:26*ncl,1] + lboxy
+    allpositions[26*ncl:27*ncl,2] = allpositions[26*ncl:27*ncl,2] + lboxz    
+    allpositions[26*ncl:27*ncl,0] = allpositions[26*ncl:27*ncl,0] - lboxx
+    allpositions[26*ncl:27*ncl,1] = allpositions[26*ncl:27*ncl,1] - lboxy    
+readwrite.wxyz('test.xyz', allpositions, csymbols*NREP)
 # find the largest cluster in new system, not using periodic boundaries
 params['lboxx'] = 1000000
 params['lboxy'] = 1000000
-xgraph = bops.getxgraph(allpositions,params,range(9*ncl))
-comps = graph.connected_comps(xgraph)
-cluster = max(comps,key=len)
+params['lboxz'] = 1000000
+
+# get largest cluster C++ code
+cluster = orderparam._clusnums(allpositions, params)
 
 # get symbols of particles in cluster
-allsymbols = csymbols*9
+allsymbols = csymbols*NREP
 clsymbols = [allsymbols[i] for i in cluster]
 
 # check that the cluster size computed in periodic boundaries is same
 # as without periodic boundaries, if not, then the cluster is percolating
 if len(cluster) != ncl:
-    raise UtilError, ('cluster percolating, size {0}, with'
+    raise UtilError, ('cluster percolating, real size {0}, without'
                       'boundaries {1}'.format(ncl,len(cluster)))
 
 clpositions = np.empty([ncl,3])

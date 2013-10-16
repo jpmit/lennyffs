@@ -27,7 +27,7 @@ from bops import bopxbulk
 from writeoutput import writexyztf
 
 def getshotdict(nint):
-    """Get shot dictionary from pickle file at interface nint."""
+    """Return shot dictionary from pickle file at interface nint."""
     
     pfile = open('interface%d.pkl' %nint, 'rb')
     shotdict = pickle.load(pfile)
@@ -35,15 +35,31 @@ def getshotdict(nint):
     return shotdict
 
 def getpickparams():
-    """Get params dictionary from pickle file."""
+    """Return params dictionary from pickle file."""
     
     pfile = open('params.pkl', 'rb')
     params = pickle.load(pfile)
     pfile.close()
     return params
 
+def getboxdims(infile):
+    """
+    Return box dimensions from XYZ file if present.  If not present,
+    return None.
+    """
+
+    lines = open(infile, 'r').readlines()
+    dimline = lines[1]
+
+    # strip will get rid of the \n character
+    if dimline.strip():
+        spl = dimline.split()
+        lx, ly, lz = float(spl[-3]), float(spl[-2]), float(spl[-1])
+        return lx, ly, lz
+    return None
+
 def getnumsuccess(nint):
-    """Get number of succesful shots at interface nint. """
+    """Return number of succesful shots at interface nint. """
     
     files = glob.glob("pos%d_*.xyz" %nint)
     nsuccess = len(files)

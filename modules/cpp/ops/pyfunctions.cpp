@@ -25,6 +25,9 @@
 #include "particle.h"
 #include "pyutil.h"
 #include "neighbours.h"
+#include "typedefs.h"
+#include "conncomponents.h"
+#include "utility.h"
 
 using std::vector;
 using std::cout;
@@ -280,9 +283,30 @@ vector<LDCLASS> py_ldclass(boost::python::numeric::array xpos,
 	  vector<LDCLASS> ldclass = classifyparticlesld(nparsurf, q4lbar,
 																	q6lbar, w4lbar, w6lbar);
 
-	  //boost::python::to_python_converter<vector<LDCLASS>, ldclass_to_python_list>();
-
-	  //boost::python::object ldobj = ldclass;
-
 	  return ldclass;
+}
+
+// indices of particles in largest cluster
+vector<int> py_largestcluster(boost::python::numeric::array cposx,
+										boost::python::numeric::array cposy,
+										boost::python::numeric::array cposz,
+										const int npar, const double lboxx,
+										const double lboxy, const double lboxz,
+										const bool zperiodic, const double nsep)
+{
+	  // create vector of type "Particle"
+	  vector<Particle> cpars = getparticles(cposx, cposy, cposz,
+														 npar);
+
+	  // create "Box"
+	  Box simbox(lboxx, lboxy, lboxz, nsep, zperiodic);
+
+	  // graph of xtal particles, with each particle a vertex and each
+	  // link an edge
+	  graph xgraph = getxgraph(cpars, range(0, npar), simbox);
+
+	  // largest cluster is the largest connected component of graph
+	  vector<int> cnums = largestcomponent(xgraph);
+
+	  return cnums;
 }
