@@ -45,12 +45,18 @@ def rxyz(fname, retsymbols=False, splines=1):
     else:
         return positions
 
-def wxyz(fname, positions, symbols):
+def wxyz(fname, positions, symbols,**kwargs):
     """Write an .xyz coordinate file."""
-    
+
     fout = open(fname,'w')
     npar = len(positions)
     fstr = '%d\n\n' %npar
+
+    if 'boxdims' in kwargs:
+        # write box dimensions as comment on 2nd line
+        fstr += '# boxdims {0}'.format(' '.join([str(d) for d in
+                                                 kwargs['boxdims']]))
+        
     for i in range(npar):
         fstr = '%s%s %.8f %.8f %.8f\n' %(fstr,symbols[i],positions[i][0],
                                          positions[i][1],positions[i][2])

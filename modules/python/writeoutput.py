@@ -50,14 +50,18 @@ def writexyztf(fname, positions, params):
     nparfl = params['npartot'] - params['nparsurf']
     symbols = ['O']*params['nparsurf'] + ['N']*nparfl
 
-    # if params contains stillsep,etc,get xtal particles
+    # if params contains stillsep, etc, get xtal particles
     if 'stillsep' in params:
         xparnums = bops.getxpars(positions, params)
         for pnum in xparnums:
             symbols[pnum] = 'S'
-        
+    # if npt simulation, get box dims from params dictionary; we write
+    # this to the second line of the XYZ file.            
+    if params['mctype'] == 'npt':
+        kwargs = {'boxdims': [params['lboxx'], params['lboxy'],
+                              params['lboxz']]} 
     # write the file
-    readwrite.wxyz(fname, positions, symbols)
+    readwrite.wxyz(fname, positions, symbols, **kwargs)
     return
 
 def writexyzld(fname, positions, params):
@@ -79,5 +83,10 @@ def writexyzld(fname, positions, params):
     ldclass = orderparam._ldclass(positions, params)
     # give each atom the correct symbol using lookup table
     symbols = [stable[i] for i in ldclass]
+    # if npt simulation, get box dims from params dictionary; we write
+    # this to the second line of the XYZ file.
+    if params['mctype'] == 'npt':
+        kwargs = {'boxdims': [params['lboxx'], params['lboxy'],
+                              params['lboxz']]} 
     # write the file
-    readwrite.wxyz(fname, positions, symbols)
+    readwrite.wxyz(fname, positions, symbols, **kwargs)
