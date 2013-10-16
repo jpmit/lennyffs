@@ -105,7 +105,7 @@ class MCProgram(object):
             sys.stderr.write('new box volume: {0}'\
                              .format(self.params['lboxx']*\
                                      self.params['lboxy']*\
-                                     self.params['lboxz'])
+                                     self.params['lboxz']))
 
 if __name__ == '__main__':
     mcprog = MCProgram()

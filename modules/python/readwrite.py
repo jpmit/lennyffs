@@ -45,7 +45,7 @@ def rxyz(fname, retsymbols=False, splines=1):
     else:
         return positions
 
-def wxyz(fname, positions, symbols,**kwargs):
+def wxyz(fname, positions, symbols, **kwargs):
     """Write an .xyz coordinate file."""
 
     fout = open(fname,'w')
