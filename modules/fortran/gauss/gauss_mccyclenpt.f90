@@ -160,14 +160,14 @@ subroutine gauss_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp,&
                  ypos = ypos / scalefacy
                  zpos = zpos / scalefacz
                  ! old cell list info
-                 llold = ll
-                 hocold = hoc
-                 ncelxold = ncelx
-                 ncelyold = ncely
-                 ncelzold = ncelz
-                 rnxold = rnx
-                 rnyold = rny
-                 rnzold = rnz
+                 ll = llold
+                 hoc = hocold
+                 ncelx = ncelxold
+                 ncely = ncelyold
+                 ncelz = ncelzold
+                 rnx = rnxold
+                 rny = rnyold
+                 rnz = rnzold
               end if
            end if
 
