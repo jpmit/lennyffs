@@ -15,9 +15,11 @@ r4col - Read 4 column file.
 r5col - Read 5 column file.
 rncol - Read n column file.
 w2col - Write 2 column file.
+wncol - Write n column file.
 """
 
 import numpy as np
+import itertools
 
 def rxyz(fname, retsymbols=False, splines=1):
     """
@@ -198,3 +200,22 @@ def w2col(fname, col1, col2, headers=[]):
     outf.write(fstr)
     outf.close()
     return
+
+def wncol(fname, cols):
+    """Cols is list of data"""
+    ncol = len(cols)
+    lcol = len(cols[0])
+    for c in cols:
+        if len(c) != lcol:
+            raise ValueError, 'length of all columns must be equal'
+    # use default precision
+    wstr = ''    
+    for i in zip(*cols):
+        for j in range(ncol):
+            wstr = '{0} {1}'.format(wstr, i[j])
+        wstr = '{0}{1}'.format(wstr, '\n')
+    outf = open(fname, 'w')
+    outf.write(wstr)
+    outf.close()
+    return
+        
