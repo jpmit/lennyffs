@@ -9,7 +9,7 @@ allowed, (ii) of the correct type.  Examples of failing these checks
 are given below for a couple of example lines from the input ('in')
 file:
 restrt new (parameter not allowed)
-Tstar three (parameter cannot be converted to 'FLOAT' (see paramdata.py).
+Tstar three (parameter cannot be converted to 'FLOAT', see paramdata.py).
 """
 
 import sys
