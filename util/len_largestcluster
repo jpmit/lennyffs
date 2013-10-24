@@ -10,7 +10,8 @@ import numpy as np
 import readwrite
 import bops
 import graph
-from ffsfunctions import getpickparams
+from ffsfunctions import getpickparams, getboxdims
+import orderparam
 
 # symbols identified as being crystal
 XTALPARS = ['S', # FCC (or all TF)
@@ -29,8 +30,17 @@ try:
 except IOError:
     sys.exit("Error: file params.pkl not found")
 
+# box dimensions: if these are written in the XYZ file, as they would
+# be for an NPT simulation, we use the ones in the XYZ file to
+# overwrite those in the parameters dictionary.
+boxdims = getboxdims(infile)
+if boxdims:
+    params['lboxx'] = boxdims[0]
+    params['lboxy'] = boxdims[1]
+    params['lboxz'] = boxdims[2]
+
 # read infile and keep only surface and crystal atoms
-positions, symbols = readwrite.rxyz(infile,True)
+positions, symbols = readwrite.rxyz(infile, True)
 npar = len(positions)
 
 # surface atoms
@@ -42,14 +52,9 @@ ns = len(spositions)
 cindexes = [i for i in range(npar) if symbols[i] in XTALPARS]
 cpositions = np.array([positions[i] for i in cindexes])
 csymbols = np.array([symbols[i] for i in cindexes])
-nc = len(cpositions)
 
-# get graph of connections
-xgraph = bops.getxgraph(cpositions,params,range(nc))
-
-# get largest cluster
-comps = graph.connected_comps(xgraph)
-cluster = max(comps,key=len)
+# get largest cluster C++ code
+cluster = orderparam._clusnums(cpositions, params)
 ncl = len(cluster)
 clpositions = np.empty([ncl,3])
 clsymbols = [None]*ncl
@@ -61,5 +66,9 @@ for j in cluster:
 
 # write out surface and largest cluster atoms
 symbols = ['O']*ns + clsymbols
-positions = np.append(spositions,clpositions,axis=0)
-readwrite.wxyz(outfile,positions,symbols)
+if ns:
+    positions = np.append(spositions, clpositions, axis=0)
+else:
+    # no surface atoms
+    positions = clpositions
+readwrite.wxyz(outfile, positions, symbols)

@@ -70,11 +70,12 @@ class FuncSelector(object):
         if cls.option[cls.POTENTIAL] == cls.LEN:
             return energy.len_totalenergy
         elif cls.option[cls.POTENTIAL] == cls.GAUSS:
-            return energy.gauss_totalenergy
+            # this uses neighbour lists
+            return energy.gauss_totalenlist
 
     @classmethod
     def EnergyIparFunc(cls):
-        """Return function that evaluates total energy."""
+        """Return function that evaluates energy of a single particle."""
         if cls.option[cls.POTENTIAL] == cls.LEN:
             return energy.len_energyipar
         elif cls.option[cls.POTENTIAL] == cls.GAUSS:

@@ -15,9 +15,11 @@ r4col - Read 4 column file.
 r5col - Read 5 column file.
 rncol - Read n column file.
 w2col - Write 2 column file.
+wncol - Write n column file.
 """
 
 import numpy as np
+import itertools
 
 def rxyz(fname, retsymbols=False, splines=1):
     """
@@ -45,12 +47,20 @@ def rxyz(fname, retsymbols=False, splines=1):
     else:
         return positions
 
-def wxyz(fname, positions, symbols):
+def wxyz(fname, positions, symbols, **kwargs):
     """Write an .xyz coordinate file."""
-    
+
     fout = open(fname,'w')
     npar = len(positions)
-    fstr = '%d\n\n' %npar
+    fstr = '%d\n' %npar
+
+    if 'boxdims' in kwargs:
+        # write box dimensions as comment on 2nd line
+        fstr += '# boxdims {0}\n'.format(' '.join([str(d) for d in
+                                                   kwargs['boxdims']]))
+    else:
+        fstr += '\n'
+        
     for i in range(npar):
         fstr = '%s%s %.8f %.8f %.8f\n' %(fstr,symbols[i],positions[i][0],
                                          positions[i][1],positions[i][2])
@@ -154,10 +164,14 @@ def r5col(fname, sep=None):
         col3.append(float(splin[2]))
         col4.append(float(splin[3]))
         col5.append(float(splin[4]))
-    return np.array(col1), np.array(col2), np.array(col3), np.array(col4), np.array(col5)
+    return np.array(col1), np.array(col2), np.array(col3), \
+           np.array(col4), np.array(col5)
 
 def rncol(fname, n, sep=None):
-    """Read n column file of numeric data and return as list of numpy arrays."""
+    """
+    Read n column file of numeric data and return as list of numpy
+    arrays.
+    """
     
     fin = open(fname,'r')
     lines = fin.readlines()
@@ -186,3 +200,22 @@ def w2col(fname, col1, col2, headers=[]):
     outf.write(fstr)
     outf.close()
     return
+
+def wncol(fname, cols):
+    """Cols is list of data"""
+    ncol = len(cols)
+    lcol = len(cols[0])
+    for c in cols:
+        if len(c) != lcol:
+            raise ValueError, 'length of all columns must be equal'
+    # use default precision
+    wstr = ''    
+    for i in zip(*cols):
+        for j in range(ncol):
+            wstr = '{0} {1}'.format(wstr, i[j])
+        wstr = '{0}{1}'.format(wstr, '\n')
+    outf = open(fname, 'w')
+    outf.write(wstr)
+    outf.close()
+    return
+        

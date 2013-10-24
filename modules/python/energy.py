@@ -74,10 +74,36 @@ def len_energyipar(ipar, positions, params, nparsurf = None):
                                   zperiodic, r6mult, r12mult)
     return etot
 
-def gauss_totalenergy(positions,params):
+def gauss_totalenlist(positions, params):
+    """
+    Compute total energy of system, including surface, using cell
+    list.
+    """    
+    
+    rcut = params['rcut']
+    rcsq = params['rcsq']
+    lboxx = params['lboxx']
+    lboxy = params['lboxy']
+    lboxz = params['lboxz']
+    vrc = params['vrc']
+    vrc2 = params['vrc2']
+    nparsurf = params['nparsurf']
+    zperiodic = params['zperiodic']
+
+    etot = mcfuncs.gauss_totalencreatelist(positions[:,0],
+                                           positions[:,1],
+                                           positions[:,2], rcut,
+                                           rcsq, lboxx,
+                                           lboxy, lboxz, vrc,
+                                           vrc2, nparsurf,
+                                           zperiodic)
+    return etot
+
+# this is antiquated, use gauss_totalenlist above, which uses cell
+# lists for efficiency.
+def gauss_totalenergy(positions, params):
     """Compute total energy of system, including surface."""
     
-    npartot = params['npartot']
     rcut = params['rcut']
     rcsq = params['rcsq']
     lboxx = params['lboxx']

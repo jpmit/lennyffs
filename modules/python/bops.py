@@ -67,7 +67,7 @@ def getxpars(positions,params):
     # one indexing in Fortran).
     return (xpars[:nxtal] - 1)
 
-def getxgraph(positions,params,xpars):
+def getxgraph(positions, params, xpars):
     """
     Create graph with xtal pars as nodes, edges between
     neighbouring pars.

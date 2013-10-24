@@ -217,7 +217,16 @@ def _ldclusnums(positions,params):
     print len(xtalnums)
     
     # graph for computing largest cluster
-    xgraph = opfunctions.getxgraph(positions,params,xtalnums)
+    xgraph = opfunctions.getxgraph(positions, params, xtalnums)
     comps = graph.connected_comps(xgraph)
 
     return comps[0]
+
+def _clusnums(cpositions, params):
+    """Return indices of particles in largest cluster."""
+
+    return mcfuncs.largestcluster(cpositions[:,0], cpositions[:,1],
+                                  cpositions[:,2], len(cpositions),
+                                  params['lboxx'], params['lboxy'],
+                                  params['lboxz'], params['zperiodic'],
+                                  params['stillsep'])

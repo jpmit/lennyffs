@@ -25,8 +25,10 @@ class MCProgram(object):
     """The main MC program."""
     
     def __init__(self):
-        """Read parameters, get initial positions, compute initial
-        potential energy."""
+        """
+        Read parameters, get initial positions, compute initial
+        potential energy.
+        """
 
         # read input parameters and write to file
         self.params = initsim.getparams()
@@ -68,12 +70,13 @@ class MCProgram(object):
 
         # file for writing order parameter
         opfile = open('opval.out','w')
-        starttime = time.time()
 
         # run the MC cycles
         cyclesdone = 0
         opfile.write('{0} {1}\n'.format(0, self.orderp(self.positions,
                                                        self.params)))
+        starttime = time.time()
+
         for cy in range(self.ncall):
             self.positions, epot = self.runcycle(self.positions,
                                                  self.params,
@@ -93,16 +96,17 @@ class MCProgram(object):
 
         # write final positions to file
         writeoutput.writexyzld('finalpositions.xyz', self.positions,
-                                   self.params)
+                               self.params)
 
         # write runtime to stderr
         sys.stderr.write("runtime in s: %.3f\n" %(endtime - starttime))
 
         # if we were npt, print new box volume
         if self.params['mctype'] == 'npt':
-            print 'new box volume: {0}'.format(self.params['lboxx']*\
-                                               self.params['lboxy']*\
-                                               self.params['lboxz'])
+            sys.stderr.write('new box volume: {0}'\
+                             .format(self.params['lboxx']*\
+                                     self.params['lboxy']*\
+                                     self.params['lboxz']))
 
 if __name__ == '__main__':
     mcprog = MCProgram()

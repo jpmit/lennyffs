@@ -42,9 +42,22 @@ subroutine gauss_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp,&
   real(kind=db) :: scalefacx, scalefacy, scalefacz, arg, etotnew
   real(kind=db), dimension(3) :: rvec
   logical :: accept
+  ! these are for cell lists
+  integer :: ncelx, ncely, ncelz, ncelxold, ncelyold, ncelzold
+  real(kind=db) :: rnx, rny, rnz, rnxold, rnyold, rnzold
+  integer, dimension(npar) :: ll, llold
+  integer, allocatable, dimension(:,:,:) :: hoc, hocold
+  logical :: newlist
   
   ! initialize random number generator
   call init_random_seed(sameseed)
+
+  ! get the number of cells and build the cell list
+  call getnumcells(lboxx, lboxy, lboxz, rc, ncelx, ncely, ncelz)
+  write(*,*) 'num cells', ncelx, ncely, ncelz
+  allocate( hoc(ncelx, ncely, ncelx) )
+  call new_nlist(xpos, ypos, zpos, rc, lboxx, lboxy, lboxz, npar,&
+                 ncelx, ncely, ncelz, ll, hoc, rnx, rny, rnz)
 
   atmovdisp = 0
   acmovdisp = 0
@@ -53,9 +66,9 @@ subroutine gauss_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp,&
   nparfl = npar - nsurf
 
   write(*,'(F12.6, F12.6)') etot,lboxx
-  do cy=1,ncycles
+  do cy=1, ncycles
      ! each cycle is on average 1 move per fluid par + 1 vol move     
-     do it=1,nparfl+1 
+     do it=1, nparfl+1 
 
         ! pick a random number between [nsurf,ntot+1]
         call random_number(rsc)
@@ -107,15 +120,30 @@ subroutine gauss_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp,&
            ypos = ypos*scalefacy
            zpos = zpos*scalefacz
 
-           call gauss_totalenergy(xpos,ypos,zpos,rc,rcsq,lboxx,lboxy,&
-                                  lboxz,vrc,vrc2,npar,nsurf,zperiodic,&
-                                  etotnew)
+           ! save old cell list info
+           llold = ll
+           hocold = hoc
+           ncelxold = ncelx
+           ncelyold = ncely
+           ncelzold = ncelz
+           rnxold = rnx
+           rnyold = rny
+           rnzold = rnz
+           
+           ! get the number of cells and build the cell list
+           call getnumcells(lboxx, lboxy, lboxz, rc, ncelx, ncely, ncelz)
+           deallocate(hoc)
+           allocate( hoc(ncelx, ncely, ncelx) )
+           call new_nlist(xpos, ypos, zpos, rc, lboxx, lboxy, lboxz, npar,&
+                          ncelx, ncely, ncelz, ll, hoc, rnx, rny, rnz)           
+      
+           ! new energy, note we are using new box dimensions
+           call gauss_totalenlist(ll, hoc, ncelx, ncely, ncelz, rnx,&
+                                  rny, rnz, xpos, ypos, zpos, rc, rcsq,&
+                                  lboxx, lboxy, lboxz, vrc, vrc2, npar,&
+                                  nsurf, zperiodic, etotnew)
 
            ! See FS p122 (Algorithm 11) for this acceptance rule
-           ! ignore - (Note that the factor in front of lnvnew - lnvold
-           ! is 1 and not nparfl + 1.  This is since we are not using
-           ! rescaled position coordinates and so the integral in
-           ! FS Eq. (5.4.12) has a factor of V rather than V^{N+1})
            
            arg = epsovert*(etot - etotnew + press*(vboxold - vboxnew)) + &
                  (nparfl + 1)*(lnvnew - lnvold)
@@ -131,6 +159,15 @@ subroutine gauss_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp,&
                  xpos = xpos / scalefacx
                  ypos = ypos / scalefacy
                  zpos = zpos / scalefacz
+                 ! old cell list info
+                 ll = llold
+                 hoc = hocold
+                 ncelx = ncelxold
+                 ncely = ncelyold
+                 ncelz = ncelzold
+                 rnx = rnxold
+                 rny = rnyold
+                 rnz = rnzold
               end if
            end if
 
@@ -147,9 +184,10 @@ subroutine gauss_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp,&
            zposi = zpos(ipar)
 
            ! find old energy
-           call gauss_energyipar(ipar,xposi,yposi,zposi,xpos,ypos,zpos,rc,&
-                                 rcsq,lboxx,lboxy,lboxz,vrc,vrc2,npar,&
-                                 nsurf,zperiodic,eold)
+           call gauss_enlist(ll, hoc, ncelx, ncely, ncelz, ipar,&
+                             xposi, yposi, zposi, xpos, ypos, zpos,&
+                             rc, rcsq, lboxx, lboxy, lboxz, vrc, vrc2, npar,&
+                             nsurf, zperiodic, eold)
 
            ! displace particle
            call random_number(rvec)
@@ -182,9 +220,11 @@ subroutine gauss_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp,&
               end if
 
               ! find new energy
-              call gauss_energyipar(ipar,xposinew,yposinew,zposinew,xpos,&
-                                    ypos,zpos,rc,rcsq,lboxx,lboxy,lboxz,&
-                                    vrc,vrc2,npar,nsurf,zperiodic,enew)
+              call gauss_enlist(ll, hoc, ncelx, ncely, ncelz, ipar,&
+                                xposinew, yposinew, zposinew, xpos,&
+                                ypos, zpos, rc, rcsq, lboxx, lboxy,&
+                                lboxz, vrc, vrc2, npar, nsurf,&
+                                zperiodic, enew)
 
               ! choose whether to accept the move or not
               accept = .True.
@@ -195,11 +235,35 @@ subroutine gauss_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp,&
 
               ! update positions if move accepted
               if (accept) then
+
+                 ! we don't rebuild the cell list by default.
+                 newlist = .false.
+
+                 ! check if the particle moved outside of its cell, if
+                 ! so we need the rebuild the cell list.  Note that
+                 ! the bracketed terms are in fact the cell number
+                 ! minus one, but there is clearly no point in adding
+                 ! the one here.
+                 if ((int(xpos(ipar) / rnx) .ne. int(xposinew / rnx)) .or.&
+                      (int(ypos(ipar) / rny) .ne. int(yposinew / rny)) .or.&
+                      (int(zpos(ipar) / rnz) .ne. int(zposinew / rnz))) then
+                    newlist = .true.
+                 end if
+                 
                  xpos(ipar) = xposinew
                  ypos(ipar) = yposinew
                  zpos(ipar) = zposinew
                  etot = etot - eold + enew
                  acmovdisp = acmovdisp + 1
+
+
+                 if (newlist) then
+                    ! update the cell list
+                    call new_nlist(xpos, ypos, zpos, rc, lboxx, lboxy, &
+                                   lboxz, npar, ncelx, ncely, ncelz, ll, &
+                                   hoc, rnx, rny, rnz)
+                 end if
+                 
               end if
            
            end if
@@ -207,13 +271,13 @@ subroutine gauss_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp,&
      end do
      
      ! write out energy after every nsamp cycles
-     if (mod(cy,nsamp) == 0) write(*,'(I7,F12.6, F12.6, F12.6, F12.6)') cy,etot,lboxx,lboxy,lboxz
+     if (mod(cy,nsamp) == 0) write(*,'(I7,F12.6, F12.6, F12.6, F12.6)') cy, etot, lboxx, lboxy, lboxz
      
   end do
 
   ! write out acceptance ratio
   write(*,'("acceptance ratio", I7, I7, F7.3, I7, I7, F7.3)')&
-       acmovdisp,atmovdisp,real(acmovdisp)/atmovdisp,&
-       acmovvol,atmovvol,real(acmovvol)/atmovvol
+        acmovdisp,atmovdisp,real(acmovdisp)/atmovdisp,&
+        acmovvol,atmovvol,real(acmovvol)/atmovvol
 
 end subroutine gauss_executecyclesnpt

@@ -1,0 +1,23 @@
+#! /usr/bin/env python
+
+# len_count
+# James Mithen
+# Count the number of atoms with a particular symbol in an XYZ file.
+
+import sys
+import readwrite
+
+if len(sys.argv) != 3:
+    sys.exit("Syntax len_largestcluster infile.xyz symbollist")
+
+infile = sys.argv[1]
+insymbols = list(sys.argv[2])
+
+positions, symbols = readwrite.rxyz(infile, True)
+
+count = 0
+for s in symbols:
+    if s in insymbols:
+        count += 1
+
+print count
