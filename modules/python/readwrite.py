@@ -4,18 +4,18 @@
 
 """
 Functions for reading / writing files of i) numeric data, ii) particle
-positions in the XYZ file format.
+positions (co-ordinates) in the XYZ file format.
 
 FUNCTIONS:
-rxyz  - Read file in XYZ format.
-wxyz  - Write file in XYZ format.
-r2col - Read 2 column file.
-r3col - Read 3 column file.
-r4col - Read 4 column file.
-r5col - Read 5 column file.
-rncol - Read n column file.
-w2col - Write 2 column file.
-wncol - Write n column file.
+rxyz  - read file in XYZ format.
+wxyz  - write file in XYZ format.
+r2col - read 2 column file of numeric data.
+r3col - read 3 column file of numeric data.
+r4col - read 4 column file of numeric data.
+r5col - read 5 column file of numeric data.
+rncol - read n column file of numeric data.
+w2col - write 2 column file of numeric data.
+wncol - write n column file of numerica data.
 """
 
 import numpy as np
@@ -48,7 +48,7 @@ def rxyz(fname, retsymbols=False, splines=1):
         return positions
 
 def wxyz(fname, positions, symbols, **kwargs):
-    """Write an .xyz coordinate file."""
+    """Write .xyz coordinate file."""
 
     fout = open(fname,'w')
     npar = len(positions)
@@ -202,7 +202,8 @@ def w2col(fname, col1, col2, headers=[]):
     return
 
 def wncol(fname, cols):
-    """Cols is list of data"""
+    """Write n column data of floats, cols is a list of columns."""
+
     ncol = len(cols)
     lcol = len(cols[0])
     for c in cols:
@@ -218,4 +219,3 @@ def wncol(fname, cols):
     outf.write(wstr)
     outf.close()
     return
-        

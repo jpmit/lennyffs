@@ -3,16 +3,16 @@
 # j.mithen@surrey.ac.uk
 
 """
-FFS specific functions
+FFS specific functions.
 
 FUNCTIONS:
 getshotdict       - return shot dictionary at a given interface.
-getpickparams     - return dictionary of parameters.
+getpickparams     - return dictionary of parameters from pickle file.
 getnumsuccess     - return number of successful shots at a given
                     interface.
 takeshot          - take FFS shot from a given configuration.
 savelambda0config - save the particle positions and time of hitting
-                    first FFS interface.
+                    first FFS interface (lambda0).
 """
 
 import os
@@ -29,7 +29,7 @@ from writeoutput import writexyztf
 def getshotdict(nint):
     """Return shot dictionary from pickle file at interface nint."""
     
-    pfile = open('interface%d.pkl' %nint, 'rb')
+    pfile = open('interface{0}.pkl'.format(nint), 'rb')
     shotdict = pickle.load(pfile)
     pfile.close()
     return shotdict
@@ -48,6 +48,8 @@ def getboxdims(infile):
     return None.
     """
 
+    # box dimension will be given on 2nd line of file as e.g.  
+    # '# boxdims 91.3213283335 91.3213283335 91.3213283335'
     lines = open(infile, 'r').readlines()
     dimline = lines[1]
 
@@ -61,7 +63,7 @@ def getboxdims(infile):
 def getnumsuccess(nint):
     """Return number of succesful shots at interface nint. """
     
-    files = glob.glob("pos%d_*.xyz" %nint)
+    files = glob.glob("pos{0}_*.xyz".format(nint))
     nsuccess = len(files)
     return nsuccess
 

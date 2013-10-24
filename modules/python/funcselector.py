@@ -4,7 +4,8 @@
 
 """
 Class for handing out energy and mccycle functions correctly,
-according to the potential.
+according to the potential.  At the moment the code the Lennard-Jones
+and Gaussian potentials only.
 
 CLASSES:
 FuncSelector - handles function selection for the potential energy,
@@ -17,13 +18,15 @@ import mccycle
 import orderparam
 
 class FuncSelector(object):
-    """Interface for selecting correct functions for:
+    """
+    Interface for selecting correct functions for:
     - Interaction Potential
     - MC Cycle type
     - Order parameter
     """
     POTENTIAL = 'potential'
     MCTYPE = 'mctype'
+    ORDERPARAM = 'orderparam'
     # choices for potential
     LEN = 'len'
     GAUSS = 'gauss'
@@ -31,13 +34,12 @@ class FuncSelector(object):
     NVT = 'nvt'
     NPT = 'npt'
     # choices for orderparam
-    ORDERPARAM = 'orderparam'
-    NTF = 'ntf'
-    NLD = 'nld'
-    FRACTF = 'fractf'
-    FRACLD = 'fracld'
-    ALLFRACLD = 'allfracld'
-    ALLFRAC = 'allfrac'
+    NTF = 'ntf' # largest cluster according to TF
+    NLD = 'nld' # largest cluster according to LD
+    FRACTF = 'fractf' # frac xtal particles according to TF
+    FRACLD = 'fracld' # frac xtal particles according to LD
+    ALLFRACLD = 'allfracld' # frac of all polymorphs (LD)
+    ALLFRAC = 'allfrac' # frac of all polymorphs (LD) + TF xtal frac
     NONE = 'none'
     # note the first option is taken as the default in each case
     OPTIONS = {POTENTIAL : [LEN, GAUSS],

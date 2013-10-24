@@ -6,10 +6,15 @@
 Functions for writing output of FFS simulations.
 
 FUNCTIONS:
-writepickparams - Write parameters dictionary to pickle file
-writeparams     - Write dictionary of parameters in human readable
+writepickparams - write parameters dictionary to pickle file.
+writeparams     - write dictionary of parameters in human readable
                   form (i.e. not pickled).
-writexyz        - Convenience function for writing xyz file.
+writexyztf      - write xyz file with particle symbols as classified
+                  by TF method.  Note this will compute order
+                  parameters.
+wrtiexyzld      - write xyz file with particle symbols as classified
+                  by LD method.  Note this will compute order
+                  parameters. 
 """
 
 import os
@@ -30,8 +35,8 @@ def writeparams(params, fname='params.out'):
     
     fout = open(fname, 'w')
     outstr = ('# Simulation parameters (Human readable version of params.pkl)\n'
-             '# Note that only some of these parameters are used\n'
-             '# Others are redundant and could prove downright misleading!\n')
+              '# Note that only some of these parameters are used\n'
+              '# Others are redundant and could prove downright misleading!\n')
     keys = params.keys()
     keys.sort()
     for k in keys:

@@ -21,6 +21,8 @@ allfracldtf_cpp - Same as above, but including TF xtal fraction.
 _ldclass        - List of particle classifications.
 _ldclusnums     - Indices of particles in the largest cluster according
                   to LD criterion.
+_clusnums       - Indices of particles in the largest cluster according
+                  to TF criterion.
 """
 
 import numpy as np
@@ -96,7 +98,7 @@ def nclustf_cpp(positions, params):
     nclus = mcfuncs.nclustf(positions[:,0], positions[:,1],
                             positions[:,2], npar, nparsurf,
                             params['lboxx'], params['lboxy'],
-                            params['lboxz'],zperiodic, nsep,
+                            params['lboxz'], zperiodic, nsep,
                             minlinks,thresh)
 
     return nclus
@@ -117,8 +119,8 @@ def fractf_cpp(positions, params):
     nclus = mcfuncs.fracsolidtf(positions[:,0], positions[:,1],
                                 positions[:,2], npar, nparsurf,
                                 params['lboxx'], params['lboxy'],
-                                params['lboxz'],zperiodic, nsep,
-                                minlinks,thresh)
+                                params['lboxz'], zperiodic, nsep,
+                                minlinks, thresh)
 
     return nclus
 
@@ -138,7 +140,7 @@ def nclusld_cpp(positions, params):
     nclus = mcfuncs.nclusld(positions[:,0], positions[:,1],
                             positions[:,2], npar, nparsurf,
                             params['lboxx'], params['lboxy'],
-                            params['lboxz'],zperiodic, nsep)
+                            params['lboxz'], zperiodic, nsep)
 
     return nclus
 
@@ -158,7 +160,7 @@ def fracld_cpp(positions, params):
     frac = mcfuncs.fracsolidld(positions[:,0], positions[:,1],
                                positions[:,2], npar, nparsurf,
                                params['lboxx'], params['lboxy'],
-                               params['lboxz'],zperiodic, nsep)
+                               params['lboxz'], zperiodic, nsep)
     
     return frac
 
@@ -199,7 +201,7 @@ def _ldclass(positions, params):
     parclass = mcfuncs.ldclass(positions[:,0], positions[:,1],
                                positions[:,2], npar, nparsurf,
                                params['lboxx'], params['lboxy'],
-                               params['lboxz'],zperiodic, nsep)
+                               params['lboxz'], zperiodic, nsep)
     return parclass
 
 def _ldclusnums(positions,params):

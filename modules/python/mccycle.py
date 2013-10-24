@@ -42,14 +42,15 @@ def len_cyclenvt(positions, params, etot):
     # setup and call the fortran subroutine
     xpos,ypos,zpos = positions[:,0],positions[:,1],positions[:,2]
     xpos, ypos, zpos, etot  = mcfuncs.\
-                           len_executecyclesnvt(xpos, ypos, zpos,
-                                                ncycle, nsamp,
-                                                rc, rcsq, vrc,
-                                                vrc2, lboxx, lboxy,
-                                                lboxz, eps4,
-                                                maxdisp, nparsurf,
-                                                zperiodic, ss, r6mult,
-                                                r12mult, etot)
+                              len_executecyclesnvt(xpos, ypos, zpos,
+                                                   ncycle, nsamp,
+                                                   rc, rcsq, vrc,
+                                                   vrc2, lboxx, lboxy,
+                                                   lboxz, eps4,
+                                                   maxdisp, nparsurf,
+                                                   zperiodic, ss,
+                                                   r6mult, r12mult,
+                                                   etot)
     
     positions[:,0], positions[:,1], positions[:,2] = xpos, ypos, zpos
 
@@ -81,14 +82,17 @@ def len_cyclenpt(positions, params, etot):
     ss = params['sameseed']
 
     # setup and call the fortran subroutine
-    xpos,ypos,zpos = positions[:,0],positions[:,1],positions[:,2]
+    xpos, ypos, zpos = positions[:,0], positions[:,1], positions[:,2]
     xpos,ypos,zpos,lx,ly,lz,etot  = mcfuncs.\
-                                    len_executecyclesnpt(xpos, ypos, zpos,
+                                    len_executecyclesnpt(xpos, ypos,
+                                                         zpos,
                                                          ncycle, nsamp,
-                                                         rc, rcsq, vrc, vrc2,
+                                                         rc, rcsq, vrc,
+                                                         vrc2,
                                                          pressure,
                                                          lboxx, lboxy,
-                                                         lboxz, eps4, maxdisp,
+                                                         lboxz, eps4,
+                                                         maxdisp,
                                                          maxvol,
                                                          nparsurf,
                                                          zperiodic, ss,
@@ -98,7 +102,7 @@ def len_cyclenpt(positions, params, etot):
     params['lboxx'] = lx
     params['lboxy'] = ly
     params['lboxz'] = lz
-    positions[:,0],positions[:,1],positions[:,2] = xpos, ypos, zpos
+    positions[:,0], positions[:,1], positions[:,2] = xpos, ypos, zpos
 
     return positions, etot
 
@@ -127,9 +131,10 @@ def gauss_cyclenvt(positions, params, etot):
     xpos, ypos, zpos, etot  = mcfuncs.\
                               gauss_executecyclesnvt(xpos, ypos, zpos,
                                                      ncycle, nsamp,
-                                                     rc, rcsq, vrc, vrc2,
-                                                     lboxx, lboxy,
-                                                     lboxz, epsovert,
+                                                     rc, rcsq, vrc,
+                                                     vrc2, lboxx,
+                                                     lboxy, lboxz,
+                                                     epsovert,
                                                      maxdisp, nparsurf,
                                                      zperiodic, ss,
                                                      etot)
@@ -161,18 +166,16 @@ def gauss_cyclenpt(positions, params, etot):
     ss = params['sameseed']
 
     # setup and call the fortran subroutine
-    xpos,ypos,zpos = positions[:,0],positions[:,1],positions[:,2]
-    xpos,ypos,zpos,lx,ly,lz,etot  = mcfuncs.\
-                                    gauss_executecyclesnpt(xpos, ypos, zpos,
-                                                           ncycle, nsamp,
-                                                           rc, rcsq, vrc, vrc2,
-                                                           pressure,
-                                                           lboxx, lboxy,
-                                                           lboxz, epsovert,
-                                                           maxdisp, maxvol,
-                                                           nparsurf,
-                                                           zperiodic,
-                                                           ss, etot)
+    xpos, ypos, zpos = positions[:,0], positions[:,1], positions[:,2]
+    xpos, ypos, zpos, lx, ly, lz, \
+          etot  = mcfuncs.gauss_executecyclesnpt(xpos, ypos, zpos,
+                                                 ncycle, nsamp, rc,
+                                                 rcsq, vrc, vrc2,
+                                                 pressure, lboxx,
+                                                 lboxy, lboxz,
+                                                 epsovert, maxdisp,
+                                                 maxvol, nparsurf,
+                                                 zperiodic, ss, etot)
     # update box dimensions
     params['lboxx'] = lx
     params['lboxy'] = ly

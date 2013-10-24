@@ -4,10 +4,11 @@
 
 """
 Functions for initializing simulation by reading params from 'in',
-making box, initialising positions etc.
-This module uses the Atomic Simulation Environment (ASE) package
-in order to initialize positions on a lattice.
-See https://wiki.fysik.dtu.dk/ase/
+making box, initialising positions etc.  This module uses the Atomic
+Simulation Environment (ASE) package in order to initialize positions
+on a lattice.  The code needed from ASE is included in
+modules/python/ase. The entire codebase and documentation for ASE is
+available at https://wiki.fysik.dtu.dk/ase/.
 
 FUNCTIONS:
 readparams            - read parameters from 'in' and return as

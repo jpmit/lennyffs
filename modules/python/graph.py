@@ -11,7 +11,7 @@ essentially identical to the networkx function
 information
 
 CLASSES:
-Graph - A simple graph class
+Graph - a simple graph class
 """
 
 class Graph(object):
@@ -19,7 +19,7 @@ class Graph(object):
     Very bare graph class.  Note this is only used to compute the
     connected components.  Be careful using it for anything else.
     """
-    def __init__(self,nodes=None):
+    def __init__(self, nodes=None):
         """Initialise graph with a list of nodes."""
         
         self.node = {}

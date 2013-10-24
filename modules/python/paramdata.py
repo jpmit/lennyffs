@@ -4,7 +4,8 @@
 
 """
 Information on the allowed input parameters, and functions to convert
-them from a string to desired type.
+them from a string (as they are read in from the input file) to the
+desired Python type.
 """
 
 INT = 'int'
@@ -15,7 +16,12 @@ BOOL = 'bool'
 
 # parameter dictionary contains type info for all allowed parameters
 # key is name of parameter, value is type, either string, float, int,
-# or 'intlist'.
+# or 'intlist'.  Here are example lines from a possible input ('in')
+# file showing the different types:
+# simulation new
+# Tstar 0.45
+# nlayersurf 3
+# lambdas [10,20,30,40,50]
 
 PDICT = {# simulation params
          'simulation': STRING,
@@ -113,7 +119,7 @@ def _strtobool(s):
               format(s)
         
 # functions for converting from string to another type.  Note that
-# 'int', 'float', 'str' and 'bool' are built-in.
+# 'int', 'float', 'str' and 'bool' are built-in Python functions.
     
 FUNCS = {INT: int, FLOAT: float, STRING: str, BOOL: _strtobool,
          INTLIST: _strtointlist}

@@ -6,7 +6,15 @@
 Local bond order parameters for FFS code. The xtal particles are
 identified in a Fortran routine which is wrapped by the function
 getxpars() below.  The code for computing BopxBulk, the largest xtal
-cluster, is implemented here. This uses the Graph class (see graph.py)
+cluster, is implemented here. This uses the Graph class (see
+graph.py).
+
+Update: 24th October 2013
+
+This code should not be needed, it has been replaced by C++ code that
+uses Boost for graph analysis and Boost.Python (see ../modules/cpp/).
+While correct, the function getxgraph below is very slow for large
+cluster sizes.
 
 FUNCTIONS:
 bopxbulk  - return size of largest xtal cluster using local bond order
@@ -14,21 +22,21 @@ bopxbulk  - return size of largest xtal cluster using local bond order
             Faraday Discuss. 104, 93
 getxpars  - return array of particle numbers that are xtal,
             according to local bond order parameters
-getxgraph - return Graph of xtal particles, with nodes that are xtal pars, and
-            edges between any two pars that are neighbours.
+getxgraph - return Graph of xtal particles, with nodes that are xtal
+            pars, and edges between any two pars that are neighbours.
 """
 
 import graph
 import mcfuncs
 
-def bopxbulk(positions,params):
+def bopxbulk(positions, params):
     """
     Return number of xtal particles (according to q6 criterion)
     and BOPxBulk, which is the largest cluster of xtal particles.
     """
 
     # get all xtal particles
-    xpars = getxpars(positions,params)
+    xpars = getxpars(positions, params)
     nxtal = len(xpars)
     
     # To compute BOPxBulk, we first create a graph with the xtal
@@ -36,15 +44,15 @@ def bopxbulk(positions,params):
     # neighbouring particles i.e. particles whose separation is less
     # than the cutoff distance, which is params['stillsep'].  Bopxbulk
     # is the largest connected component of the graph.
-    xgraph = getxgraph(positions,params,xpars)
+    xgraph = getxgraph(positions, params, xpars)
     comps = graph.connected_comps(xgraph)
     if nxtal > 0:
         bopxbulk = len(comps[0])
     else:
         bopxbulk = 0
-    return nxtal,bopxbulk
+    return nxtal, bopxbulk
 
-def getxpars(positions,params):
+def getxpars(positions, params):
     """Return array of xtal particle numbers."""
 
     npar = params['npartot']
@@ -55,10 +63,11 @@ def getxpars(positions,params):
     minlinks = params['q6numlinks']
 
     # call fortran routine to get xtal particles (see bopsf.f90)
-    xpars,nxtal = mcfuncs.xpars(positions[:,0],positions[:,1],
-                                positions[:,2],nparsurf,params['lboxx'],
-                                params['lboxy'],params['lboxz'],zperiodic,
-                                nsep,minlinks,thresh)
+    xpars,nxtal = mcfuncs.xpars(positions[:,0], positions[:,1],
+                                positions[:,2], nparsurf,
+                                params['lboxx'], params['lboxy'],
+                                params['lboxz'], zperiodic,
+                                nsep, minlinks, thresh)
 
     # Note that the fortran routine returns xpars(1:npar).  Most of
     # these entries will be zero, we only want the non-zero ones.
@@ -116,5 +125,5 @@ def getxgraph(positions, params, xpars):
                             rijsq = sepx**2 + sepy**2 + sepz**2
                             if rijsq < stillsepsq:
                                 # particles are in same cluster
-                                xgraph.add_edge(i,j)
+                                xgraph.add_edge(i, j)
     return xgraph
