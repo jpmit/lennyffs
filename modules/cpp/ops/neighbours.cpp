@@ -101,4 +101,3 @@ void neighcut(const vector<Particle>& allpars, const Box& simbox,
 			 numneigh[i] = lneigh[i].size();
 	  }
 }
-

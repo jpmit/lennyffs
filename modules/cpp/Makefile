@@ -1,10 +1,17 @@
+# Makefile for C++ module.  The source C++ (.cpp) files are compiled
+# to object files (.o).  These are linked with the Boost.Python
+# library, which creates a shared object library (.so) in this
+# directory that can be imported into Python.  This process requires
+# Boost.Python wrapper code for the functions in the shared library,
+# which is contained in the source file ops/$(LIBNAME).cpp. The name
+# of the shared library that is built is $(LIBNAME).so, where LIBNAME
+# is defined below.
 
 PYTHON_VERSION := $(shell python -c \
-'import sys; print str(sys.version_info[0]) + "." + str(sys.version_info[1])')
+                   'import sys; print str(sys.version_info[0]) + "." + str(sys.version_info[1])')
 PYTHON_INCLUDE = /usr/include/python$(PYTHON_VERSION)
 
 # location of the Boost Python include files and library
-
 BOOST_INC = /usr/include
 BOOST_LIB = /usr/lib
 
@@ -14,17 +21,21 @@ CXXFLAGS = -O3 -fPIC -I$(PYTHON_INCLUDE) -I$(BOOST_INC)
 
 SRCDIR = ops
 OBJDIR = ops
+
 # the name of the shared library that Python can import
 LIBNAME = op_ext
+
 # the Boost.Python wrapper code
-TARGET = $(addprefix $(OBJDIR)/, op_ext)
-OBJ = $(addprefix $(OBJDIR)/, conncomponents.o opfunctions.o pyfunctions.o qlmfunctions.o pyutil.o neighbours.o)
+TARGET = $(addprefix $(OBJDIR)/, $(LIBNAME))
+
+# objects to build
+OBJ = $(addprefix $(OBJDIR)/, conncomponents.o opfunctions.o \
+		  pyfunctions.o qlmfunctions.o pyutil.o neighbours.o)
 
 $(TARGET).so: $(TARGET).o $(OBJ)
-	g++ -shared -Wl,--export-dynamic $(TARGET).o $(OBJ) -L$(BOOST_LIB) -l:libboost_python.so -L/usr/lib/python$(PYTHON_VERSION)/config -lpython$(PYTHON_VERSION) -o $(LIBNAME).so
-
-#$(TARGET).o: $(TARGET).c
-#	g++ -I$(PYTHON_INCLUDE) -I$(BOOST_INC) -fPIC -c $(TARGET).c
+	g++ -shared -Wl,--export-dynamic $(TARGET).o $(OBJ) -L$(BOOST_LIB) \
+	-l:libboost_python.so -L/usr/lib/python$(PYTHON_VERSION)/config \
+	-lpython$(PYTHON_VERSION) -o $(LIBNAME).so
 
 $(TARGET): $(TARGET).cpp pyfunctions.h
 
@@ -41,9 +52,6 @@ qlmfunctions.o: qlmfunctions.cpp particle.h box.h constants.h opfunctions.h\
 neighbours.o: neighbours.cpp particle.h box.h constants.h
 
 pyutil.o: pyutil.cpp particle.h
-
-#$(OBJ) : $(SRC)
-#	g++ -fPIC -c $(SRC)
 
 clean:
 	rm $(LIBNAME).so $(OBJDIR)/*.o
