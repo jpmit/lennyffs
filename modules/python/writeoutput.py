@@ -65,7 +65,10 @@ def writexyztf(fname, positions, params):
     # this to the second line of the XYZ file.            
     if params['mctype'] == 'npt':
         kwargs = {'boxdims': [params['lboxx'], params['lboxy'],
-                              params['lboxz']]} 
+                              params['lboxz']]}
+    else:
+        kwargs = {}
+        
     # write the file
     readwrite.wxyz(fname, positions, symbols, **kwargs)
     return
