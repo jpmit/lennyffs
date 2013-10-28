@@ -128,7 +128,7 @@ class FuncSelector(object):
     @classmethod
     def WriteXyzFunc(cls):
         """Return function that will write an XYZ file."""
-        if cls.option[cls.ORDERPARAM] == cls.LD:
+        if cls.option[cls.WRITEXYZ] == cls.LD:
             return writeoutput.writexyzld
-        elif cls.option[cls.ORDERPARM] == cls.TF:
+        elif cls.option[cls.WRITEXYZ] == cls.TF:
             return writeoutput.writexyztf
