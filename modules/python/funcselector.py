@@ -16,6 +16,7 @@ from lenexceptions import *
 import energy
 import mccycle
 import orderparam
+import writeoutput
 
 class FuncSelector(object):
     """
@@ -27,6 +28,7 @@ class FuncSelector(object):
     POTENTIAL = 'potential'
     MCTYPE = 'mctype'
     ORDERPARAM = 'orderparam'
+    WRITEXYZ = 'writexyz'
     # choices for potential
     LEN = 'len'
     GAUSS = 'gauss'
@@ -41,11 +43,17 @@ class FuncSelector(object):
     ALLFRACLD = 'allfracld' # frac of all polymorphs (LD)
     ALLFRAC = 'allfrac' # frac of all polymorphs (LD) + TF xtal frac
     NONE = 'none'
-    # note the first option is taken as the default in each case
+    # choices for writexyz
+    LD = 'ld'
+    TF = 'tf'
+    # note the parameters 'potential', 'mctype', 'orderparam',
+    # 'writexyz' need to be in the input file.
     OPTIONS = {POTENTIAL : [LEN, GAUSS],
                MCTYPE : [NVT, NPT],
                ORDERPARAM: [NTF, NLD, FRACTF, FRACLD, ALLFRACLD,
-                            ALLFRAC, NONE]}
+                            ALLFRAC, NONE],
+               WRITEXYZ: [TF, LD]
+               }
 
     def __init__(self, params):
         self.store_input(params)
@@ -116,3 +124,11 @@ class FuncSelector(object):
             return orderparam.allfracldtf_cpp        
         elif cls.option[cls.ORDERPARAM] == cls.NONE:
             return orderparam.default
+
+    @classmethod
+    def WriteXyzFunc(cls):
+        """Return function that will write an XYZ file."""
+        if cls.option[cls.ORDERPARAM] == cls.LD:
+            return writeoutput.writexyzld
+        elif cls.option[cls.ORDERPARM] == cls.TF:
+            return writeoutput.writexyztf

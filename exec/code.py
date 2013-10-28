@@ -35,14 +35,6 @@ class MCProgram(object):
         writeoutput.writepickparams(self.params)
         writeoutput.writeparams(self.params)
 
-        # initialize positions
-        self.positions = initsim.initpositions(self.params)
-
-        # write initial positions to file if new simulation
-        if self.params['simulation'] == 'new':
-            writeoutput.writexyzld('initpositions.xyz', self.positions,
-                                   self.params)
-
         # From params dictionary create FuncSelector object.  This
         # will handle correct selection of the underlying fortran/C++
         # functions correctly (the functions called depend on the
@@ -53,6 +45,15 @@ class MCProgram(object):
         self.totalenergy = funcman.TotalEnergyFunc()
         self.runcycle = funcman.MCCycleFunc()
         self.orderp = funcman.OrderParamFunc()
+        self.writexyz = funcman.WriteXyzFunc()
+
+        # initialize positions
+        self.positions = initsim.initpositions(self.params)
+
+        # write initial positions to file if new simulation
+        if self.params['simulation'] == 'new':
+            self.writexyz('initpositions.xyz', self.positions,
+                          self.params)
 
         # number of times to call MC cycle function
         self.ncall = int( np.ceil(self.params['ncycle'] /
@@ -89,17 +90,16 @@ class MCProgram(object):
             opfile.flush()
             # write out pos file if required
             if (cyclesdone % self.params['nsave'] == 0):
-                writeoutput.writexyzld('pos{0}.xyz'.format(cy), self.positions,
-                                       self.params)
+                self.writexyz('pos{0}.xyz'.format(cy), self.positions,
+                              self.params)
 
             endtime = time.time()
 
         # write final positions to file
-        writeoutput.writexyzld('finalpositions.xyz', self.positions,
-                               self.params)
+        self.writexyz('finalpositions.xyz', self.positions, self.params)
 
         # write runtime to stderr
-        sys.stderr.write("runtime in s: %.3f\n" %(endtime - starttime))
+        sys.stderr.write("runtime in s: {:.3f}\n".format(endtime - starttime))
 
         # if we were npt, print new box volume
         if self.params['mctype'] == 'npt':

@@ -24,7 +24,6 @@ import funcselector
 import initsim
 import readwrite
 from bops import bopxbulk
-from writeoutput import writexyztf
 
 def getshotdict(nint):
     """Return shot dictionary from pickle file at interface nint."""
@@ -165,7 +164,7 @@ def takeshot(initfile, nint, params):
 
     return success, weight, ttot, positions
 
-def savelambda0config(qhits, thit, positions, params):
+def savelambda0config(qhits, thit, positions, params, wfunc):
     """Save configuration at lambda0 and add to the times file."""
     
     fnametime = 'times.out'
@@ -181,9 +180,9 @@ def savelambda0config(qhits, thit, positions, params):
     nxtal,bopx = bopxbulk(positions, params)
 
     # write to file
-    fout.write('%d %d %d \n' %(thit, nxtal, bopx))
+    fout.write('{0} {1} {2}\n'.format(thit, nxtal, bopx))
     fout.close()
 
     # write out positions at the interface lambda_0
-    writexyztf(fnamepos, positions, params)        
+    wfunc(fnamepos, positions, params)        
     return

@@ -19,6 +19,7 @@ wrtiexyzld      - write xyz file with particle symbols as classified
 
 import os
 import orderparam
+import opfunctions
 import readwrite
 import pickle
 
@@ -40,7 +41,7 @@ def writeparams(params, fname='params.out'):
     keys = params.keys()
     keys.sort()
     for k in keys:
-        outstr = '%s%s %s\n' %(outstr, k, str(params[k]))
+        outstr = '{0}{1} {2}\n'.format(outstr, k, str(params[k]))
     fout.write(outstr)
     fout.close()
     return
@@ -57,7 +58,7 @@ def writexyztf(fname, positions, params):
 
     # if params contains stillsep, etc, get xtal particles
     if 'stillsep' in params:
-        xparnums = bops.getxpars(positions, params)
+        xparnums = opfunctions.getxpars(positions, params)
         for pnum in xparnums:
             symbols[pnum] = 'S'
     # if npt simulation, get box dims from params dictionary; we write
