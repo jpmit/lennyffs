@@ -35,9 +35,11 @@ subroutine gauss_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp,&
   !f2py intent(in) :: epsovert, maxdisp, npar, nparsuf, zperiodic, sameseed
   !f2py intent(in,out) :: xpos, ypos, zpos, lboxx, lboxy, lboxz, etot
 
-  integer :: ipar, atmovdisp, acmovdisp, atmovvol, acmovvol, cy, it, nparfl, i, j
-  real(kind=db) :: rsc, xposi, yposi, zposi, xposinew, yposinew, zposinew
-  real(kind=db) :: eold, enew, lboxnew, lboxxold, lboxyold, lboxzold
+  integer :: ipar, atmovdisp, acmovdisp, atmovvol, acmovvol, cy, it,&
+             nparfl, i, j
+  real(kind=db) :: rsc, xposi, yposi, zposi, xposinew, yposinew,&
+                   zposinew, eold, enew
+  real(kind=db) :: lboxnew, lboxxold, lboxyold, lboxzold
   real(kind=db) :: vboxold, lnvold, lnvnew, vboxnew
   real(kind=db) :: scalefacx, scalefacy, scalefacz, arg, etotnew
   real(kind=db), dimension(3) :: rvec
@@ -64,8 +66,8 @@ subroutine gauss_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp,&
   atmovvol = 0
   acmovvol = 0
   nparfl = npar - nsurf
-
-  write(*,'(F12.6, F12.6)') etot,lboxx
+  
+  write(*,'(F12.6, F12.6, F12.6, F12.6)') etot, lboxx, lboxy, lboxz
   do cy=1, ncycles
      ! each cycle is on average 1 move per fluid par + 1 vol move     
      do it=1, nparfl+1 
@@ -263,9 +265,7 @@ subroutine gauss_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp,&
                                    lboxz, npar, ncelx, ncely, ncelz, ll, &
                                    hoc, rnx, rny, rnz)
                  end if
-                 
               end if
-           
            end if
         end if
      end do

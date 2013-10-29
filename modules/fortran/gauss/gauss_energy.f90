@@ -6,10 +6,16 @@
 ! Gaussian interaction.
 !
 ! SUBROUTINES:
-! gauss_totalenergy - compute total p.e. of system by summing
-!                     p.e. between all pairs of particles
-! gauss_energyipar  - compute p.e. between a given particle
-!                     and all other particles
+! gauss_totalenergy       - compute total p.e. of system by summing
+!                           p.e. between all pairs of particles
+! gauss_energyipar        - compute p.e. between a given particle
+!                           and all other particles
+! gauss_eij               - compute p.e. between particles i and j
+! gauss_totalencreatelist - create the cell list and return total
+!                           p.e.
+! gauss_totalenlist       - compute total p.e. using cell lists
+! gauss_enlist            - compute total p.e. of particle i using
+!                           cell lists
 
 subroutine gauss_totalenergy(xpos, ypos, zpos, rc, rcsq,&
                              lboxx, lboxy, lboxz, vrc, vrc2, npar,&
@@ -415,9 +421,10 @@ subroutine gauss_enlist(ll, hoc, ncelx, ncely, ncelz, ipar, xposi,&
         if (ipar /= jpar) then
            
            ! get p.e. between particles i and j
-           call gauss_eij(ipar, jpar, xposi, yposi, zposi, xpos(jpar), ypos(jpar), zpos(jpar),&
-                          lboxx, lboxy, lboxz, rc, rcsq, vrc, vrc2, npar, nsurf,&
-                          zperiodic, eij)           
+           call gauss_eij(ipar, jpar, xposi, yposi, zposi, xpos(jpar),&
+                          ypos(jpar), zpos(jpar), lboxx, lboxy, lboxz,&
+                          rc, rcsq, vrc, vrc2, npar, nsurf, zperiodic,&
+                          eij)           
            epot = epot + eij
         end if
         jpar = ll(jpar)

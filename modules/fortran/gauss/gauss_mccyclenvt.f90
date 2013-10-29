@@ -143,8 +143,6 @@ subroutine gauss_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp,&
               xpos(ipar) = xposinew
               ypos(ipar) = yposinew
               zpos(ipar) = zposinew
-              ! new potential energy
-              !write(*, *) eold, enew
               etot = etot - eold + enew
               acmov = acmov + 1
 

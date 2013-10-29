@@ -33,14 +33,29 @@ subroutine len_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp, rc,&
   !f2py intent(in) :: maxdisp, npar, nparsuf, zperiodic, sameseed, r6mult, r12mult
   !f2py intent(in,out) :: xpos, ypos, zpos, etot
 
-  integer :: ipar,atmov,acmov,cy,it,nparfl
-  real(kind=db) :: rsc,xposi,yposi,zposi,xposinew,yposinew,zposinew,eold,enew
+  integer :: ipar, atmov, acmov, cy, it, nparfl
+  real(kind=db) :: rsc, xposi, yposi, zposi, xposinew, yposinew,&
+                   zposinew, eold, enew
   real(kind=db), dimension(3) :: rvec
   logical :: accept
+  ! these are for cell lists
+  integer :: ncelx, ncely, ncelz
+  real(kind=db) :: rnx, rny, rnz
+  integer, dimension(npar) :: ll
+  integer, allocatable, dimension(:,:,:) :: hoc
+  logical :: newlist
   
   ! initialize random number generator
   call init_random_seed(sameseed)
 
+  ! get the number of cells and build the cell list
+  call getnumcells(lboxx, lboxy, lboxz, rc, ncelx, ncely, ncelz)
+  write(*,*) 'num cells', ncelx, ncely, ncelz
+  allocate( hoc(ncelx, ncely, ncelx) )
+  call new_nlist(xpos, ypos, zpos, rc, lboxx, lboxy, lboxz, npar,&
+                 ncelx, ncely, ncelz, ll, hoc, rnx, rny, rnz)
+
+  ! counters for attempted and accepted moves
   atmov = 0
   acmov = 0
   nparfl = npar - nsurf
@@ -58,9 +73,10 @@ subroutine len_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp, rc,&
         zposi = zpos(ipar)
 
         ! find old energy
-        call len_energyipar(ipar,xposi,yposi,zposi,xpos,ypos,zpos,rc,rcsq,&
-                            lboxx,lboxy,lboxz,vrc,vrc2,npar,nsurf,zperiodic,&
-                            r6mult,r12mult,eold)
+        call len_enlist(ll, hoc, ncelx, ncely, ncelz, ipar,&
+                        xposi, yposi, zposi, xpos, ypos, zpos,&
+                        rc, rcsq, lboxx, lboxy, lboxz, vrc, vrc2, npar,&
+                        nsurf, zperiodic, r6mult, r12mult, eold)
 
         ! displace particle
         call random_number(rvec)
@@ -93,9 +109,11 @@ subroutine len_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp, rc,&
            end if
 
            ! find new energy
-           call len_energyipar(ipar,xposinew,yposinew,zposinew,xpos,ypos,zpos,&
-                               rc,rcsq,lboxx,lboxy,lboxz,vrc,vrc2,npar,nsurf,&
-                               zperiodic,r6mult,r12mult,enew)
+           call len_enlist(ll, hoc, ncelx, ncely, ncelz, ipar,&
+                           xposinew, yposinew, zposinew, xpos,&
+                           ypos, zpos, rc, rcsq, lboxx, lboxy,&
+                           lboxz, vrc, vrc2, npar, nsurf,&
+                           zperiodic, enew)
 
            ! choose whether to accept the move or not
            accept = .True.
@@ -103,14 +121,35 @@ subroutine len_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp, rc,&
               call random_number(rsc)
               if (exp((eold - enew)*eps4) < rsc) accept = .False.
            end if
-
            ! update positions if move accepted
            if (accept) then
+
+              ! we don't rebuild the cell list by default.
+              newlist = .false.
+
+              ! check if the particle moved outside of its cell, if so
+              ! we need the rebuild the cell list.  Note that the
+              ! bracketed terms are in fact the cell number minus one,
+              ! but there is clearly no point in adding the one here.
+              if ((int(xpos(ipar) / rnx) .ne. int(xposinew / rnx)) .or.&
+                  (int(ypos(ipar) / rny) .ne. int(yposinew / rny)) .or.&
+                  (int(zpos(ipar) / rnz) .ne. int(zposinew / rnz))) then
+                 newlist = .true.
+              end if
+              
               xpos(ipar) = xposinew
               ypos(ipar) = yposinew
               zpos(ipar) = zposinew
               etot = etot - eold + enew
               acmov = acmov + 1
+
+              if (newlist) then
+                 ! update the cell list
+                 call new_nlist(xpos, ypos, zpos, rc, lboxx, lboxy, &
+                                lboxz, npar, ncelx, ncely, ncelz, ll, &
+                                hoc, rnx, rny, rnz)
+              end if
+
            end if
         end if
 
