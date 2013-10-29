@@ -4,9 +4,7 @@
 
 """
 Wrapper to Fortran code for performing the Monte Carlo simulation This
-just calls the fortran subroutine 'executecycles' (see mccyclef.f90)
-for nvt simulation, and 'executecyclesnpt' (see mccyclenptf.f90) for
-npt simulation.
+just calls the relevant fortran subroutine.
 
 FUNCTIONS:
 len_cyclenvt   - NVT MC for Lennard-Jones potential.

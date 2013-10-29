@@ -17,7 +17,6 @@
 ! len_enlist            - compute total p.e. of particle i using
 !                         cell lists
 
-
 subroutine len_totalenergy(xpos, ypos, zpos, rc, rcsq,&
                            lboxx, lboxy, lboxz, vrc, vrc2, npar,&
                            nsurf, zperiodic, r6mult, r12mult, epot)
@@ -48,8 +47,8 @@ subroutine len_totalenergy(xpos, ypos, zpos, rc, rcsq,&
   p5lboxy = 0.5_db*lboxy
   p5lboxz = 0.5_db*lboxz
   epot = 0.0_db
-  do ipar=1,npar-1
-     do jpar=ipar+1,npar
+  do ipar = 1, npar-1
+     do jpar = ipar+1, npar
         sepx = xpos(ipar) - xpos(jpar)
         ! periodic boundary conditions
         if (sepx > p5lboxx) then
@@ -130,7 +129,7 @@ subroutine len_energyipar(ipar,xposi,yposi,zposi,xpos,ypos,zpos,rc,rcsq,&
   p5lboxy = 0.5_db*lboxy
   p5lboxz = 0.5_db*lboxz
   epot = 0.0_db
-  do jpar=1,npar
+  do jpar = 1, npar
      if (ipar /= jpar) then
         sepx = xposi - xpos(jpar)
         ! periodic boundary conditions

@@ -61,8 +61,8 @@ subroutine len_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp, rc,&
   nparfl = npar - nsurf
 
   write(*,*) 0,etot
-  do cy=1,ncycles
-     do it=1,nparfl
+  do cy = 1, ncycles
+     do it = 1, nparfl
         atmov = atmov + 1
 
         ! pick a particle at random from fluid particles
@@ -113,7 +113,7 @@ subroutine len_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp, rc,&
                            xposinew, yposinew, zposinew, xpos,&
                            ypos, zpos, rc, rcsq, lboxx, lboxy,&
                            lboxz, vrc, vrc2, npar, nsurf,&
-                           zperiodic, enew)
+                           zperiodic, r6mult, r12mult, enew)
 
            ! choose whether to accept the move or not
            accept = .True.
@@ -125,7 +125,7 @@ subroutine len_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp, rc,&
            if (accept) then
 
               ! we don't rebuild the cell list by default.
-              newlist = .false.
+              newlist = .False.
 
               ! check if the particle moved outside of its cell, if so
               ! we need the rebuild the cell list.  Note that the
@@ -134,7 +134,7 @@ subroutine len_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp, rc,&
               if ((int(xpos(ipar) / rnx) .ne. int(xposinew / rnx)) .or.&
                   (int(ypos(ipar) / rny) .ne. int(yposinew / rny)) .or.&
                   (int(zpos(ipar) / rnz) .ne. int(zposinew / rnz))) then
-                 newlist = .true.
+                 newlist = .True.
               end if
               
               xpos(ipar) = xposinew
@@ -156,11 +156,11 @@ subroutine len_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp, rc,&
      end do
      
      ! write out energy after every nsamp cycles
-     if (mod(cy,nsamp) == 0) write(*,*) cy,etot
+     if (mod(cy,nsamp) == 0) write(*,*) cy, etot
      
   end do
 
   ! write out acceptance ratio
-  write(*,'("acceptance ratio", I7, I7, F7.3)') acmov,atmov,real(acmov)/atmov
+  write(*,'("acceptance ratio", I7, I7, F7.3)') acmov, atmov, real(acmov)/atmov
 
 end subroutine len_executecyclesnvt

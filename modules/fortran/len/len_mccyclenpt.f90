@@ -68,11 +68,11 @@ subroutine len_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp, rc,&
   nparfl = npar - nsurf
   
   write(*,'(F12.6, F12.6, F12.6, F12.6)') etot, lboxx, lboxy, lboxz
-  do cy=1,ncycles
+  do cy = 1, ncycles
      ! each cycle is on average 1 move per fluid par + 1 vol move     
-     do it=1,nparfl+1 
+     do it = 1, nparfl+1 
 
-        ! pick a random number between [nsurf,ntot+1]
+        ! pick a random number between [nsurf+1, ntot+1]
         call random_number(rsc)
         ipar = int(rsc*(nparfl + 1)) + nsurf + 1
 
@@ -91,6 +91,10 @@ subroutine len_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp, rc,&
            
            ! random number between 0 and 1 for attempted volume move
            call random_number(rsc)
+
+           ! new box volume
+           lnvnew = lnvold + maxvol*(rsc - 0.5_db)
+           vboxnew = exp(lnvnew)
 
            ! scale factor for multiplying each dimension of simulation
            ! box. If z is periodic we multiply each of the three box
@@ -136,11 +140,11 @@ subroutine len_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp, rc,&
                           ncelx, ncely, ncelz, ll, hoc, rnx, rny, rnz)           
 
            ! new energy, note we are using new box dimensions
-           call gauss_totalenlist(ll, hoc, ncelx, ncely, ncelz, rnx,&
-                                  rny, rnz, xpos, ypos, zpos, rc, rcsq,&
-                                  lboxx, lboxy, lboxz, vrc, vrc2, npar,&
-                                  nsurf, zperiodic, r6mult, r12mult,&
-                                  etotnew)
+           call len_totalenlist(ll, hoc, ncelx, ncely, ncelz, rnx,&
+                                rny, rnz, xpos, ypos, zpos, rc, rcsq,&
+                                lboxx, lboxy, lboxz, vrc, vrc2, npar,&
+                                nsurf, zperiodic, r6mult, r12mult,&
+                                etotnew)
 
            ! See FS p122 (Algorithm 11) for this acceptance rule
            
@@ -244,8 +248,8 @@ subroutine len_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp, rc,&
                  ! minus one, but there is clearly no point in adding
                  ! the one here.
                  if ((int(xpos(ipar) / rnx) .ne. int(xposinew / rnx)) .or.&
-                      (int(ypos(ipar) / rny) .ne. int(yposinew / rny)) .or.&
-                      (int(zpos(ipar) / rnz) .ne. int(zposinew / rnz))) then
+                     (int(ypos(ipar) / rny) .ne. int(yposinew / rny)) .or.&
+                     (int(zpos(ipar) / rnz) .ne. int(zposinew / rnz))) then
                     newlist = .true.
                  end if
                  

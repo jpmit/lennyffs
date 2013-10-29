@@ -128,7 +128,7 @@ subroutine gauss_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp,&
            if (accept) then
 
               ! we don't rebuild the cell list by default.
-              newlist = .false.
+              newlist = .False.
 
               ! check if the particle moved outside of its cell, if so
               ! we need the rebuild the cell list.  Note that the
@@ -137,7 +137,7 @@ subroutine gauss_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp,&
               if ((int(xpos(ipar) / rnx) .ne. int(xposinew / rnx)) .or.&
                   (int(ypos(ipar) / rny) .ne. int(yposinew / rny)) .or.&
                   (int(zpos(ipar) / rnz) .ne. int(zposinew / rnz))) then
-                 newlist = .true.
+                 newlist = .True.
               end if
               
               xpos(ipar) = xposinew
@@ -159,7 +159,7 @@ subroutine gauss_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp,&
      end do
      
      ! write out energy after every nsamp cycles
-     if (mod(cy,nsamp) == 0) write(*,*) cy, etot
+     if (mod(cy, nsamp) == 0) write(*,*) cy, etot
      
   end do
 
