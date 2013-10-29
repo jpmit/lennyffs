@@ -46,8 +46,7 @@ class FuncSelector(object):
     # choices for writexyz
     LD = 'ld'
     TF = 'tf'
-    # note the parameters 'potential', 'mctype', 'orderparam',
-    # 'writexyz' need to be in the input file.
+    # the first on the list is taken as the default here (!)
     OPTIONS = {POTENTIAL : [LEN, GAUSS],
                MCTYPE : [NVT, NPT],
                ORDERPARAM: [NTF, NLD, FRACTF, FRACLD, ALLFRACLD,
