@@ -25,6 +25,8 @@ gauss_totalenlist - computes total potential energy of system, including
 
 import mcfuncs
 
+# this is deprecated, use len_totalenlist below, which uses cell lists
+# for efficiency.
 def len_totalenergy(positions,params):
     """Compute total energy of system, including surface."""
 
@@ -78,7 +80,35 @@ def len_energyipar(ipar, positions, params, nparsurf = None):
                                   zperiodic, r6mult, r12mult)
     return etot
 
-# this is antiquated, use gauss_totalenlist below, which uses cell
+def len_totalenlist(positions, params):
+    """
+    Compute total energy of system, including surface, using cell
+    list.
+    """    
+    
+    rcut = params['rcut']
+    rcsq = params['rcsq']
+    lboxx = params['lboxx']
+    lboxy = params['lboxy']
+    lboxz = params['lboxz']
+    vrc = params['vrc']
+    vrc2 = params['vrc2']
+    nparsurf = params['nparsurf']
+    zperiodic = params['zperiodic']
+    r6mult = params['r6mult']
+    r12mult = params['r12mult']
+
+    etot = mcfuncs.len_totalencreatelist(positions[:,0],
+                                         positions[:,1],
+                                         positions[:,2], rcut,
+                                         rcsq, lboxx,
+                                         lboxy, lboxz, vrc,
+                                         vrc2, nparsurf,
+                                         zperiodic, r6mult,
+                                         r12mult)
+    return etot
+
+# this is deprecated, use gauss_totalenlist below, which uses cell
 # lists for efficiency.
 def gauss_totalenergy(positions, params):
     """Compute total energy of system, including surface."""

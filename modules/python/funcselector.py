@@ -77,7 +77,8 @@ class FuncSelector(object):
     def TotalEnergyFunc(cls):
         """Return function that evaluates total energy."""
         if cls.option[cls.POTENTIAL] == cls.LEN:
-            return energy.len_totalenergy
+            # this uses neighbour lists
+            return energy.len_totalenlist
         elif cls.option[cls.POTENTIAL] == cls.GAUSS:
             # this uses neighbour lists
             return energy.gauss_totalenlist
