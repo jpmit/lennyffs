@@ -66,8 +66,9 @@ PDICT = {# simulation params
          'maxvol': FLOAT,
          'sameseed' : BOOL,
 
-         # parameter for saving
+         # parameters for saving
          'nsave': INT,
+         'writexyz': STRING,
 
          # order params
          'orderparam' : STRING,
