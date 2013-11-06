@@ -93,7 +93,7 @@ class MCProgram(object):
                 self.writexyz('pos{0}.xyz'.format(cy), self.positions,
                               self.params)
 
-            endtime = time.time()
+        endtime = time.time()
 
         # write final positions to file
         self.writexyz('finalpositions.xyz', self.positions, self.params)
@@ -103,7 +103,7 @@ class MCProgram(object):
 
         # if we were npt, print new box volume
         if self.params['mctype'] == 'npt':
-            sys.stderr.write('new box volume: {0}'\
+            sys.stderr.write('new box volume: {0}\n'\
                              .format(self.params['lboxx']*\
                                      self.params['lboxy']*\
                                      self.params['lboxz']))
