@@ -239,6 +239,21 @@ def addparamssurf(pdict):
 
     # total number of particles
     pdict['npartot'] = pdict['nparsurf'] + pdict['nparfl']
+
+    # overrides: The following overrides mean we can specify
+    # non-standard simulation setups in the case where there is a
+    # surface.
+    #
+    # i) Allow lboxx, lboxy and lboxz to be overridden by o_boxvol.
+    #    This is useful for simulations with seed particles.
+    if pdict['o_boxvol']:
+        lb = pdict['o_boxvol']**(1.0/3.0)
+        pdict['lboxx'] = lb
+        pdict['lboxy'] = lb
+        pdict['lboxz'] = lb
+    # ii) Allow 'zperiodic' to be overridden.
+    if pdict['o_zperiodic']:
+        pdict['zperiodic'] = pdict['o_zperiodic']
     
     return pdict
 

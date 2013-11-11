@@ -90,7 +90,11 @@ PDICT = {# simulation params
          'minsuccess': INT,
          'lambdasamp': INT,
          'pruning': BOOL,
-         'prunprob': FLOAT
+         'prunprob': FLOAT,
+
+         # overrides (used when be have surface particles)
+         'o_zperiodic' : BOOL,
+         'o_boxvol': FLOAT
          }
 
 def _strtointlist(s):
