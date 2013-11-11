@@ -94,7 +94,8 @@ PDICT = {# simulation params
 
          # overrides (used when be have surface particles)
          'o_zperiodic' : BOOL,
-         'o_boxvol': FLOAT
+         'o_boxvol': FLOAT,
+         'o_nparsurf': INT
          }
 
 def _strtointlist(s):
