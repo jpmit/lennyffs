@@ -254,6 +254,10 @@ def addparamssurf(pdict):
     # ii) Allow 'zperiodic' to be overridden.
     if pdict['o_zperiodic']:
         pdict['zperiodic'] = pdict['o_zperiodic']
+    # iii) Allow nparsurf to be overridden.
+    if pdict['o_nparsurf']:
+        pdict['nparsurf'] = pdict['o_nparsurf']
+        pdict['npartot'] = pdict['nparsurf'] + pdict['nparfl']
     
     return pdict
 
