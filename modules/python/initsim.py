@@ -246,16 +246,16 @@ def addparamssurf(pdict):
     #
     # i) Allow lboxx, lboxy and lboxz to be overridden by o_boxvol.
     #    This is useful for simulations with seed particles.
-    if pdict['o_boxvol']:
+    if 'o_boxvol' in pdict:
         lb = pdict['o_boxvol']**(1.0/3.0)
         pdict['lboxx'] = lb
         pdict['lboxy'] = lb
         pdict['lboxz'] = lb
     # ii) Allow 'zperiodic' to be overridden.
-    if pdict['o_zperiodic']:
+    if 'o_zperiodic' in pdict:
         pdict['zperiodic'] = pdict['o_zperiodic']
     # iii) Allow nparsurf to be overridden.
-    if pdict['o_nparsurf']:
+    if 'o_nparsurf' in pdict:
         pdict['nparsurf'] = pdict['o_nparsurf']
         pdict['npartot'] = pdict['nparsurf'] + pdict['nparfl']
     
