@@ -134,8 +134,6 @@ subroutine gauss_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp,&
               ypos(1:nsurf) = ypos(1:nsurf) / scalefacy
               zpos(1:nsurf) = zpos(1:nsurf) / scalefacz
            end if
-
-        end if
         
            ! save old cell list info
            llold = ll
@@ -181,7 +179,7 @@ subroutine gauss_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp,&
                  ! surface particles back in they're original
                  ! positions.  Note this is for simulations with seed
                  ! particles.
-                 if ((zperiodic) .and. (nsurf > 0)) then
+                 if (zperiodic .and. nsurf > 0) then
                     xpos(1:nsurf) = xpos(1:nsurf)*scalefacx
                     ypos(1:nsurf) = ypos(1:nsurf)*scalefacy
                     zpos(1:nsurf) = zpos(1:nsurf)*scalefacz
@@ -284,7 +282,6 @@ subroutine gauss_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp,&
                  etot = etot - eold + enew
                  acmovdisp = acmovdisp + 1
 
-
                  if (newlist) then
                     ! update the cell list
                     call new_nlist(xpos, ypos, zpos, rc, lboxx, lboxy, &
@@ -303,7 +300,7 @@ subroutine gauss_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp,&
 
   ! write out acceptance ratio
   write(*,'("acceptance ratio", I7, I7, F7.3, I7, I7, F7.3)')&
-        acmovdisp,atmovdisp,real(acmovdisp)/atmovdisp,&
-        acmovvol,atmovvol,real(acmovvol)/atmovvol
+       acmovdisp,atmovdisp,real(acmovdisp)/atmovdisp,&
+       acmovvol,atmovvol,real(acmovvol)/atmovvol
 
 end subroutine gauss_executecyclesnpt
