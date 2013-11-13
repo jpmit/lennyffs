@@ -122,6 +122,21 @@ subroutine gauss_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp,&
            ypos = ypos*scalefacy
            zpos = zpos*scalefacz
 
+           ! if z is periodic, and we have some 'surface' particles -
+           ! this is the case, e.g., when we are studying a 'seed'
+           ! particle immersed in fluid - don't rescale the positions
+           ! of the surface particles .  We need to be a bit careful
+           ! with the position of the seed here, since we are not
+           ! checking that the seed is still inside the simulation
+           ! box.
+           if ((zperiodic) .and. (nsurf > 0)) then
+              xpos(1:nsurf) = xpos(1:nsurf) / scalefacx
+              ypos(1:nsurf) = ypos(1:nsurf) / scalefacy
+              zpos(1:nsurf) = zpos(1:nsurf) / scalefacz
+           end if
+
+        end if
+        
            ! save old cell list info
            llold = ll
            hocold = hoc
@@ -146,7 +161,6 @@ subroutine gauss_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp,&
                                   nsurf, zperiodic, etotnew)
 
            ! See FS p122 (Algorithm 11) for this acceptance rule
-           
            arg = epsovert*(etot - etotnew + press*(vboxold - vboxnew)) + &
                  (nparfl + 1)*(lnvnew - lnvold)
            accept = .True.
@@ -154,6 +168,7 @@ subroutine gauss_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp,&
               call random_number(rsc)
               if (rsc > exp(arg)) then
                  accept = .False.
+                 
                  ! back to old boxsize and positions
                  lboxx = lboxxold
                  lboxy = lboxyold
@@ -161,6 +176,17 @@ subroutine gauss_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp,&
                  xpos = xpos / scalefacx
                  ypos = ypos / scalefacy
                  zpos = zpos / scalefacz
+                 
+                 ! if we are periodic and we have a surface, put the
+                 ! surface particles back in they're original
+                 ! positions.  Note this is for simulations with seed
+                 ! particles.
+                 if ((zperiodic) .and. (nsurf > 0)) then
+                    xpos(1:nsurf) = xpos(1:nsurf)*scalefacx
+                    ypos(1:nsurf) = ypos(1:nsurf)*scalefacy
+                    zpos(1:nsurf) = zpos(1:nsurf)*scalefacz
+                 end if
+                 
                  ! old cell list info
                  ll = llold
                  hoc = hocold
