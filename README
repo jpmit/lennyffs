@@ -40,3 +40,15 @@ The following scripts are in the exec directory:
 code.py - for normal NVT/NPT Monte-Carlo
 codeffs.py - for FFS simulation with NVT/NPT Monte-Carlo dynamics
 diagnostics.py - run after codeffs to collect FFS results
+
+INPUT FILE
+-----------
+
+OPTIONS
+
+These ones are used in 'funcselector.py' (the first option is used as
+the default):
+
+'potential' - 'len' or 'gauss'
+'mctype'    - 'nvt' or 'npt'
+'orderparam' - 'ntf' or 'nld' or 'fractf' or 'fracld' or 'allfracld' or 'allfrac' or 'none'
