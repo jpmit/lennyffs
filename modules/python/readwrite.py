@@ -60,10 +60,10 @@ def wxyz(fname, positions, symbols, **kwargs):
                                                    kwargs['boxdims']]))
     else:
         fstr += '\n'
-        
+
     for i in range(npar):
-        fstr = '%s%s %.8f %.8f %.8f\n' %(fstr,symbols[i],positions[i][0],
-                                         positions[i][1],positions[i][2])
+        fstr = '%s%s %.8f %.8f %.8f\n' %(fstr, symbols[i], positions[i][0],
+                                         positions[i][1], positions[i][2])
     fout.write(fstr)
     fout.close()
     return
@@ -90,8 +90,8 @@ def r1col(fname):
 def r2col(fname, sep=None, **kwargs):
     """Read 2 column file of numeric data and return as numpy arrays."""
     
-    sskip = kwargs.get('eskip',0) # skip lines at start
-    eskip = kwargs.get('eskip',0) # skip lines at end
+    sskip = kwargs.get('eskip', 0) # skip lines at start
+    eskip = kwargs.get('eskip', 0) # skip lines at end
     
     fin = open(fname,'r')
     lines = fin.readlines()
