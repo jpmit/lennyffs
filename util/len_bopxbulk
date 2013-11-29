@@ -21,7 +21,7 @@ XTALPARS = ['S', # FCC (or all TF)
             'B'] # ICOS
 
 if len(sys.argv) != 2:
-    sys.exit("Syntax bopxbulk infile.xyz")
+    sys.exit("Syntax len_bopxbulk infile.xyz")
 
 infile = sys.argv[1]
 fin = open(infile,'r')
@@ -32,7 +32,7 @@ except IOError:
     sys.exit("Error: could not open file params.pkl")
 
 # read infile and keep only crystal atoms
-positions, symbols = readwrite.rxyz(infile,True)
+positions, symbols = readwrite.rxyz(infile, True)
 fin.close()
 npar = len(positions)
 
@@ -42,7 +42,7 @@ cpositions = np.array([positions[i] for i in range(npar)
 nc = len(cpositions)
 
 # get graph of connections
-xgraph = bops.getxgraph(cpositions,params,range(nc))
+xgraph = bops.getxgraph(cpositions, params, range(nc))
 
 # get largest cluster
 comps = graph.connected_comps(xgraph)

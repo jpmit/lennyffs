@@ -23,6 +23,8 @@ _ldclusnums     - Indices of particles in the largest cluster according
                   to LD criterion.
 _clusnums       - Indices of particles in the largest cluster according
                   to TF criterion.
+_q4w4q6w6       - Return q4bar, w4bar, q6bar, w6bar (the Lechner Dellago
+                  versions) for all particles. 
 """
 
 import numpy as np
@@ -204,9 +206,11 @@ def _ldclass(positions, params):
                                params['lboxz'], zperiodic, nsep)
     return parclass
 
-def _ldclusnums(positions,params):
-    """Return indices of particles in largest cluster according to the
-    LD criterion."""
+def _ldclusnums(positions, params):
+    """
+    Return indices of particles in largest cluster according to the LD
+    criterion.
+    """
     
     # get all xtal classifications
     ldclass = _ldclass(positions, params)
@@ -232,3 +236,25 @@ def _clusnums(cpositions, params):
                                   params['lboxx'], params['lboxy'],
                                   params['lboxz'], params['zperiodic'],
                                   params['stillsep'])
+
+def _q4w4q6w6(positions, params):
+    """Return LD order parameters."""
+
+    ntot = params['npartot']
+    q4w4q6w6 =  mcfuncs.q4w4q6w6(positions[:,0], positions[:,1],
+                                 positions[:,2], ntot,
+                                 params['nparsurf'],
+                                 params['lboxx'], params['lboxy'],
+                                 params['lboxz'], params['zperiodic'],
+                                 params['stillsep'])
+
+    # the C++ function returns a long list with q4 values followed by
+    # w4 values followed by q6values followed by w6 values.  Split
+    # this up here and return four lists.
+    q4 = q4w4q6w6[:ntot]
+    w4 = q4w4q6w6[ntot:2*ntot]
+    q6 = q4w4q6w6[ntot:2*ntot]
+    w6 = q4w4q6w6[ntot:2*ntot]
+
+    return q4, w4, q6, w6
+

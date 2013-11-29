@@ -1,0 +1,40 @@
+#! /usr/bin/env python
+
+# len_q4w4q6w6
+# James Mithen
+# Output q4bar, w4bar, q6bar and w6bar for all particles, excluding
+# surface particles.  For definitions of these quantities, see Lechner
+# and Dellago J. Chem. Phys. 129, 114707 (2008), although note that
+# equation (6) in this reference is wrong (the prefactor
+# 1/\tilde{N_b}(i) should be 1/(\tilde{N_b}(i) + 1) !  In principle,
+# the values of q4bar, w4bar, q6bar and w6bar for a given particle
+# uniquely determines that particle as either LIQUID, BCC, HCP, FCC,
+
+import sys
+import readwrite
+import orderparam
+from ffsfunctions import getpickparams
+
+if len(sys.argv) != 2:
+    sys.exit("Syntax len_q4w4q6w6 infile.xyz")
+
+infile = sys.argv[1]
+fin = open(infile, 'r')
+
+try:
+    params = getpickparams()
+except IOError:
+    sys.exit("Error: could not open file params.pkl")
+
+# read particle positions from infile
+positions, symbols = readwrite.rxyz(infile, True)
+fin.close()
+
+q4s, w4s, q6s, w6s = orderparam._q4w4q6w6(positions, params)
+
+outstr = "# q4 w4 q6 w6"
+for (q4, w4, q6, w6) in zip(q4s, w4s, q6s, w6s):
+    outstr = "{0}\n{1:.5f} {2:.5f} {3:.5f} {4:.5f}"\
+             .format(outstr, q4, w4, q6, w6)
+
+print outstr
