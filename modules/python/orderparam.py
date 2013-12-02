@@ -253,8 +253,8 @@ def _q4w4q6w6(positions, params):
     # this up here and return four lists.
     q4 = q4w4q6w6[:ntot]
     w4 = q4w4q6w6[ntot:2*ntot]
-    q6 = q4w4q6w6[ntot:2*ntot]
-    w6 = q4w4q6w6[ntot:2*ntot]
+    q6 = q4w4q6w6[2*ntot:3*ntot]
+    w6 = q4w4q6w6[3*ntot:4*ntot]
 
     return np.array(q4), np.array(w4), np.array(q6), np.array(w6)
 
