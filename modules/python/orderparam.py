@@ -256,5 +256,5 @@ def _q4w4q6w6(positions, params):
     q6 = q4w4q6w6[ntot:2*ntot]
     w6 = q4w4q6w6[ntot:2*ntot]
 
-    return q4, w4, q6, w6
+    return np.array(q4), np.array(w4), np.array(q6), np.array(w6)
 
