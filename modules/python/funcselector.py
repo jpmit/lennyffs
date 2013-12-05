@@ -140,7 +140,7 @@ class FuncSelector(object):
             return writeoutput.writexyz_ld
         elif cls.option[cls.WRITEXYZ] == cls.TF:
             return writeoutput.writexyz_tf
-        elif cls.option[cls.NOOP] == cls.TF:
+        elif cls.option[cls.WRITEXYZ] == cls.NOOP:
             return writeoutput.writexyz_noop
 
         
