@@ -258,3 +258,8 @@ def _q4w4q6w6(positions, params):
 
     return np.array(q4), np.array(w4), np.array(q6), np.array(w6)
 
+def nothing(positions, params):
+    """No order parameter."""
+
+    return 0.0
+

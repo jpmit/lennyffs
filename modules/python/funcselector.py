@@ -25,6 +25,7 @@ class FuncSelector(object):
     - MC Cycle type
     - Order parameter
     """
+    
     POTENTIAL = 'potential'
     MCTYPE = 'mctype'
     ORDERPARAM = 'orderparam'
@@ -63,6 +64,7 @@ class FuncSelector(object):
         Store the chosen options for interaction potential, MC cycle
         type, and order parameter in the instance.
         """
+        
         cls.option = {}
         for oname in cls.OPTIONS:
             # store the chosen option in the class
@@ -76,6 +78,7 @@ class FuncSelector(object):
     @classmethod
     def TotalEnergyFunc(cls):
         """Return function that evaluates total energy."""
+        
         if cls.option[cls.POTENTIAL] == cls.LEN:
             # this uses neighbour lists
             return energy.len_totalenlist
@@ -86,6 +89,7 @@ class FuncSelector(object):
     @classmethod
     def EnergyIparFunc(cls):
         """Return function that evaluates energy of a single particle."""
+        
         if cls.option[cls.POTENTIAL] == cls.LEN:
             return energy.len_energyipar
         elif cls.option[cls.POTENTIAL] == cls.GAUSS:
@@ -94,6 +98,7 @@ class FuncSelector(object):
     @classmethod
     def MCCycleFunc(cls):
         """Return function that computes an MC cycle."""
+        
         if cls.option[cls.MCTYPE] == cls.NPT:
             # functions for NPT MC for each different potential            
             if cls.option[cls.POTENTIAL] == cls.LEN:
@@ -110,6 +115,7 @@ class FuncSelector(object):
     @classmethod
     def OrderParamFunc(cls):
         """Return function that computes an MC cycle."""
+        
         if cls.option[cls.ORDERPARAM] == cls.NTF:
             return orderparam.nclustf_cpp
         elif cls.option[cls.ORDERPARAM] == cls.NLD:
@@ -123,11 +129,12 @@ class FuncSelector(object):
         elif cls.option[cls.ORDERPARAM] == cls.ALLFRAC:
             return orderparam.allfracldtf_cpp        
         elif cls.option[cls.ORDERPARAM] == cls.NONE:
-            return orderparam.default
+            return orderparam.nothing
 
     @classmethod
     def WriteXyzFunc(cls):
         """Return function that will write an XYZ file."""
+        
         if cls.option[cls.WRITEXYZ] == cls.LD:
             return writeoutput.writexyzld
         elif cls.option[cls.WRITEXYZ] == cls.TF:
