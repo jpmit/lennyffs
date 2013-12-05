@@ -47,12 +47,13 @@ class FuncSelector(object):
     # choices for writexyz
     LD = 'ld'
     TF = 'tf'
+    NOOP = 'noop'
     # the first on the list is taken as the default here (!)
     OPTIONS = {POTENTIAL : [LEN, GAUSS],
                MCTYPE : [NVT, NPT],
                ORDERPARAM: [NTF, NLD, FRACTF, FRACLD, ALLFRACLD,
                             ALLFRAC, NONE],
-               WRITEXYZ: [TF, LD]
+               WRITEXYZ: [TF, LD, NOOP]
                }
 
     def __init__(self, params):
@@ -136,6 +137,10 @@ class FuncSelector(object):
         """Return function that will write an XYZ file."""
         
         if cls.option[cls.WRITEXYZ] == cls.LD:
-            return writeoutput.writexyzld
+            return writeoutput.writexyz_ld
         elif cls.option[cls.WRITEXYZ] == cls.TF:
-            return writeoutput.writexyztf
+            return writeoutput.writexyz_tf
+        elif cls.option[cls.NOOP] == cls.TF:
+            return writeoutput.writexyz_noop
+
+        

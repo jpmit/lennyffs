@@ -262,4 +262,3 @@ def nothing(positions, params):
     """No order parameter."""
 
     return 0.0
-

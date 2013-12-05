@@ -46,7 +46,7 @@ def writeparams(params, fname='params.out'):
     fout.close()
     return
 
-def writexyztf(fname, positions, params):
+def writexyz_tf(fname, positions, params):
     """
     Write positions in xyz format with symbols as atom types, using
     TF approach for identifying crystalline particles.
@@ -73,7 +73,7 @@ def writexyztf(fname, positions, params):
     readwrite.wxyz(fname, positions, symbols, **kwargs)
     return
 
-def writexyzld(fname, positions, params):
+def writexyz_ld(fname, positions, params):
     """
     Write positions in xyz format with symbols as atom types, using
     LD approach for identifying crystalline particles.
@@ -101,3 +101,14 @@ def writexyzld(fname, positions, params):
         kwargs = {}
     # write the file
     readwrite.wxyz(fname, positions, symbols, **kwargs)
+
+def writexyz_noop(fname, positions, params):
+    """
+    Write positions in xyz format without computing any order
+    parameter with which to classify the particles as xtal, liquid
+    etc.  Here we simply make the symbol for every particle in the xyz
+    file 'N' (Nitrogen), which is blue in jmol.
+    """
+
+    readwrite.wxyz(fname, positions, ['N']*len(positions))
+
