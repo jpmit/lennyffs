@@ -34,8 +34,8 @@ OBJ = $(addprefix $(OBJDIR)/, conncomponents.o opfunctions.o \
 
 $(TARGET).so: $(TARGET).o $(OBJ)
 	g++ -shared -Wl,--export-dynamic $(TARGET).o $(OBJ) -L$(BOOST_LIB) \
-	-l:libboost_python.so -L/usr/lib/python$(PYTHON_VERSION)/config \
-	-lpython$(PYTHON_VERSION) -o $(LIBNAME).so
+	-Bdynamic -l:libboost_python.so -L/usr/lib/python$(PYTHON_VERSION)/config \
+	-Bstatic -lpython$(PYTHON_VERSION) -o $(LIBNAME).so
 
 $(TARGET): $(TARGET).cpp pyfunctions.h
 
