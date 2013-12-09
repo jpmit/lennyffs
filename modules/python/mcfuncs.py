@@ -13,5 +13,15 @@ be called via these interfaces, and not by mcfuncs.[function name].
 
 # Fortran 90 extension module (built with f2py)
 from mcfuncslinux import *
+
 # C++ extension module (built with Boost.Python)
-from op_ext import *
+try:
+    from op_ext import *
+except ImportError:
+    # print hostname: this is for debugging when the shared library is
+    # not on the machine.
+    import socket
+    print socket.gethostname()
+    # re-raise the previous error so that we still get the normal
+    # exception information.
+    raise
