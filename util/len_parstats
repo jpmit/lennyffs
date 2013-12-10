@@ -1,0 +1,42 @@
+#! /usr/bin/env python
+
+# len_parstats
+# James Mithen
+# Print number and percentage of each particle type (surface, liquid,
+# fcc, etc.)
+
+import sys
+import readwrite
+
+if len(sys.argv) != 2:
+    sys.exit("Syntax len_parstats infile.xyz")
+
+infile = sys.argv[1]
+
+# symbols identified as being crystal
+PARTYPES = ['O', # SURFACE
+            'N', # LIQUID
+            'S', # FCC (or all TF)
+            'P', # HCP
+            'F', # BCC
+            'B'] # ICOS
+
+PARNAMES = ['Surface', 'Liquid', 'Fcc', 'Hcp', 'Bcc', 'Icos']
+
+positions, symbols = readwrite.rxyz(infile, True)
+npar = len(positions)
+
+pcount = {ptype : 0 for ptype in PARTYPES}
+
+for sy in symbols:
+    pcount[sy] += 1
+
+# print statistics
+for pt, pn in zip(PARTYPES, PARNAMES):
+    # pad where appropriate to make the string look nice
+    name = '{0} ({1})'.format(pt, pn).ljust(11)
+    num = str(pcount[pt]).ljust(5)
+    st = '{0} : {1} ({2}%)'.format(name, num,
+                                   100* float(pcount[pt]) / npar)
+    print st
+

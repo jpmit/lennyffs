@@ -37,7 +37,7 @@ except IOError:
     sys.exit("Error: file params.pkl not found")
 
 # read infile
-positions, symbols = readwrite.rxyz(infile,True)
+positions, symbols = readwrite.rxyz(infile, True)
 npar = len(positions)
 
 # crystal atoms
