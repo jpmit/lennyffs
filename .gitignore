@@ -9,3 +9,4 @@ versions
 test
 boost
 *.so
+*.o
