@@ -119,11 +119,11 @@ subroutine gauss_forcecreatelist(xpos, ypos, zpos, rc, rcsq,&
   ! get total energy using cell list
   call gauss_forcelist(ll, hoc, ncelx, ncely, ncelz, rnx, rny, rnz,&
                        xpos, ypos, zpos, rc, rcsq, lboxx, lboxy,&
-                       lboxz, vrc, vrc2, npar, nsurf, zperiodic, etot)
+                       lboxz, npar, nsurf, zperiodic, fx, fy, fz)
   ! deallocate the head of cell array
   deallocate(hoc, STAT=status)
 
-end subroutine gauss_totalencreatelist
+end subroutine gauss_forcecreatelist
 
 subroutine gauss_forcelist(ll, hoc, ncelx, ncely, ncelz,&
                            rnx, rny, rnz, xpos, ypos, zpos,&
