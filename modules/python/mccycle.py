@@ -219,7 +219,7 @@ def gauss_cyclemd(positions, params, velocities, forces):
                                                  mass,
                                                  nparsurf,
                                                  zperiodic)
-    
+
     positions[:,0], positions[:,1], positions[:,2] = xpos, ypos, zpos
     velocities[:,0], velocities[:,1], velocities[:,2] = xvel, yvel, zvel
     forces[:,0], forces[:,1], forces[:,2] = fx, fy, fz

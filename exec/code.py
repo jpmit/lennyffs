@@ -104,7 +104,7 @@ class MCProgram(object):
         starttime = time.time()
 
         for cy in range(self.ncall):
-            self.positions, self.velocities,
+            self.positions, self.velocities,\
             self.forces = self.runcycle(self.positions,
                                         self.params, self.velocities,
                                         self.forces)
