@@ -13,6 +13,9 @@ gauss_forceslist - computes force on every particle in the system
                    for efficiency.
 """
 
+import mcfuncs
+import numpy as np
+
 def gauss_forceslist(positions, params):
     """Compute force on every particle in system, including surface."""
 
@@ -31,7 +34,7 @@ def gauss_forceslist(positions, params):
                                        lboxx, lboxy, lboxz, nparsurf,
                                        zperiodic)
 
-    # unsure that this is the most efficient way to create this array
+    # this may not be the most efficient way to create this array
     forces = np.empty([len(fx), 3])
     forces[:,0], forces[:,1], forces[:,2] = fx, fy, fz
 

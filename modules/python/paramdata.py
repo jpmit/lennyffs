@@ -92,10 +92,14 @@ PDICT = {# simulation params
          'pruning': BOOL,
          'prunprob': FLOAT,
 
-         # overrides (used when be have surface particles)
+         # overrides (useful when be have surface particles)
          'o_zperiodic' : BOOL,
          'o_boxvol': FLOAT,
-         'o_nparsurf': INT
+         'o_nparsurf': INT,
+
+         # extra parameters used for MD simulations
+         'dt': FLOAT,
+         'mass': FLOAT
          }
 
 def _strtointlist(s):

@@ -17,6 +17,7 @@ import funcselector
 import initsim
 import writeoutput
 import energy
+import force
 import mccycle
 import time
 import sys
@@ -75,7 +76,7 @@ class MCProgram(object):
 
         self.velocities = initsim.initvelocities(self.params)
 
-        self.forces = force.gauss_forceslist(positions, params)
+        self.forces = force.gauss_forceslist(self.positions, self.params)
 
     def run(self):
         """Perform the MC/MD simulation."""

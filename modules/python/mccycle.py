@@ -192,23 +192,28 @@ def gauss_cyclemd(positions, params, velocities, forces):
     nsamp = params['nsamp']
     rc = params['rcut']
     rcsq = params['rcsq']
+    vrc = params['vrc']
+    vrc2 = params['vrc2']    
     lboxx = params['lboxx']
     lboxy = params['lboxy']
     lboxz = params['lboxz']
     nparsurf = params['nparsurf']
     zperiodic = params['zperiodic']
+    dt = params['dt']
+    mass = params['mass']
 
     # setup and call the fortran subroutine
     xpos, ypos, zpos = positions[:,0], positions[:,1], positions[:,2]
     xvel, yvel, zvel = velocities[:,0], velocities[:,1], velocities[:,2]
     fx, fy, fz = forces[:,0], forces[:,1], forces[:,2]    
-    xpos, ypos, zpos,
-    xvel, yvel, zvel,
+    xpos, ypos, zpos,\
+    xvel, yvel, zvel,\
     fx, fy, fz  = mcfuncs.gauss_executecyclesnve(xpos, ypos, zpos,
                                                  xvel, yvel, zvel,
                                                  fx, fy, fz,
                                                  ncycle, nsamp,
                                                  dt, rc, rcsq,
+                                                 vrc, vrc2,
                                                  lboxx,
                                                  lboxy, lboxz,
                                                  mass,
@@ -217,6 +222,6 @@ def gauss_cyclemd(positions, params, velocities, forces):
     
     positions[:,0], positions[:,1], positions[:,2] = xpos, ypos, zpos
     velocities[:,0], velocities[:,1], velocities[:,2] = xvel, yvel, zvel
-    forces[:,0], forces[:,1], forces[:,2] = xforce, yforce, zforce
+    forces[:,0], forces[:,1], forces[:,2] = fx, fy, fz
 
-    return positions, velocites, forces
+    return positions, velocities, forces

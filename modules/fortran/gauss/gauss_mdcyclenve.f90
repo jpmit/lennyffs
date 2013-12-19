@@ -11,8 +11,8 @@
 
 subroutine gauss_executecyclesnve(xpos, ypos, zpos, xvel, yvel, zvel,&
                                   fx, fy, fz, ncycles, nsamp, dt, rc,&
-                                  rcsq, lboxx, lboxy, lboxz, mass,&
-                                  npar, nsurf, zperiodic)
+                                  rcsq, vrc, vrc2, lboxx, lboxy, lboxz,&
+                                  mass, npar, nsurf, zperiodic)
 
   implicit none
   integer, parameter :: db = 8 !selected_real_kind(13)
@@ -20,7 +20,8 @@ subroutine gauss_executecyclesnve(xpos, ypos, zpos, xvel, yvel, zvel,&
   ! subroutine arguments
   ! inputs
   integer, intent(in) :: ncycles, nsamp, npar, nsurf
-  real(kind=db), intent(in) :: dt, rc, rcsq, lboxx, lboxy, lboxz, mass
+  real(kind=db), intent(in) :: dt, rc, rcsq, vrc, vrc2
+  real(kind=db), intent(in) :: lboxx, lboxy, lboxz, mass
   logical, intent(in) :: zperiodic
   ! outputs (note inout intent)
   real(kind=db), dimension(npar), intent(inout) :: xpos, ypos, zpos,&
@@ -28,13 +29,14 @@ subroutine gauss_executecyclesnve(xpos, ypos, zpos, xvel, yvel, zvel,&
                                                    fx, fy, fz
 
   !f2py intent(in) :: ncycles, nsamp, dt, rc, rcsq, lboxx, lboxy, lboxz
-  !f2py intent(in) :: mass, npar, nparsuf, zperiodic
-  !f2py intent(in,out) :: xpos, ypos, zpos, xvel, yvel, zvel, fz, fy, fz
+  !f2py intent(in) :: vrc, vrc2, mass, npar, nparsuf, zperiodic
+  !f2py intent(in,out) :: xpos, ypos, zpos, xvel, yvel, zvel, fx, fy, fz
 
   real(kind=db) :: rsc, xposi, yposi, zposi, xposinew, yposinew,&
                    zposinew, eold, enew, p5dt, p5dtsq
   integer :: cy
   real(kind=db), dimension(npar) :: newfx, newfy, newfz
+  real(kind=db) :: epottot, ekintot
   ! these are for cell lists
   integer :: ncelx, ncely, ncelz
   real(kind=db) :: rnx, rny, rnz
@@ -82,7 +84,12 @@ subroutine gauss_executecyclesnve(xpos, ypos, zpos, xvel, yvel, zvel,&
      ! write out diagnostics after every nsamp cycles
      if (mod(cy, nsamp) == 0) then
         ! todo: compute energy (say KE and PE) and output here (?)
-        write(*,*) cy
+        ! compute PE
+        call gauss_totalenlist(ll, hoc, ncelx, ncely, ncelz, rnx, rny,&
+                               rnz, xpos, ypos, zpos, rc, rcsq, lboxx,&
+                               lboxy, lboxz, vrc, vrc2, npar, nsurf,&
+                               zperiodic, epottot)
+        write(*,*) cy, epottot
      end if
 
   end do

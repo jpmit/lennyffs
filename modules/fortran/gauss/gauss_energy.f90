@@ -20,7 +20,7 @@
 subroutine gauss_totalenergy(xpos, ypos, zpos, rc, rcsq,&
                              lboxx, lboxy, lboxz, vrc, vrc2, npar,&
                              nsurf, zperiodic, epot)
-   !!! Computes total potential energy of system (in units of epsilon)
+  !!! Computes total potential energy of system (in units of epsilon)
 
   implicit none
   integer, parameter :: db = 8 !selected_real_kind(13)
@@ -101,7 +101,7 @@ end subroutine gauss_totalenergy
 subroutine gauss_energyipar(ipar, xposi, yposi, zposi, xpos, ypos, zpos, rc, rcsq,&
                             lboxx, lboxy, lboxz, vrc, vrc2, npar,&
                             nsurf, zperiodic, epot)
-   !!! Computes potential energy of particle ipar (in units of epsilon)
+  !!! Computes potential energy of particle ipar (in units of epsilon)
 
   implicit none
   integer, parameter :: db = 8 !selected_real_kind(13)
@@ -345,9 +345,10 @@ subroutine gauss_totalenlist(ll, hoc, ncelx, ncely, ncelz,&
            if (ipar /= jpar) then
 
               ! get p.e. between particles i and j
-              call gauss_eij(ipar, jpar, xposi, yposi, zposi, xpos(jpar), ypos(jpar), zpos(jpar),&
-                   lboxx, lboxy, lboxz, rc, rcsq, vrc, vrc2, npar, nsurf,&
-                   zperiodic, eij)           
+              call gauss_eij(ipar, jpar, xposi, yposi, zposi,&
+                             xpos(jpar), ypos(jpar), zpos(jpar),&
+                             lboxx, lboxy, lboxz, rc, rcsq, vrc,&
+                             vrc2, npar, nsurf, zperiodic, eij)           
               etot = etot + eij
            end if
            jpar = ll(jpar)
