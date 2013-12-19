@@ -14,7 +14,7 @@ subroutine gauss_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp,&
                                   rc, rcsq, vrc, vrc2, lboxx, lboxy,&
                                   lboxz, epsovert, maxdisp, npar, nsurf,&
                                   zperiodic, sameseed, etot)
-  ! execute ncycles MD cycles
+  ! execute ncycles MC cycles
 
   implicit none
   integer, parameter :: db = 8 !selected_real_kind(13)

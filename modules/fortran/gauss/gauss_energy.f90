@@ -304,7 +304,6 @@ subroutine gauss_totalenlist(ll, hoc, ncelx, ncely, ncelz,&
   real(kind=db), intent(in) :: rc, rcsq, lboxx, lboxy, lboxz, vrc, vrc2
   integer, intent(in) :: npar, nsurf
   logical, intent(in) :: zperiodic
-
   ! outputs
   real(kind=db), intent(out) :: etot
 

@@ -36,6 +36,7 @@ class FuncSelector(object):
     # choices for mctype
     NVT = 'nvt'
     NPT = 'npt'
+    MD  = 'md'
     # choices for orderparam
     NTF = 'ntf' # largest cluster according to TF
     NLD = 'nld' # largest cluster according to LD
@@ -50,7 +51,7 @@ class FuncSelector(object):
     NOOP = 'noop'
     # the first on the list is taken as the default here (!)
     OPTIONS = {POTENTIAL : [LEN, GAUSS],
-               MCTYPE : [NVT, NPT],
+               MCTYPE : [NVT, NPT, MD],
                ORDERPARAM: [NTF, NLD, FRACTF, FRACLD, ALLFRACLD,
                             ALLFRAC, NONE],
                WRITEXYZ: [TF, LD, NOOP]
@@ -112,6 +113,9 @@ class FuncSelector(object):
                 return mccycle.len_cyclenvt
             elif cls.option[cls.POTENTIAL] == cls.GAUSS:
                 return mccycle.gauss_cyclenvt
+        if cls.option[cls.MCTYPE] == cls.MD:
+            if cls.option[cls.POTENTIAL] == cls.GAUSS:
+                return mccycle.gauss_cyclemd
 
     @classmethod
     def OrderParamFunc(cls):
@@ -142,5 +146,3 @@ class FuncSelector(object):
             return writeoutput.writexyz_tf
         elif cls.option[cls.WRITEXYZ] == cls.NOOP:
             return writeoutput.writexyz_noop
-
-        

@@ -27,10 +27,9 @@ import mcfuncs
 
 # this is deprecated, use len_totalenlist below, which uses cell lists
 # for efficiency.
-def len_totalenergy(positions,params):
+def len_totalenergy(positions, params):
     """Compute total energy of system, including surface."""
 
-    npartot = params['npartot']
     rcut = params['rcut']
     rcsq = params['rcsq']
     lboxx = params['lboxx']
@@ -98,6 +97,7 @@ def len_totalenlist(positions, params):
     r6mult = params['r6mult']
     r12mult = params['r12mult']
 
+    # note that the function creates the list for us
     etot = mcfuncs.len_totalencreatelist(positions[:,0],
                                          positions[:,1],
                                          positions[:,2], rcut,

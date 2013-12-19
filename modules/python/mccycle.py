@@ -3,14 +3,15 @@
 # j.mithen@surrey.ac.uk
 
 """
-Wrapper to Fortran code for performing the Monte Carlo simulation This
-just calls the relevant fortran subroutine.
+Wrapper to Fortran code for performing the Monte Carlo
+simulation. This just calls the relevant fortran subroutine.
 
 FUNCTIONS:
 len_cyclenvt   - NVT MC for Lennard-Jones potential.
 len_cyclenpt   - NPT MC for Lennard-Jones potential.
 gauss_cyclenvt - NVT MC for Gaussian potential.
 gauss_cyclenpt - NPT MC for Gaussian potential.
+gauss_cyclemd  - NVE MD (not MC!) for Gaussian potential.
 """
 
 import mcfuncs
@@ -181,3 +182,41 @@ def gauss_cyclenpt(positions, params, etot):
     positions[:,0], positions[:,1], positions[:,2] = xpos, ypos, zpos
 
     return positions, etot
+
+def gauss_cyclemd(positions, params, velocities, forces):
+    """Performs the requested number of cycles of NVE MD (not MC!)."""
+
+    # ncycle is the number of MD cycles we perform (one cycle consists
+    # of a single timestep).
+    ncycle = params['cycle']
+    nsamp = params['nsamp']
+    rc = params['rcut']
+    rcsq = params['rcsq']
+    lboxx = params['lboxx']
+    lboxy = params['lboxy']
+    lboxz = params['lboxz']
+    nparsurf = params['nparsurf']
+    zperiodic = params['zperiodic']
+
+    # setup and call the fortran subroutine
+    xpos, ypos, zpos = positions[:,0], positions[:,1], positions[:,2]
+    xvel, yvel, zvel = velocities[:,0], velocities[:,1], velocities[:,2]
+    fx, fy, fz = forces[:,0], forces[:,1], forces[:,2]    
+    xpos, ypos, zpos,
+    xvel, yvel, zvel,
+    fx, fy, fz  = mcfuncs.gauss_executecyclesnve(xpos, ypos, zpos,
+                                                 xvel, yvel, zvel,
+                                                 fx, fy, fz,
+                                                 ncycle, nsamp,
+                                                 dt, rc, rcsq,
+                                                 lboxx,
+                                                 lboxy, lboxz,
+                                                 mass,
+                                                 nparsurf,
+                                                 zperiodic)
+    
+    positions[:,0], positions[:,1], positions[:,2] = xpos, ypos, zpos
+    velocities[:,0], velocities[:,1], velocities[:,2] = xvel, yvel, zvel
+    forces[:,0], forces[:,1], forces[:,2] = xforce, yforce, zforce
+
+    return positions, velocites, forces

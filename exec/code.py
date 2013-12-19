@@ -63,8 +63,72 @@ class MCProgram(object):
         self.params['cycle'] = min(self.params['ncycle'],
                                    self.params['opsamp'])
 
+        # call MD specific initialization if needed
+        if self.params['mctype'] == 'md':
+            self.init_md()
+
+    def init_md(self):
+        """
+        Initialize velocities and forces.  These are needed for MD
+        simulation.
+        """
+
+        self.velocities = initsim.initvelocities(self.params)
+
+        self.forces = force.gauss_forceslist(positions, params)
+
     def run(self):
-        """Perform the MC simulation."""
+        """Perform the MC/MD simulation."""
+
+        if self.params['mctype'] == 'md':
+            self.run_md()
+        else:
+            self.run_mc()
+
+    def run_md(self):
+        """
+        Perform the MD simulation
+
+        Note: we will probably have to do things like velocity
+        rescaling during equilibration in this routine.
+        """
+
+        # file for writing order parameter
+        opfile = open('opval.out','w')
+
+        # run the MC cycles
+        cyclesdone = 0
+        opfile.write('{0} {1}\n'.format(0, self.orderp(self.positions,
+                                                       self.params)))
+        starttime = time.time()
+
+        for cy in range(self.ncall):
+            self.positions, self.velocities,
+            self.forces = self.runcycle(self.positions,
+                                        self.params, self.velocities,
+                                        self.forces)
+            
+            cyclesdone += self.params['cycle']
+            # write out order parameter
+            opfile.write('{0} {1}\n'.format(cyclesdone,
+                                            self.orderp(self.positions,
+                                                        self.params)))
+            opfile.flush()
+            # write out pos file if required
+            if (cyclesdone % self.params['nsave'] == 0):
+                self.writexyz('pos{0}.xyz'.format(cy), self.positions,
+                              self.params)
+
+        endtime = time.time()
+
+        # write final positions to file
+        self.writexyz('finalpositions.xyz', self.positions, self.params)
+
+        # write runtime to stderr
+        sys.stderr.write("runtime in s: {:.3f}\n".format(endtime - starttime))
+
+    def run_mc(self):
+        """Perform the MC simulation"""
 
         # compute initial energy
         epot = self.totalenergy(self.positions, self.params)

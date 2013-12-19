@@ -28,6 +28,7 @@ initlatticepositions  - init particle positions on a lattice.
 initflpositionsrandom - init fluid positions randomly above surface.
 initflpositionslayer  - init fluid positions in layers above surface.
 initpositionssurf     - init particle positions if have surface.
+initvelocities        - init particle velocities (for MD simulation).
 """
 
 import sys
@@ -465,3 +466,29 @@ def initpositionssurf(params):
     allpositions = np.append(surfpositions,flpositions, axis=0)
 
     return allpositions    
+
+def initvelocities(params):
+    """
+    Initialize velocities.
+    
+    For now give particles random velocities consistent with
+    temperature, and with zero net momentum.
+    """
+
+    # get parameters required from dictionary
+    npar = params['npartot']
+    temp = params['Tstar']
+
+    # random velocities
+    vels = np.random.random((npar, 3)) - 0.5
+    sumv = np.sum(vels, axis = 0) / npar
+    sumv2 = np.sum(vels**2, axis = 0) / npar
+
+    # scale factor
+    fs = (3 * temp / sumv2)**0.5
+
+    # numpy automatically handles the different shapes of these arrays
+    # correctly (yay!)
+    vels = (vels - sumv)*fs
+
+    return vels
