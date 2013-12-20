@@ -12,7 +12,8 @@
 subroutine gauss_executecyclesnve(xpos, ypos, zpos, xvel, yvel, zvel,&
                                   fx, fy, fz, ncycles, nsamp, dt, rc,&
                                   rcsq, vrc, vrc2, lboxx, lboxy, lboxz,&
-                                  mass, npar, nsurf, zperiodic)
+                                  mass, npar, nsurf, zperiodic, vscale,&
+                                  temp)
 
   implicit none
   integer, parameter :: db = 8 !selected_real_kind(13)
@@ -21,8 +22,8 @@ subroutine gauss_executecyclesnve(xpos, ypos, zpos, xvel, yvel, zvel,&
   ! inputs
   integer, intent(in) :: ncycles, nsamp, npar, nsurf
   real(kind=db), intent(in) :: dt, rc, rcsq, vrc, vrc2
-  real(kind=db), intent(in) :: lboxx, lboxy, lboxz, mass
-  logical, intent(in) :: zperiodic
+  real(kind=db), intent(in) :: lboxx, lboxy, lboxz, mass, temp
+  logical, intent(in) :: zperiodic, vscale
   ! outputs (note inout intent)
   real(kind=db), dimension(npar), intent(inout) :: xpos, ypos, zpos,&
                                                    xvel, yvel, zvel,&

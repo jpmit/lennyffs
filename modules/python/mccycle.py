@@ -201,6 +201,8 @@ def gauss_cyclemd(positions, params, velocities, forces):
     zperiodic = params['zperiodic']
     dt = params['dt']
     mass = params['mass']
+    vscale = params['vscale']
+    temp = params['Tstar']
 
     # setup and call the fortran subroutine
     xpos, ypos, zpos = positions[:,0], positions[:,1], positions[:,2]
@@ -218,7 +220,8 @@ def gauss_cyclemd(positions, params, velocities, forces):
                                                  lboxy, lboxz,
                                                  mass,
                                                  nparsurf,
-                                                 zperiodic)
+                                                 zperiodic,
+                                                 vscale, temp)
 
     positions[:,0], positions[:,1], positions[:,2] = xpos, ypos, zpos
     velocities[:,0], velocities[:,1], velocities[:,2] = xvel, yvel, zvel

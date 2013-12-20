@@ -99,7 +99,8 @@ PDICT = {# simulation params
 
          # extra parameters used for MD simulations
          'dt': FLOAT,
-         'mass': FLOAT
+         'mass': FLOAT,
+         'vscale': BOOL,
          }
 
 def _strtointlist(s):
