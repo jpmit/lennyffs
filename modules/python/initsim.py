@@ -485,7 +485,7 @@ def initvelocities(params):
     sumv2 = np.sum(vels**2, axis = 0) / npar
 
     # scale factor
-    fs = (3 * temp / sumv2)**0.5
+    fs = (temp / sumv2)**0.5
 
     # numpy automatically handles the different shapes of these arrays
     # correctly (yay!)

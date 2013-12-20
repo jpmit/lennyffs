@@ -37,7 +37,7 @@ subroutine gauss_executecyclesnve(xpos, ypos, zpos, xvel, yvel, zvel,&
                    zposinew, eold, enew, p5dt, p5dtsq
   integer :: cy, i
   real(kind=db), dimension(npar) :: newfx, newfy, newfz
-  real(kind=db) :: epottot, ekintot
+  real(kind=db) :: sumv2, fs, epottot, ekintot
   ! these are for cell lists
   integer :: ncelx, ncely, ncelz
   real(kind=db) :: rnx, rny, rnz
@@ -120,6 +120,15 @@ subroutine gauss_executecyclesnve(xpos, ypos, zpos, xvel, yvel, zvel,&
      fx = newfx
      fy = newfy
      fz = newfz
+
+     ! if set, we perform velocity scaling every timestep
+     if (vscale) then
+        sumv2 = sum(xvel**2 + yvel**2 + zvel**2) / npar
+        fs = sqrt(3 * temp / sumv2)
+        xvel = fs*xvel
+        yvel = fs*yvel
+        zvel = fs*zvel
+     end if
 
      ! write out diagnostics after every nsamp cycles
      if (mod(cy, nsamp) == 0) then

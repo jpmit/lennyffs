@@ -107,6 +107,7 @@ def _strtointlist(s):
     """
     Converts string e.g. '[0,2,3,4,6]' to a Python list of integers.
     """
+
     try:
         ilist = [int(i) for i in s.split(',')]
     except:
