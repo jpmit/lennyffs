@@ -22,18 +22,20 @@ import mccycle
 import time
 import sys
 
-class MCProgram(object):
-    """The main MC program."""
+class MProgram(object):
+    """The main MC/MD program."""
     
     def __init__(self):
         """
-        Read parameters, get initial positions, compute initial
-        potential energy.
+        Read parameters, get initial positions (and velocities if MD),
+        and setup any parameters needed for the 
         """
 
         # read input parameters and write to file
         self.params = initsim.getparams()
+        # pickled version 'params.pkl'
         writeoutput.writepickparams(self.params)
+        # human readable version 'params.out'
         writeoutput.writeparams(self.params)
 
         # From params dictionary create FuncSelector object.  This
@@ -48,13 +50,29 @@ class MCProgram(object):
         self.orderp = funcman.OrderParamFunc()
         self.writexyz = funcman.WriteXyzFunc()
 
-        # initialize positions
-        self.positions = initsim.initpositions(self.params)
+        # initialize positions (and velocities and forces if we are
+        # doing MD rather than MC).
+        if self.params['mctype'] == 'md':
+            self.positions, \
+            self.velocities = initsim.\
+            initpositionsvelocities(self.params)
+            # Note we only have MD implemented for Gaussian potential
+            # at present; the force function should in principle be
+            # handled by the FuncSelector interface.
+            self.forces = force.gauss_forceslist(self.positions,
+                                                 self.params)            
+        else:
+            self.positions = initsim.initpositions(self.params)
 
         # write initial positions to file if new simulation
         if self.params['simulation'] == 'new':
             self.writexyz('initpositions.xyz', self.positions,
                           self.params)
+            # write initial pickle file that stores both positions and
+            # velocities if we are doing an MD simulation.
+            if self.params['mctype'] == 'md':
+                writeoutput.writemdpick('initpositions.pkl',
+                                        self.positions, self.velocities)                
 
         # number of times to call MC cycle function
         self.ncall = int( np.ceil(self.params['ncycle'] /
@@ -63,20 +81,6 @@ class MCProgram(object):
         # number of cycles each time we call MC cycle function
         self.params['cycle'] = min(self.params['ncycle'],
                                    self.params['opsamp'])
-
-        # call MD specific initialization if needed
-        if self.params['mctype'] == 'md':
-            self.init_md()
-
-    def init_md(self):
-        """
-        Initialize velocities and forces.  These are needed for MD
-        simulation.
-        """
-
-        self.velocities = initsim.initvelocities(self.params)
-
-        self.forces = force.gauss_forceslist(self.positions, self.params)
 
     def run(self):
         """Perform the MC/MD simulation."""
@@ -88,10 +92,9 @@ class MCProgram(object):
 
     def run_md(self):
         """
-        Perform the MD simulation
+        Perform the MD simulation.
 
-        Note: we will probably have to do things like velocity
-        rescaling during equilibration in this routine.
+        TODO: integrate this into the run_mc method (?)
         """
 
         # file for writing order parameter
@@ -125,11 +128,14 @@ class MCProgram(object):
         # write final positions to file
         self.writexyz('finalpositions.xyz', self.positions, self.params)
 
+        # write pickled save file which includes the velocities
+        writeoutput.writemdpick('finalpositions.pkl', self.positions, self.velocities)
+
         # write runtime to stderr
         sys.stderr.write("runtime in s: {:.3f}\n".format(endtime - starttime))
 
     def run_mc(self):
-        """Perform the MC simulation"""
+        """Perform the MC simulation."""
 
         # compute initial energy
         epot = self.totalenergy(self.positions, self.params)
@@ -174,5 +180,5 @@ class MCProgram(object):
                                      self.params['lboxz']))
 
 if __name__ == '__main__':
-    mcprog = MCProgram()
+    mcprog = MProgram()
     mcprog.run()

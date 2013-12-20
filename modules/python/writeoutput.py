@@ -9,10 +9,14 @@ FUNCTIONS:
 writepickparams - write parameters dictionary to pickle file.
 writeparams     - write dictionary of parameters in human readable
                   form (i.e. not pickled).
+writemdpick     - write pickle file for restarting MD simulations,
+                  this includes the positions as well as the velocities.
+readmdpick      - read pickle file for restarting MD simulations,
+                  return positions and velocities.
 writexyztf      - write xyz file with particle symbols as classified
                   by TF method.  Note this will compute order
                   parameters.
-wrtiexyzld      - write xyz file with particle symbols as classified
+writexyzld      - write xyz file with particle symbols as classified
                   by LD method.  Note this will compute order
                   parameters. 
 """
@@ -46,6 +50,27 @@ def writeparams(params, fname='params.out'):
     fout.close()
     return
 
+def writemdpick(fname, positions, velocities):
+    """
+    Write pickle file that includes both positions and velocities.
+    """
+
+    topick = [positions, velocities]
+    
+    fout = open(fname,'wb')
+    pickle.dump(topick, fout)
+    fout.close()
+
+def readmdpick(fname):
+    """
+    Read file and return positions and velocities.
+    """
+
+    pfile = open(fname, 'rb')
+    positions, velocities = pickle.load(pfile)
+    pfile.close()
+    return positions, velocities
+
 def writexyz_tf(fname, positions, params):
     """
     Write positions in xyz format with symbols as atom types, using
@@ -61,6 +86,7 @@ def writexyz_tf(fname, positions, params):
         xparnums = opfunctions.getxpars(positions, params)
         for pnum in xparnums:
             symbols[pnum] = 'S'
+            
     # if npt simulation, get box dims from params dictionary; we write
     # this to the second line of the XYZ file.            
     if params['mctype'] == 'npt':
@@ -92,6 +118,7 @@ def writexyz_ld(fname, positions, params):
     ldclass = orderparam._ldclass(positions, params)
     # give each atom the correct symbol using lookup table
     symbols = [stable[i] for i in ldclass]
+    
     # if npt simulation, get box dims from params dictionary; we write
     # this to the second line of the XYZ file.
     if params['mctype'] == 'npt':
@@ -111,4 +138,3 @@ def writexyz_noop(fname, positions, params):
     """
 
     readwrite.wxyz(fname, positions, ['N']*len(positions))
-

@@ -37,6 +37,7 @@ import numpy as np
 import mcfuncs
 import readwrite
 import params
+import writeoutput
 
 import ase.lattice.surface as ase
 
@@ -303,6 +304,18 @@ def addparamsnosurf(pdict):
             print "Warning, box size has not been set properly!"
             
     return pdict
+
+def initpositionsvelocities(params):
+    """
+    Initialize both positions and velocities for MD simulation.
+    """
+
+    if params['simulation'] == 'restart':
+        # the restart file should be a pickle file that contains both
+        # the positions and the velocities
+        return writeoutput.readmdpick(params['restartfile'])
+    else:
+        return initpositions(params), initvelocities(params)
 
 def initpositions(params):
     """

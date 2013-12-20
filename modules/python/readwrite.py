@@ -3,8 +3,8 @@
 # j.mithen@surrey.ac.uk
 
 """
-Functions for reading / writing files of i) numeric data, ii) particle
-positions (co-ordinates) in the XYZ file format.
+Generic functions for reading / writing files of i) numeric data, ii)
+particle positions (co-ordinates) in the XYZ file format.
 
 FUNCTIONS:
 rxyz  - read file in XYZ format.

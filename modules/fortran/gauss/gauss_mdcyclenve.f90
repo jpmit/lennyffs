@@ -56,13 +56,13 @@ subroutine gauss_executecyclesnve(xpos, ypos, zpos, xvel, yvel, zvel,&
   p5dt = 0.5_db*dt
   p5dtsq = 0.5_db*(dt**2)
 
-  ! output initial pe, ke and sum
+  ! output initial PE, KE and total energy per particle
   call gauss_totalenlist(ll, hoc, ncelx, ncely, ncelz, rnx, rny,&
                          rnz, xpos, ypos, zpos, rc, rcsq, lboxx,&
                          lboxy, lboxz, vrc, vrc2, npar, nsurf,&
                          zperiodic, epottot)
   call gauss_kineticen(xvel, yvel, zvel, npar, ekintot)
-  write(*,*) 0, epottot, ekintot, epottot + ekintot
+  write(*,*) 0, epottot/npar, ekintot/npar, (epottot + ekintot)/npar
 
   do cy = 1, ncycles
      
@@ -132,14 +132,14 @@ subroutine gauss_executecyclesnve(xpos, ypos, zpos, xvel, yvel, zvel,&
 
      ! write out diagnostics after every nsamp cycles
      if (mod(cy, nsamp) == 0) then
-        ! todo: compute energy (say KE and PE) and output here (?)
-        ! compute PE
+        ! compute PE and KE
         call gauss_totalenlist(ll, hoc, ncelx, ncely, ncelz, rnx, rny,&
                                rnz, xpos, ypos, zpos, rc, rcsq, lboxx,&
                                lboxy, lboxz, vrc, vrc2, npar, nsurf,&
                                zperiodic, epottot)
         call gauss_kineticen(xvel, yvel, zvel, npar, ekintot)
-        write(*,*) cy, epottot, ekintot, epottot + ekintot
+        ! output PE, KE and total energy per particle
+        write(*,*) cy, epottot/npar, ekintot/npar, (epottot + ekintot)/npar
      end if
 
   end do
