@@ -34,7 +34,7 @@ subroutine gauss_executecyclesnve(xpos, ypos, zpos, xvel, yvel, zvel,&
 
   real(kind=db) :: rsc, xposi, yposi, zposi, xposinew, yposinew,&
                    zposinew, eold, enew, p5dt, p5dtsq
-  integer :: cy
+  integer :: cy, i
   real(kind=db), dimension(npar) :: newfx, newfy, newfz
   real(kind=db) :: epottot, ekintot
   ! these are for cell lists
@@ -47,10 +47,21 @@ subroutine gauss_executecyclesnve(xpos, ypos, zpos, xvel, yvel, zvel,&
   call getnumcells(lboxx, lboxy, lboxz, rc, ncelx, ncely, ncelz)
   write(*,*) 'num cells', ncelx, ncely, ncelz
   allocate( hoc(ncelx, ncely, ncelx) )
+  ! construct the cell list
+  call new_nlist(xpos, ypos, zpos, rc, lboxx, lboxy, lboxz, npar,&
+                 ncelx, ncely, ncelz, ll, hoc, rnx, rny, rnz)
   
   ! precompute half of timestep and half of timestep squared
   p5dt = 0.5_db*dt
   p5dtsq = 0.5_db*(dt**2)
+
+  ! output initial pe, ke and sum
+  call gauss_totalenlist(ll, hoc, ncelx, ncely, ncelz, rnx, rny,&
+                         rnz, xpos, ypos, zpos, rc, rcsq, lboxx,&
+                         lboxy, lboxz, vrc, vrc2, npar, nsurf,&
+                         zperiodic, epottot)
+  call gauss_kineticen(xvel, yvel, zvel, npar, ekintot)
+  write(*,*) 0, epottot, ekintot, epottot + ekintot
 
   do cy = 1, ncycles
      
@@ -59,6 +70,34 @@ subroutine gauss_executecyclesnve(xpos, ypos, zpos, xvel, yvel, zvel,&
      xpos = xpos + xvel*dt + fx*p5dtsq
      ypos = ypos + yvel*dt + fy*p5dtsq
      zpos = zpos + zvel*dt + fz*p5dtsq
+
+     ! apply periodic BCs
+     do i = 1, npar
+
+        ! x and y directions
+        if (xpos(i) < 0.0_db) then
+           xpos(i) = xpos(i) + lboxx
+        else if (xpos(i) > lboxx) then
+           xpos(i) = xpos(i) - lboxx
+        end if
+        if (ypos(i) < 0.0_db) then
+           ypos(i) = ypos(i) + lboxy
+        else if (ypos(i) > lboxy) then
+           ypos(i) = ypos(i) - lboxy
+        end if
+
+        ! z direction
+        if (zperiodic) then
+           if (zpos(i) < 0.0_db) then
+              zpos(i) = zpos(i) + lboxz
+           else if (zpos(i) > lboxz) then
+              zpos(i) = zpos(i) - lboxz
+           end if
+        else
+           ! TODO: need to treat case of z not periodic here
+        end if
+        
+     end do ! apply periodic BCs
 
      ! we need to rebuild the cell list with the new positions
      call new_nlist(xpos, ypos, zpos, rc, lboxx, lboxy, lboxz, npar,&
@@ -89,7 +128,8 @@ subroutine gauss_executecyclesnve(xpos, ypos, zpos, xvel, yvel, zvel,&
                                rnz, xpos, ypos, zpos, rc, rcsq, lboxx,&
                                lboxy, lboxz, vrc, vrc2, npar, nsurf,&
                                zperiodic, epottot)
-        write(*,*) cy, epottot
+        call gauss_kineticen(xvel, yvel, zvel, npar, ekintot)
+        write(*,*) cy, epottot, ekintot, epottot + ekintot
      end if
 
   end do

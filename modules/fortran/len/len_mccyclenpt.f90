@@ -137,7 +137,7 @@ subroutine len_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp, rc,&
            deallocate(hoc)
            allocate( hoc(ncelx, ncely, ncelx) )
            call new_nlist(xpos, ypos, zpos, rc, lboxx, lboxy, lboxz, npar,&
-                          ncelx, ncely, ncelz, ll, hoc, rnx, rny, rnz)           
+                          ncelx, ncely, ncelz, ll, hoc, rnx, rny, rnz)
 
            ! new energy, note we are using new box dimensions
            call len_totalenlist(ll, hoc, ncelx, ncely, ncelz, rnx,&
@@ -258,7 +258,6 @@ subroutine len_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp, rc,&
                  zpos(ipar) = zposinew
                  etot = etot - eold + enew
                  acmovdisp = acmovdisp + 1
-
 
                  if (newlist) then
                     ! update the cell list

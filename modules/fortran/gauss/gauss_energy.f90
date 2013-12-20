@@ -362,6 +362,26 @@ subroutine gauss_totalenlist(ll, hoc, ncelx, ncely, ncelz,&
 
 end subroutine gauss_totalenlist
 
+subroutine gauss_kineticen(xvel, yvel, zvel, npar, ekintot)
+  ! Compute kinetic energy (assume mass = 1 in our units)
+
+  implicit none
+  integer, parameter :: db = 8 !selected_real_kind(13)
+
+  ! inputs
+  integer, intent(in) :: npar
+  real(kind=db), dimension(npar), intent(in) :: xvel, yvel, zvel
+
+  ! outputs
+  real(kind=db), intent(out) :: ekintot
+
+  !f2py intent(in) :: xvel, yvel, zvel, npar
+  !f2py intent(out) :: ekintot
+  !f2py depend(npar) :: xvel, yvel, zvel
+
+  ekintot = 0.5_db * sum(xvel**2 + yvel**2 + zvel**2)
+end subroutine gauss_kineticen
+
 subroutine gauss_enlist(ll, hoc, ncelx, ncely, ncelz, ipar, xposi,&
                         yposi, zposi, xpos, ypos, zpos, rc, rcsq,&
                         lboxx, lboxy, lboxz, vrc, vrc2, npar, nsurf,&
