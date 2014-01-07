@@ -37,7 +37,7 @@ subroutine gauss_executecyclesnve(xpos, ypos, zpos, xvel, yvel, zvel,&
                    zposinew, eold, enew, p5dt, p5dtsq
   integer :: cy, i
   real(kind=db), dimension(npar) :: newfx, newfy, newfz
-  real(kind=db) :: sumv2, fs, epottot, ekintot
+  real(kind=db) :: sumv2, fs, epottot, epottot2, ekintot, ekintot2
   ! these are for cell lists
   integer :: ncelx, ncely, ncelz
   real(kind=db) :: rnx, rny, rnz
@@ -62,7 +62,13 @@ subroutine gauss_executecyclesnve(xpos, ypos, zpos, xvel, yvel, zvel,&
                          lboxy, lboxz, vrc, vrc2, npar, nsurf,&
                          zperiodic, epottot)
   call gauss_kineticen(xvel, yvel, zvel, npar, ekintot)
-  write(*,*) 0, epottot/npar, ekintot/npar, (epottot + ekintot)/npar
+
+  ! we use ekintot2 and epottot2 to store total kinetic and total
+  ! potential energy per particle.  Note that we output ekintot /
+  ! (npar * T), which should fluctuate around the value 1.5.
+  epottot2 = epottot / npar
+  ekintot2 = ekintot / npar
+  write(*,*) 0, epottot2, ekintot2/temp, epottot2 + ekintot2
 
   do cy = 1, ncycles
      
@@ -138,8 +144,10 @@ subroutine gauss_executecyclesnve(xpos, ypos, zpos, xvel, yvel, zvel,&
                                lboxy, lboxz, vrc, vrc2, npar, nsurf,&
                                zperiodic, epottot)
         call gauss_kineticen(xvel, yvel, zvel, npar, ekintot)
-        ! output PE, KE and total energy per particle
-        write(*,*) cy, epottot/npar, ekintot/npar, (epottot + ekintot)/npar
+        ! output PE/npar, KE/(npar*T) ~ 1.5 and total energy per particle
+        epottot2 = epottot / npar
+        ekintot2 = ekintot / npar
+        write(*,*) cy, epottot2, ekintot2/temp, epottot2 + ekintot2
      end if
 
   end do
