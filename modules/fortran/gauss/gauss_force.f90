@@ -67,16 +67,16 @@ subroutine gauss_fij(ipar, jpar, xposi, yposi, zposi, xposj, yposj, zposj,&
            prefac = -2*exp(-sepsq)
            if (ipar > nsurf .and. jpar > nsurf) then
               ! both particles are fluid particles
-              fx = -sepx*exp(-sepsq)
-              fy = -sepy*exp(-sepsq)
-              fz = -sepz*exp(-sepsq)              
+              fx = sepx*prefac
+              fy = sepy*prefac
+              fz = sepz*prefac
            else
               ! at least one particle is a surface particle
               ! currently we are doing the same thing, but may
               ! want to add a different potential later
-              fx = -sepx*exp(-sepsq)
-              fy = -sepy*exp(-sepsq)
-              fz = -sepz*exp(-sepsq)              
+              fx = sepx*prefac
+              fy = sepy*prefac
+              fz = sepz*prefac
            end if
         end if
      end if
