@@ -311,10 +311,21 @@ def initpositionsvelocities(params):
     """
 
     if params['simulation'] == 'restart':
-        # the restart file should be a pickle file that contains both
-        # the positions and the velocities
-        return writeoutput.readmdpick(params['restartfile'])
+        # we can restart either from a .pkl file (in which case we
+        # expect both positions and velocities) or from a .xyz file
+        # (in which case we expect only positions).  In the latter
+        # case, we initialize the velocities randomly with
+        # Maxwell-Boltzmann distribution.
+        if params['restartfile'].endswith('.pkl'):
+            # the restart file should be a pickle file that contains
+            # both the positions and the velocities.
+            return writeoutput.readmdpick(params['restartfile'])
+        else:
+            return readwrite.rxyz(params['restartfile']),\
+                   initvelocitiesgauss(params)            
     else:
+        # note unlike in the case of restarting a simulation, we
+        # initialize the velocities randomly.
         return initpositions(params), initvelocities(params)
 
 def initpositions(params):
@@ -478,7 +489,37 @@ def initpositionssurf(params):
     # array ordered as surface atoms, then fluid atoms
     allpositions = np.append(surfpositions,flpositions, axis=0)
 
-    return allpositions    
+    return allpositions
+
+def initvelocitiesgauss(params):
+    """
+    Initialize velocities from Maxwell-Boltzmann distribution at the
+    desired temperature.
+    """
+    
+    # get parameters required from dictionary
+    npar = params['npartot']
+    temp = params['Tstar']
+
+    # for each velocity component, we do the following:
+    # (i)   init velocity from Gaussian with sigma = sqrt(k_B T / m)
+    # (ii)  add/subtract from all velocities so that net mom is zero
+    # (iii) multiply by scale factor so that kinetic temp is exact
+    # Furthermore, note that we are assuming mass is = 1 here    
+
+    stdev = temp**0.5
+
+    vels = np.empty((npar, 3))
+
+    for i in range(3):
+        vels[:,i] = np.random.normal(0.0, stdev, npar)
+        sumv = np.sum(vels[:,i]) / npar
+        vels[:,i] = vels[:,i] - sumv
+        sumv2 = np.sum(vels[:,i]**2) / npar
+        fs = (temp / sumv2)**0.5
+        vels[:,i] = vels[:,i]*fs
+
+    return vels
 
 def initvelocities(params):
     """

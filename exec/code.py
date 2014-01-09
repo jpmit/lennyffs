@@ -62,6 +62,7 @@ class MProgram(object):
             self.forces = force.gauss_forceslist(self.positions,
                                                  self.params)            
         else:
+            # MC simulation.  We initialize positions only.
             self.positions = initsim.initpositions(self.params)
 
         # write initial positions to file if new simulation
