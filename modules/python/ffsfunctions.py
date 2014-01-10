@@ -23,7 +23,6 @@ import numpy as np
 import funcselector
 import initsim
 import readwrite
-from bops import bopxbulk
 
 def getshotdict(nint):
     """Return shot dictionary from pickle file at interface nint."""

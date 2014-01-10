@@ -34,10 +34,14 @@ except IOError:
 # be for an NPT simulation, we use the ones in the XYZ file to
 # overwrite those in the parameters dictionary.
 boxdims = getboxdims(infile)
+# we pass boxdict to the wxyz file, so that the XYZ file for the
+# cluster we are writing also has the boxdims written on it.
+boxdict = {} 
 if boxdims:
     params['lboxx'] = boxdims[0]
     params['lboxy'] = boxdims[1]
     params['lboxz'] = boxdims[2]
+    boxdict = {'boxdims' : boxdims}
 
 # read infile and keep only surface and crystal atoms
 positions, symbols = readwrite.rxyz(infile, True)
@@ -71,4 +75,4 @@ if ns:
 else:
     # no surface atoms
     positions = clpositions
-readwrite.wxyz(outfile, positions, symbols)
+readwrite.wxyz(outfile, positions, symbols, **boxdict)

@@ -10,9 +10,8 @@ import sys
 import os
 import numpy as np
 import readwrite
-import bops
-import graph
-from ffsfunctions import getpickparams
+import orderparam
+from ffsfunctions import getpickparams, getboxdims
 
 # symbols identified as being crystal
 XTALPARS = ['S', # FCC (or all TF)
@@ -31,6 +30,15 @@ try:
 except IOError:
     sys.exit("Error: could not open file params.pkl")
 
+# box dimensions: if these are written in the XYZ file, as they would
+# be for an NPT simulation, we use the ones in the XYZ file to
+# overwrite those in the parameters dictionary.
+boxdims = getboxdims(infile)
+if boxdims:
+    params['lboxx'] = boxdims[0]
+    params['lboxy'] = boxdims[1]
+    params['lboxz'] = boxdims[2]
+
 # read infile and keep only crystal atoms
 positions, symbols = readwrite.rxyz(infile, True)
 fin.close()
@@ -39,17 +47,8 @@ npar = len(positions)
 # crystal atoms
 cpositions = np.array([positions[i] for i in range(npar)
                        if symbols[i] in XTALPARS])
-nc = len(cpositions)
 
-# get graph of connections
-xgraph = bops.getxgraph(cpositions, params, range(nc))
-
-# get largest cluster
-comps = graph.connected_comps(xgraph)
-if not comps:
-    # there are no crystalline particles, comps = []
-    ncl = 0
-else:
-    ncl = len(comps[0])
+# second method of getting cluster size
+ncl = len(orderparam._clusnums(cpositions, params))
 
 print ncl

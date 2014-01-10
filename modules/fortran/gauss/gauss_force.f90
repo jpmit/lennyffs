@@ -33,7 +33,8 @@ subroutine gauss_fij(ipar, jpar, xposi, yposi, zposi, xposj, yposj, zposj,&
   fy = 0.0_db
   fz = 0.0_db
   ! note the ordering of the separation here; this is important for
-  ! getting the direction of the force correct.
+  ! getting the direction of the force correct.  If sepx is positive,
+  ! the force on particle i should be in the negative x direction.
   sepx = xposj - xposi
   ! periodic boundary conditions
   if (sepx > 0.5*lboxx) then
