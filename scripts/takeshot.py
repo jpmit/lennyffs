@@ -99,6 +99,6 @@ if success:
 # line: initialconfignumber timetaken success
 fname = 'shots{0}_{1}.out'.format(intfrom + 1, myjobnm)
 fout = open(fname, 'w')
-fout.write('from time success weight\n{0} {1} {2} {:.6f}\n'\
+fout.write('from time success weight\n{0} {1} {2} {3:.6f}\n'\
            .format(initnum, time, success, weight))
 fout.close()
