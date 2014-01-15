@@ -70,13 +70,13 @@ while (qhits < totalqhits):
     # write OP and total time to file
     fin.write('{0} {1}\n'.format(ttot, op))
     fin.flush()
-    if (bopx >= lam0):
+    if (op >= lam0):
         # we hit the interface
         qhits = qhits + 1
         savelambda0config(qhits, thit, positions, params)
         thit = 0
         # now let the system relax back to lambda A
-        while (bopx >= lamA):
+        while (op >= lamA):
             # TODO: make this work for MD (will require velocities and forces)
             positions, epot = cyclefunc(positions, params, epot)
             ttot = ttot + lamsamp                
@@ -87,7 +87,7 @@ while (qhits < totalqhits):
             # if we reached lam0*10 then return to phase A by
             # reloading initial positions. lam0*10 is arbitrary, the
             # aim here is to stop the system from reaching phase B.
-            if (bopx > lam0*10):
+            if (op > lam0*10):
                 positions = initsim.initpositions(params)
                 op = orderpfunc(positions, params)
                 epot = totalenergyfunc(positions, params)
