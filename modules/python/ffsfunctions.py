@@ -163,23 +163,21 @@ def takeshot(initfile, nint, params):
 
     return success, weight, ttot, positions
 
-def savelambda0config(qhits, thit, positions, params, wfunc):
+def savelambda0config(qhits, thit, oparam, positions, params, wfunc):
     """Save configuration at lambda0 and add to the times file."""
     
     fnametime = 'times.out'
     fnamepos = 'pos0_{0}.xyz'.format(qhits)
-    
-    if qhits == 1: # hit lambda0 for the first time
+
+    # create file times.out if hit lambda0 for the first time
+    if qhits == 1: 
         fout = open(fnametime,'w')
-        fout.write('#Time nxtal BOPx\n')
+        fout.write('#Time OP\n')
     else:
         fout = open(fnametime, 'a')
 
-    # get all xtal particles and bopxbulk
-    nxtal,bopx = bopxbulk(positions, params)
-
     # write to file
-    fout.write('{0} {1} {2}\n'.format(thit, nxtal, bopx))
+    fout.write('{0} {1}\n'.format(thit, oparam))
     fout.close()
 
     # write out positions at the interface lambda_0

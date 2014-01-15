@@ -5,7 +5,7 @@
 
 """
 Take the system from phase A to Lambda0 in FFS simulation.  see Allen,
- Valerani, ten Wolde J. Phys. Condens. matter 21, 463102.
+Valerani, ten Wolde J. Phys. Condens. matter 21, 463102.
 """
 
 import sys
@@ -32,10 +32,11 @@ positions = initsim.initpositions(params)
 
 # get the correct energy function and MC cycle function using
 # PotSelector interface
-potman = funcselector.FuncSelector(params)
-totalenergyfunc = potman.TotalEnergyFunc()
-cyclefunc = potman.MCCycleFunc()
-orderpfunc = potman.OrderParamFunc()
+funcman = funcselector.FuncSelector(params)
+totalenergyfunc = funcman.TotalEnergyFunc()
+cyclefunc = funcman.MCCycleFunc()
+orderpfunc = funcman.OrderParamFunc()
+wxyzfunc = funcman.WriteXyzFunc()
 
 # check that lambda < lamA (we are in phase A)
 op = orderpfunc(positions, params)
@@ -73,11 +74,13 @@ while (qhits < totalqhits):
     if (op >= lam0):
         # we hit the interface
         qhits = qhits + 1
-        savelambda0config(qhits, thit, positions, params)
+        savelambda0config(qhits, thit, op, positions, params,
+                          wxyzfunc)
         thit = 0
         # now let the system relax back to lambda A
         while (op >= lamA):
-            # TODO: make this work for MD (will require velocities and forces)
+            # TODO: make this work for MD (will require velocities and
+            # forces)
             positions, epot = cyclefunc(positions, params, epot)
             ttot = ttot + lamsamp                
             # evaluate OP
