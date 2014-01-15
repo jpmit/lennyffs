@@ -15,7 +15,7 @@ import initsim
 import energy
 import mccycle
 from ffsfunctions import savelambda0config, getpickparams
-import potselector
+import funcselector
 from lenexceptions import *
 
 params = getpickparams()
@@ -32,7 +32,7 @@ positions = initsim.initpositions(params)
 
 # get the correct energy function and MC cycle function using
 # PotSelector interface
-potman = potselector.PotSelector(params)
+potman = funcselector.FuncSelector(params)
 totalenergyfunc = potman.TotalEnergyFunc()
 cyclefunc = potman.MCCycleFunc()
 orderpfunc = potman.OrderParamFunc()
