@@ -13,7 +13,6 @@ import os
 import numpy as np
 import funcselector
 import readwrite
-from writeoutput import writexyz
 from ffsfunctions import *
 
 # get command line arguments and complain if not right. We expect at
