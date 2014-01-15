@@ -160,7 +160,7 @@ double py_nclusld(boost::python::numeric::array xpos,
 	  vector<vector<int> > lneigh(npartot); // vector of neighbour particle nums for
 	                                         // each par
 
-	  // fill up numneigh and lneigh, we can use either neighcut of
+	  // fill up numneigh and lneigh, we can use either neighcut or
 	  // neighnearest for this
 	  neighnearest(allpars, simbox, numneigh, lneigh, 12);
 
@@ -182,7 +182,8 @@ double py_nclusld(boost::python::numeric::array xpos,
 
 	  // classify particles using q4lbar etc.
 	  vector<LDCLASS> ldclass = classifyparticlesld(nparsurf, q4lbar,
-																	q6lbar, w4lbar, w6lbar);
+																	q6lbar, w4lbar,
+																	w6lbar);
 
 	  // indices of particles in the largest cluster
 	  vector<int> ldcnums = largestclusterld(allpars, simbox, ldclass);

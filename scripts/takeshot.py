@@ -68,11 +68,11 @@ initfile = 'pos{0}_{1}.xyz'.format(intfrom, initnum)
 print ('I found {0} successful shots at the previous interface - you should'
        'check this is correct'.format(shotdict['nsuccess']))
 print 'These are runs {0}'\
-      .format(','.join([str(i) for i in shotdict['successnumbers']])
+      .format(','.join([str(i) for i in shotdict['successnumbers']]))
 print 'I have chosen the initial config {0}'.format(initfile)
 params['restartfile'] = initfile
 
-# take the shot
+# take the shot (see ffsfunctions.py)
 success, weight, time, positions = takeshot(initfile, intfrom, params)
 
 # print out whether success/fail and time
