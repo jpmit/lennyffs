@@ -1,0 +1,49 @@
+#! /usr/bin/env python
+
+# len_changesymbol
+# James Mithen
+# Change symbol in .xyz file if they have a given symbol e.g.
+# 'S', 'N', 'O'.  Note that symbol can be anything but must be a
+# single character (input like SNO will be treated as three characters,
+# and a particle with any of these symbols will be removed).
+
+import sys
+import readwrite
+
+if len(sys.argv) != 5:
+    sys.exit("Syntax len_changesymbol symbolin symbolout infile.xyz outfile.xyz")
+
+# symbols can be given as S SNO etc. so can strip multiple symbols by
+# running this script only once
+sin = sys.argv[1]
+sout = sys.argv[2]
+infile = sys.argv[3]
+outfile = sys.argv[4]
+
+# read infile positions and symbols
+try:
+    fin = open(infile,'r')
+except IOError:
+    sys.exit("Problem reading file %s" %infile)
+positions,symbols = readwrite.rxyz(infile,True)
+fin.close()
+npar = len(positions)
+
+outstr = ''
+np = 0 # number of particles not stripped
+for i in range(npar):
+    if symbols[i] != sin:
+        sym = symbols[i]
+    else:
+        sym = sout
+    outstr = '%s%s %.8f %.8f %.8f\n' %(outstr,sym,
+                                       positions[i][0],
+                                       positions[i][1],
+                                       positions[i][2])
+    np = np + 1
+outstr = '%d\n\n%s' %(np,outstr)
+
+# write to outfile
+fout = open(outfile,'w')
+fout.write(outstr)
+fout.close()
