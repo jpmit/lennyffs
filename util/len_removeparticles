@@ -11,7 +11,7 @@ import sys
 import readwrite
 
 if len(sys.argv) != 4:
-    sys.exit("Syntax stripsymbols symbols infile.xyz outfile.xyz")
+    sys.exit("Syntax len_removeparticles symbols infile.xyz outfile.xyz")
 
 # symbols can be given as S SNO etc. so can strip multiple symbols by
 # running this script only once
@@ -37,16 +37,9 @@ for i in range(npar):
                                            positions[i][1],
                                            positions[i][2])
         np = np + 1
-outstr = '%d\n\n%s' %(np,outstr)
+outstr = '%d\n\n%s' %(np, outstr)
 
 # write to outfile
 fout = open(outfile,'w')
 fout.write(outstr)
 fout.close()
-
-
-        
-
-
-
-    
