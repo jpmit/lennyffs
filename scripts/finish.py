@@ -2,11 +2,17 @@
 # finish.py
 # James Mithen
 # j.mithen@surrey.ac.uk
-#
-# We have made it from interface intfrom to interface intfrom+1
-# This script gathers the results of every shot at this interface
-# At the end of the FFS run, these interfacei.out files are used
-# by the script diagnosis.py, which collects FFS statistics
+
+"""
+Finish off going from intfrom to intfrom + 1.  This script gathers the
+results of every shot, from files like shots1_32.out, processes the
+data from all of them (e.g. for going from interface 0 to 1, this is
+all of the shots1_*.out files).  The results are written to
+interfacei.out files.  At the very end of the FFS run (once all
+interfaces have been done), the interfacei.out files are used by the
+script diagnosis.py, which collects overall FFS statistics (such as
+the rate).
+"""
 
 import sys
 import os
@@ -14,35 +20,35 @@ import glob
 import pickle
 import numpy as np
 
-# get arguments and complain if not right
-# expect at least 1 argument: intfrom
-# which is the interface we are arriving from
-# e.g. if intfrom=0, we are taking a shot from lambda0, aiming for lambda1
-# the second argument is optional, if set, we dont delete the files produced
-# by each individual shot (this is useful for debugging, but in general we
-# want to delete these files)
+# get arguments and complain if not right.  We expect at least 1
+# argument: intfrom, which is the interface we are arriving from
+# e.g. if intfrom=0, we are taking a shot from lambda0, aiming for
+# lambda1. The second argument is optional, if set, we dont delete the
+# files produced by each individual shot (this is useful for
+# debugging, but in general we want to delete these files).
 
 if len(sys.argv) != 2 and len(sys.argv) != 3:
     sys.exit('Error: finish.py expected either one or two argument')
-intfrom = int(sys.argv[1]) # interface we came from
+# interface we came from    
+intfrom = int(sys.argv[1])
 
 if len(sys.argv) == 3:
     delete = False
 else:
     delete = True
 
-# exit the program if we have just gone from phaseA->lambda0
-# since nothing to do in this case (make this cleaner later)
-# since lambda0.py writes its own shot dictionary
+# exit the program if we have just gone from phaseA->lambda0 since
+# nothing to do in this case (make this cleaner later), as lambda0.py
+# writes its own shot dictionary.
 if (intfrom == -1) :
     sys.exit()
 
 # work out nshots by counting number of shots%d_%d.out files
-sfiles = glob.glob('shots%d_*.out' %(intfrom + 1))
+sfiles = glob.glob('shots{0}_*.out'.format(intfrom + 1))
 nshots = len(sfiles)
 
 # get sorted list of shot numbers
-shotnums = np.zeros(nshots,dtype=int)
+shotnums = np.zeros(nshots, dtype=int)
 i = 0
 for sfile in sfiles:
     snum = int(sfile.split('_')[1].split('.')[0])    
@@ -50,7 +56,8 @@ for sfile in sfiles:
     i = i + 1
 shotnums.sort()
 
-# open each shot file for interface, and get from,time,success,weight
+# open each shot file for interface, and get from, time, success,
+# weight.
 shotfrom = np.zeros(nshots,dtype=int)
 times = np.zeros(nshots,dtype=int)
 success = np.zeros(nshots,dtype=int)
@@ -62,7 +69,7 @@ nsuccess = 0 # total number successes
 nsuccesseff = 0.0 # total weight of successful shots (>= nsuccess)
 i = 0
 for sn in shotnums:
-    fout = open('shots%d_%d.out' %(intfrom+1,sn),'r')
+    fout = open('shots{0}_{1}.out'.format(intfrom + 1, sn), 'r')
     dataline = fout.readlines()[1].split()
     fout.close()
     f = int(dataline[0])
