@@ -38,7 +38,7 @@ cyclefunc = potman.MCCycleFunc()
 orderpfunc = potman.OrderParamFunc()
 
 # check that lambda < lamA (we are in phase A)
-op = orderpfunc(positions,params)
+op = orderpfunc(positions, params)
 if (op >= lamA):
     raise FFSError, ('OP is {0}, system must start in phase A, '
                      'OP < {1}'.format(op, lamA))
@@ -68,7 +68,7 @@ while (qhits < totalqhits):
     # evaluate OP
     op = orderpfunc(positions, params)
     # write OP and total time to file
-    fin.write('{0} {1} {2}\n'.format(ttot, nxtal, bopx))
+    fin.write('{0} {1}\n'.format(ttot, op))
     fin.flush()
     if (bopx >= lam0):
         # we hit the interface
@@ -83,7 +83,7 @@ while (qhits < totalqhits):
             # evaluate OP
             op = orderpfunc(positions, params)
             # write OP and total time to file
-            fin.write('{0} {1} {2}\n'.format(ttot, nxtal, bopx))
+            fin.write('{0} {1}\n'.format(ttot, op))
             # if we reached lam0*10 then return to phase A by
             # reloading initial positions. lam0*10 is arbitrary, the
             # aim here is to stop the system from reaching phase B.
@@ -92,7 +92,7 @@ while (qhits < totalqhits):
                 op = orderpfunc(positions, params)
                 epot = totalenergyfunc(positions, params)
                 fin.write('RETURNING TO PHASE A\n')
-                fin.write('{0} {1} {2}\n'.format(ttot, nxtal, bopx))
+                fin.write('{0} {1}\n'.format(ttot, op))
                 
 fin.close()
 
@@ -100,7 +100,7 @@ fin.close()
 # and read by shots at the subsequent interface (see takeshot.py).
 shotdict = {'nshots': totalqhits,'nshotseff': totalqhits,
             'nsuccess': totalqhits,'nsuccesseff' : totalqhits,
-            'successnumbers' : np.array(range(1,totalqhits+1)),
+            'successnumbers' : np.array(range(1, totalqhits + 1)),
             'successweights': np.ones(totalqhits)}
 
 # write out to pickle file
