@@ -69,7 +69,18 @@ print ('I found {0} successful shots at the previous interface - you should'
 print 'These are runs {0}'\
       .format(','.join([str(i) for i in shotdict['successnumbers']]))
 print 'I have chosen the initial config {0}'.format(initfile)
+
+# set up params dictionary using the chosen file
+# i) override restartfile (means we read in positions)
 params['restartfile'] = initfile
+# ii) get box dimensions: if these are written in the XYZ file, as
+# they would be for an NPT simulation, we use the ones in the XYZ file
+# to overwrite those in the parameters dictionary.
+boxdims = getboxdims(initfile)
+if boxdims:
+    params['lboxx'] = boxdims[0]
+    params['lboxy'] = boxdims[1]
+    params['lboxz'] = boxdims[2]
 
 # take the shot (see ffsfunctions.py)
 success, weight, time, positions = takeshot(initfile, intfrom, params)
