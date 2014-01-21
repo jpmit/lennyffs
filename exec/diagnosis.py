@@ -99,7 +99,7 @@ fout.write('----------\nDETAILED BREAKDOWN\n'
                    params['lambdas'][-1], len(ts)))
 fstr = ''
 for i in range(nint):
-    fstr = '{0}{:d}->{:d} {:d} {:d} {:d} {:.6f} {:.6e}\n'\
+    fstr = '{}{:d}->{:d} {:d} {:d} {:d} {:.6f} {:.6e}\n'\
             .format(fstr, i, i+1, params['lambdas'][i + 1], fired[i],
                     success[i], probs[i], cumprobs[i])
 fout.write(fstr)
