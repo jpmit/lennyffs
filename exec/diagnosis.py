@@ -12,6 +12,7 @@
 import readwrite
 import numpy as np
 from ffsfunctions import getpickparams
+from lenexceptions import FFSError
 
 # get number of interfaces in simulation
 params = getpickparams()
@@ -23,8 +24,8 @@ ts, op = readwrite.r2col('times.out')
 flux = 1.0 / np.average(ts)
 
 # now get all probabilities
-fired = np.empty(nint)
-success = np.empty(nint)
+fired = np.empty(nint, dtype='int')
+success = np.empty(nint, dtype='int')
 probs = np.empty(nint)
 firedeff = np.empty(nint)
 successeff = np.empty(nint)
@@ -58,6 +59,8 @@ for i in range(nint-1):
     cumprobseff[-i - 2] = cumprobseff[-i - 1]*probs[-i - 2]
 
 # critical interface is smallest interface for which P(finalphase) > 0.5
+critint = 0
+critinteff = 0
 for i in range(nint):
     if cumprobs[i] > 0.5:
         critint = i
@@ -66,6 +69,11 @@ for i in range(nint):
     if cumprobseff[i] > 0.5:
         critinteff = i
         break
+# if critint = 0, throw an error since these means we haven't gone far
+# enough in OP space to be able to define the critical interface
+if critint == 0:
+    raise FFSError, ('cannot get critical interface due to low '
+                     'crossing probabilities')
 
 # critical OP is OP at the critical interface
 critop = params['lambdas'][critint]
@@ -100,7 +108,7 @@ fout.write('----------\nDETAILED BREAKDOWN\n'
 fstr = ''
 for i in range(nint):
     fstr = '{}{:d}->{:d} {:d} {:d} {:d} {:.6f} {:.6e}\n'\
-            .format(fstr, i, i+1, params['lambdas'][i + 1], fired[i],
+            .format(fstr, i, i + 1, params['lambdas'][i + 1], fired[i],
                     success[i], probs[i], cumprobs[i])
 fout.write(fstr)
 fout.close()
@@ -118,14 +126,14 @@ fout.write('SUMMARY\nCritint Critn\n{:d} {:d}\nFlux Prob Rate ln(Rate)\n'
            .format(critinteff, critopeff, flux, probeff, rateeff,
                    np.log(rateeff)))
 fout.write('----------\nDETAILED BREAKDOWN\n'
-           'phase A OP: {:.d} lambda0 OP: {:.d} phase B OP: {:.d}\n'
-           '{:.d} shots fired from A to lambda0\ninterface '
+           'phase A OP: {:d} lambda0 OP: {:d} phase B OP: {:d}\n'
+           '{:d} shots fired from A to lambda0\ninterface '
            'OP fired success P(success) P(finalphase)\n'\
            .format(params['lambdaA'], params['lambdas'][0],
                    params['lambdas'][-1], len(ts)))
 fstr = ''
 for i in range(nint):
-    fstr = '{0}{:d}->{:d} {:d} {:d} {:d} {:.6f} {:.6e}\n'\
+    fstr = '{}{:d}->{:d} {:d} {:.6f} {:.6f} {:.6f} {:.6e}\n'\
            .format(fstr, i, i+1, params['lambdas'][i+1], firedeff[i],
                    successeff[i], probseff[i], cumprobseff[i])
 fout.write(fstr)
