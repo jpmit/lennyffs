@@ -86,7 +86,7 @@ prob = np.product(probs)
 # rate of forming FINAL PHASE, starting from phase A
 rate = flux*prob
 fout = open(sname,'w')
-fout.write('SUMMARY\nCritint Critn\n{:d} {:d} {:d}\n'
+fout.write('SUMMARY\nCritint Critn\n{:d} {:d}\n'
            'Flux Prob Rate ln(Rate) relvar\n{:.6e} {:.6e} {:.6e} '
            '{:.6e} {:.6e}\n'.format(critint, critop, flux, prob, rate,
                                     np.log(rate), relvar))
