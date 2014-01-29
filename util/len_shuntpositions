@@ -10,7 +10,7 @@ import readwrite
 import sys
 
 if len(sys.argv) != 6:
-    sys.exit("Syntax shuntpositions symbols axis[x/y/z] "
+    sys.exit("Syntax len_shuntpositions symbols axis[x/y/z] "
              "distance infile.xyz outfile.xyz")
 
 axdict = {'x': 0, 'y': 1, 'z':2}

@@ -24,8 +24,8 @@ ts, op = readwrite.r2col('times.out')
 flux = 1.0 / np.average(ts)
 
 # now get all probabilities
-fired = np.empty(nint, dtype='int')
-success = np.empty(nint, dtype='int')
+fired = np.empty(nint)
+success = np.empty(nint)
 probs = np.empty(nint)
 firedeff = np.empty(nint)
 successeff = np.empty(nint)
@@ -108,8 +108,8 @@ fout.write('----------\nDETAILED BREAKDOWN\n'
 fstr = ''
 for i in range(nint):
     fstr = '{}{:d}->{:d} {:d} {:d} {:d} {:.6f} {:.6e}\n'\
-            .format(fstr, i, i + 1, params['lambdas'][i + 1], fired[i],
-                    success[i], probs[i], cumprobs[i])
+            .format(fstr, i, i + 1, params['lambdas'][i + 1], int(fired[i]),
+                    int(success[i]), probs[i], cumprobs[i])
 fout.write(fstr)
 fout.close()
 
