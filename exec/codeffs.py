@@ -59,7 +59,7 @@ epath = os.path.normpath(os.path.join(fullpath, '..', 'scripts'))
 print 'path to scripts lambda0.py, finish.py, takeshot.py is', epath
 
 # can specify a job queue here
-qname = 'physics'
+qname = 'physics.q'
 if qname:
     qstr = '-q %s' %qname
 else:
