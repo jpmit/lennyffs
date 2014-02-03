@@ -1,0 +1,45 @@
+#!/usr/bin/env python
+
+# len_ancestry
+# James Mithen
+# Return FFS 'ancestry' of a particular FFS configuration.
+
+import readwrite
+import sys
+import numpy as np
+import re
+import glob
+
+if len(sys.argv) != 2:
+    sys.exit("Syntax len_ancestry infile.xyz")
+
+fname = sys.argv[1]
+
+# we assume filenames like pos2_234.xyz etc
+posstr = fname.split('/')[-1]
+nums = posstr[3:-4]
+ns = nums.split('_')
+
+# interface and shot number of the XYZ file under investigation
+intnum = int(ns[0])
+shotnum = int(ns[1])
+
+# get maximum interface number
+#maxinum = max([int(re.findall('\d+', f)[0]) for f in glob.glob('interface*.out')])
+
+# open each interface file in turn
+shotnums = np.zeros(intnum + 1,dtype = int)
+shotnums[intnum] = shotnum
+
+# work backwards from current interface
+for i in range(intnum):
+    fint = open('interface%d.out' %(intnum - i),'r')
+    lines = fint.readlines()
+    fint.close()
+    last = shotnums[intnum - i]
+    shotfrom = int(lines[last + 5].split()[1])
+    shotnums[intnum-i-1] = shotfrom
+
+# stitch together filenames
+for i in range(intnum + 1):
+    print 'pos{:d}_{:d}.xyz'.format(i, qshotnums[i])
