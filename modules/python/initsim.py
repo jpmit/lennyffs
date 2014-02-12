@@ -284,8 +284,8 @@ def addparamsnosurf(pdict):
     #   we use nstar to set the box dimensions
     # - If none of the above has set the box dimensions, we have a
     #   problem (!)
-    # Finally, for npt simulation, if we are restarting, we try
-    # getting the box dims from the xyz file.
+    # Finally, we try getting the box dims from the xyz file.  Note
+    # this will override the above!
     if ('lboxx' in pdict) and ('lboxy' in pdict) and ('lboxz' in pdict):
         pass
     else:
@@ -305,8 +305,8 @@ def addparamsnosurf(pdict):
             # we haven't set the box size (!)
             print "Warning, box size has not been set properly!"
 
-    # for npt sim, if restarting then get box volume from the XYZ file
-    if (pdict['mctype'] == 'npt') and (pdict['simulation'] == 'restart'):
+    # if restarting then try over-riding with box volume from the XYZ file
+    if (pdict['simulation'] == 'restart'):
         boxdims = getboxdims(pdict['restartfile'])
         if boxdims:
             pdict['lboxx'] = boxdims[0]

@@ -21,7 +21,6 @@ import glob
 import pickle
 import numpy as np
 import funcselector
-import initsim
 import readwrite
 
 def getshotdict(nint):
