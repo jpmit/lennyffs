@@ -306,8 +306,8 @@ def addparamsnosurf(pdict):
             print "Warning, box size has not been set properly!"
 
     # for npt sim, if restarting then get box volume from the XYZ file
-    if (params['mctype'] == 'npt') and (params['simulation'] == 'restart'):
-        boxdims = getboxdims(params['restartfile'])
+    if (pdict['mctype'] == 'npt') and (pdict['simulation'] == 'restart'):
+        boxdims = getboxdims(pdict['restartfile'])
         if boxdims:
             pdict['lboxx'] = boxdims[0]
             pdict['lboxy'] = boxdims[1]
