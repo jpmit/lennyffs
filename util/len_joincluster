@@ -35,10 +35,14 @@ except IOError:
 # be for an NPT simulation, we use the ones in the XYZ file to
 # overwrite those in the parameters dictionary.
 boxdims = getboxdims(infile)
+# we pass boxdict to the wxyz file, so that the XYZ file for the
+# cluster we are writing also has the boxdims written on it.
+boxdict = {} 
 if boxdims:
     params['lboxx'] = boxdims[0]
     params['lboxy'] = boxdims[1]
     params['lboxz'] = boxdims[2]
+    boxdict = {'boxdims' : boxdims}
 
 # save box dimensions for future use
 lboxx = params['lboxx']
@@ -233,8 +237,8 @@ if ns > 0: # i.e. we have some surface atoms in the xyz file
 
     # write out file
     allpositions = np.vstack((surfpositions,clpositions))
-    readwrite.wxyz(outfile,allpositions,['O']*ns + clsymbols)
+    readwrite.wxyz(outfile, allpositions,['O']*ns + clsymbols, **boxdict)
  # no surface atoms in the xyz file    
 else:
     # write out file
-    readwrite.wxyz(outfile, clpositions, clsymbols)            
+    readwrite.wxyz(outfile, clpositions, clsymbols, **boxdict)
