@@ -1,0 +1,41 @@
+#! /usr/bin/env python
+
+# len_centerpars
+# James Mithen
+# Center the particles in the box.
+
+import sys
+import readwrite
+import numpy as np
+from lenexceptions import UtilError
+from ffsfunctions import getboxdims
+
+if len(sys.argv) != 3:
+    sys.exit("Syntax len_centerpars infile.xyz outfile")
+
+infile = sys.argv[1]
+outfile = sys.argv[2]
+
+boxdims = getboxdims(infile)
+if not boxdims:
+	raise UtilError, 'Did not find box dimensions in XYZ file'
+
+params = {}
+params['lboxx'] = boxdims[0]
+params['lboxy'] = boxdims[1]
+params['lboxz'] = boxdims[2]
+boxdict = {'boxdims' : boxdims}
+
+positions, symbols = readwrite.rxyz(infile, True)
+
+# we just need to find the center of mass of the particles (cm), and
+# find the offset between the box center and this center of mass (bc).
+# Then we move the positions of the particles by bc - cm.
+
+cm = np.average(positions, axis=0)
+bc = np.array(boxdims) / 2.0
+offset = bc - cm
+
+positions = positions + offset
+
+readwrite.wxyz(outfile, positions, symbols, **boxdict)
