@@ -28,7 +28,7 @@ class MProgram(object):
     def __init__(self):
         """
         Read parameters, get initial positions (and velocities if MD),
-        and setup any parameters needed for the 
+        and setup any parameters needed for the simulation.
         """
 
         # read input parameters and write to file

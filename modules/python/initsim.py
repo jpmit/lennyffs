@@ -38,8 +38,8 @@ import mcfuncs
 import readwrite
 import params
 import writeoutput
-
 import ase.lattice.surface as ase
+from ffsfunctions import getboxdims
 
 def readparams():
     """Read simulation parameters from 'in' file."""
@@ -284,6 +284,8 @@ def addparamsnosurf(pdict):
     #   we use nstar to set the box dimensions
     # - If none of the above has set the box dimensions, we have a
     #   problem (!)
+    # Finally, for npt simulation, if we are restarting, we try
+    # getting the box dims from the xyz file.
     if ('lboxx' in pdict) and ('lboxy' in pdict) and ('lboxz' in pdict):
         pass
     else:
@@ -302,6 +304,14 @@ def addparamsnosurf(pdict):
         else:
             # we haven't set the box size (!)
             print "Warning, box size has not been set properly!"
+
+    # for npt sim, if restarting then get box volume from the XYZ file
+    if (params['mctype'] == 'npt') and (params['simulation'] == 'restart'):
+        boxdims = getboxdims(params['restartfile'])
+        if boxdims:
+            pdict['lboxx'] = boxdims[0]
+            pdict['lboxy'] = boxdims[1]
+            pdict['lboxz'] = boxdims[2]
             
     return pdict
 
