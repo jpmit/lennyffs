@@ -8,6 +8,7 @@
 
 import readwrite
 import numpy as np
+from lenexception import UtilError
 
 # make positions positive by at least this amount (we don't want to
 # have particles with an x,y or z co-ord closer to the origin than
@@ -30,5 +31,4 @@ minpos = np.min(positions, axis=0)
 # is < 0.
 offset = [-1.0*min(0.0, s - _EPS) for s in minpos]
 
-print 'Not yet fully implemented'
-
+raise UtilError, 'Not yet fully implemented'
