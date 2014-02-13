@@ -231,6 +231,10 @@ def _ldclusnums(positions, params):
 def _clusnums(cpositions, params):
     """Return indices of particles in largest cluster."""
 
+    # handle case of empty cpositions array
+    if not cpositions:
+        return []
+    
     return mcfuncs.largestcluster(cpositions[:,0], cpositions[:,1],
                                   cpositions[:,2], len(cpositions),
                                   params['lboxx'], params['lboxy'],

@@ -21,7 +21,7 @@ XTALPARS = ['S', # FCC (or all TF)
             'B'] # ICOS
 
 if len(sys.argv) != 3:
-    sys.exit("Syntax joincluster infile.xyz outfile")
+    sys.exit("Syntax len_joincluster infile.xyz outfile")
 
 infile = sys.argv[1]
 outfile = sys.argv[2]
