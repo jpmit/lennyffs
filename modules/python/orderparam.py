@@ -232,7 +232,7 @@ def _clusnums(cpositions, params):
     """Return indices of particles in largest cluster."""
 
     # handle case of empty cpositions array
-    if not cpositions:
+    if cpositions.shape == (0,):
         return []
     
     return mcfuncs.largestcluster(cpositions[:,0], cpositions[:,1],
