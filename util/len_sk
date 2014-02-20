@@ -1,0 +1,61 @@
+#! /usr/bin/env python
+
+# len_sk
+# James Mithen
+# Compute S(k) for a single positional configuration.  Note we are
+# assuming a square box!
+
+import sys
+import numpy as np
+import readwrite
+from util import boxdims_xyz, getndict
+
+if len(sys.argv) != 3:
+    sys.exit("Syntax len_sk k_max infile.xyz")
+
+kmax = float(sys.argv[1])
+infile = sys.argv[2]
+fin = open(infile,'r')
+
+lboxx, lboxy, lboxz = boxdims_xyz(infile)
+positions = readwrite.rxyz(infile, False)
+npar = len(positions)
+
+# we must have a square box for this S(k) calculation to be valid
+assert (lboxx == lboxy == lboxz)
+
+L2pi = (2.0 * np.pi) / lboxx
+
+# ceil means we will go to k vals a bit > kmax rather than < kmax
+maxn2 = int(np.ceil((kmax / L2pi)**2))
+
+ndict = getndict(maxn2)
+
+# number of unique k values
+numkvals = len(ndict)
+kvals = np.empty(numkvals)
+skvals = np.empty(numkvals)
+
+for i, n2 in enumerate(sorted(ndict.keys())):
+
+    # make array of complete lot of vectors for this |k| value, each
+    # row is a different k vector
+    kvecarr = L2pi * np.array(ndict[n2]).transpose()
+
+    dotsum = np.dot(positions, kvecarr)
+    nkvals = np.sum(np.exp(1j*dotsum), axis=0)
+
+    skv = (nkvals*np.conjugate(nkvals)).real
+
+    # store k and s(k) for this k value
+    kvals[i] = n2**0.5 * L2pi
+    
+    # divide total sk by number of permutations times number of
+    # particles
+    skvals[i] = np.average(skv) / npar
+
+# print out file name in header
+ostr = '# k, S(k) filename: {0}'.format(infile)
+for k, sk in zip(kvals, skvals):
+    ostr += '\n{0:.5f} {1:.5f}'.format(k, sk)
+print ostr
