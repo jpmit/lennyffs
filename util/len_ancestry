@@ -42,4 +42,4 @@ for i in range(intnum):
 
 # stitch together filenames
 for i in range(intnum + 1):
-    print 'pos{:d}_{:d}.xyz'.format(i, qshotnums[i])
+    print 'pos{:d}_{:d}.xyz'.format(i, shotnums[i])
