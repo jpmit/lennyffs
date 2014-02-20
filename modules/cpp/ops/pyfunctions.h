@@ -23,7 +23,7 @@ double py_fracsolidtf(boost::python::numeric::array,
 							 const double);
 double py_nclustf(boost::python::numeric::array,
 						boost::python::numeric::array,
-						boost::python::numeric::array, 
+						boost::python::numeric::array,
 						const int, const int,
 						const double, const double,
 						const double, const bool, const double,
@@ -47,6 +47,11 @@ std::vector<double> py_q4w4q6w6(boost::python::numeric::array,
 										  boost::python::numeric::array,
 										  boost::python::numeric::array, 
 										  const int, const int, const double, const double,
+										  const double, const bool, const double);
+std::vector<int> py_numneighcut(boost::python::numeric::array,
+										  boost::python::numeric::array,
+										  boost::python::numeric::array,
+										  const int, const double, const double,
 										  const double, const bool, const double);
 
 // structs used to convert from C++ types to python types

@@ -34,4 +34,5 @@ BOOST_PYTHON_MODULE(op_ext)
 	  def("ldclass", py_ldclass);
 	  def("largestcluster", py_largestcluster);
 	  def("q4w4q6w6", py_q4w4q6w6);
+	  def("numneighcut", py_numneighcut);
 }

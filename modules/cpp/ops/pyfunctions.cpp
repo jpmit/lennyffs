@@ -19,7 +19,9 @@
 //                     FCC (0), HCP (1), BCC (2), LIQUID (3), ICOS (4) or
 //                     SURFACE (5).
 // py_largestcluster - size of largest cluster (needs xtal particles to be
-//                     passed as argument). 
+//                     passed as argument).
+// py_q4w4q6w6       - return vector of with values of q4, w4, q6, w6 back
+//                     to back.
 
 #include <iostream>
 #include <vector>
@@ -369,4 +371,33 @@ vector<double> py_q4w4q6w6(boost::python::numeric::array xpos,
 	  q4w4q6w6.insert(q4w4q6w6.end(), q6lbar.begin(), q6lbar.end());
 	  q4w4q6w6.insert(q4w4q6w6.end(), w6lbar.begin(), w6lbar.end());
 	  return q4w4q6w6;
+}
+
+// number of neighbours of each particle, where neighbours are defined
+// as those within a specified cutoff radius nsep
+vector<int> py_numneighcut(boost::python::numeric::array xpos,
+								boost::python::numeric::array ypos,
+								boost::python::numeric::array zpos,
+								const int npartot,
+								const double lboxx, const double lboxy,
+								const double lboxz, const bool zperiodic,
+								const double nsep)
+{
+	  // create vector of type "Particle"
+	  vector<Particle> allpars = getparticles(xpos, ypos, zpos,
+															npartot);
+	  
+	  // create "Box"
+	  Box simbox(lboxx, lboxy, lboxz, nsep, zperiodic);
+
+	  // number of neighbours and neighbour list
+  	  vector<int> numneigh(npartot, 0);     // num neighbours for each particle
+	  vector<vector<int> > lneigh(npartot); // vector of neighbour
+														 // particle nums for each
+														 // par
+
+	  // get all neighbours within separation nsep
+	  neighcut(allpars, simbox, numneigh, lneigh);	  
+
+	  return numneigh;
 }

@@ -262,6 +262,19 @@ def _q4w4q6w6(positions, params):
 
     return np.array(q4), np.array(w4), np.array(q6), np.array(w6)
 
+def _numneighcut(positions, params):
+    """Return list of number of neighbours of each particle."""
+
+    nn = mcfuncs.numneighcut(positions[:,0], positions[:,1],
+                             positions[:,2], params['npartot'],
+                             params['lboxx'],
+                             params['lboxy'],
+                             params['lboxz'],
+                             params['zperiodic'],
+                             params['nsep'])
+                             
+    return nn
+
 def nothing(positions, params):
     """No order parameter."""
 

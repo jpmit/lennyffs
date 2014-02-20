@@ -7,6 +7,8 @@
 import sys
 import numpy as np
 import readwrite
+from ffsfunctions import getpickparams, getboxdims
+import orderparam
 
 # assignment dict for BCC and FCC particles: key is number of
 # neighbours, value is symbol.  If a particle has a number of
@@ -27,31 +29,66 @@ rcut = float(sys.argv[1])
 infile = sys.argv[2]
 outfile = sys.argv[3]
 
+# Get the box dimensions: we first try getting them from the
+# 'params.pkl' file, if this exists.
+lboxx, lboxy, lboxz = None, None, None
+try:
+    params = getpickparams()
+except IOError:
+    # It's ok, we only need the box dims, and we can get these from
+    # the XYZ file itself.
+    params = {}
+else:
+    lboxx = params['lboxx']
+    lboxy = params['lboxy']
+    lboxz = params['lboxz']
+
+boxdims = getboxdims(infile)
+if boxdims:
+    # note we override the dims we got from the params.pkl file if
+    # that file exists.
+    lboxx = boxdims[0]
+    lboxy = boxdims[1]
+    lboxz = boxdims[2]
+
+if lboxx is None:
+    raise UtilError, 'box dims not found in params.pkl or XYZ file'
+
 positions, symbols = readwrite.rxyz(infile, True)
 npar = len(positions)
 nneigh = np.zeros(npar, dtype='int')
-rcutsq = rcut**2
 
-for i in range(npar):
-    for j in range(i + 1, npar):
-        # figure out if i and j are neighbours
-        sepsq = sum((positions[i] - positions[j])**2)
+# set up params dict needed for getting num neighbours
+myparams = {'lboxx': lboxx, 'lboxy': lboxy, 'lboxz': lboxz,
+            'npartot': npar, 'nsep': rcut,
+            # note zperiodic defaults to True if we didn't read
+            # something from the pickle file
+            'zperiodic': params.get('zperiodic', True)}
 
-        if (sepsq < rcutsq):
-            nneigh[i] += 1
-            nneigh[j] += 1
+# get num neighbours for each particle
+nneigh = orderparam._numneighcut(positions, myparams)
+
+# TODO: implement this neighbour list in C instead.
+#for i in range(npar):
+#    for j in range(i + 1, npar):
+#        # figure out if i and j are neighbours
+#        sepsq = sum((positions[i] - positions[j])**2)
+#
+#        if (sepsq < rcutsq):
+#            nneigh[i] += 1
+#            nneigh[j] += 1
 
 # store indexes of particles we want (those with the correct number of
 # neighbours).
 wanted = []
 symbs = []
 for i in range(npar):
-    if nneigh[i] in PARSYMB:
-        wanted.append(i)
-        symbs.append(PARSYMB[nneigh[i]])
+    # we don't want to write out liquid particles, there are probably
+    # many liquid particles with 7, 8, 9, 11, 12, 13 neighbours.
+    if symbols[i] != 'N':
+        if nneigh[i] in PARSYMB:
+            wanted.append(i)
+            symbs.append(PARSYMB[nneigh[i]])
 
 # use awesome numpy array indexing here!
 readwrite.wxyz(outfile, positions[wanted], symbs)
-
-
-    
