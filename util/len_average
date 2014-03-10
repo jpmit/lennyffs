@@ -1,0 +1,26 @@
+#! /usr/bin/env python
+
+# len_average
+# James Mithen
+# average a number of files, it is assumed of 2 column data (though it
+# would be straightforward to try to detect the number of columns).
+
+import sys
+import numpy as np
+
+nfiles = len(sys.argv)
+
+# recall sys.argv[0] is name of the script, so first filename for
+# averaging is sys.argv[1]
+col1, col2 = np.loadtxt(sys.argv[1], unpack=True)
+
+for f in sys.argv[2:]:
+    n, col2n = np.loadtxt(f, unpack=True)
+    col2 += col2n
+
+col2 = col2/nfiles
+
+ostr = ''
+for v1, v2 in zip(col1, col2):
+    ostr += '\n{0:.5f} {1:.5f}'.format(v1, v2)
+print ostr
