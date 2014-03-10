@@ -8,6 +8,21 @@ e.g. len_sk, len_neighbour, etc.
 """
 
 from ffsfunctions import getboxdims, getpickparams
+import mcfuncs
+
+def getnr(positions, params):
+
+    lboxx = params['lboxx']
+    lboxy = params['lboxy']
+    lboxz = params['lboxz']
+    zperiodic = params['zperiodic']
+    dr = params['dr']
+    nrvals = params['nrvals']
+
+    nprvals = mcfuncs.get_nr(positions[:,0], positions[:,1],
+                             positions[:,2], lboxx, lboxy,
+                             lboxz, zperiodic, dr, nrvals)
+    return nprvals
 
 def boxdims_xyz(xyzfname):
     """Return lboxx, lboxy, lboxz from XYZ file fname.

@@ -8,7 +8,7 @@
 import sys
 import numpy as np
 import readwrite
-from util import boxdims_xyz, getndict
+from util import boxdims_xyz, getndict, getnr
 
 if len(sys.argv) != 3:
     sys.exit("Syntax len_gr dr infile.xyz")
@@ -21,46 +21,22 @@ lboxx, lboxy, lboxz = boxdims_xyz(infile)
 positions = readwrite.rxyz(infile, False)
 npar = len(positions)
 
+# maximum separation between any two particles
 rmax = ((lboxx/2.0)**2 + (lboxy/2.0)**2 + (lboxz/2.0)**2)**0.5
 
 # get list of r values
 rvals = np.arange(0, rmax, dr)
-nprval = np.zeros(len(rvals))    
+nprval = np.zeros(len(rvals))
 
-# get all nearest neighbour distances
-# TODO: implement this in C
-p5lboxx = 0.5*lboxx
-p5lboxy = 0.5*lboxy
-p5lboxz = 0.5*lboxz
-for i in range(npar):
-    for j in range(i + 1, npar):
-        sepx = positions[i][0] - positions[j][0]
-        # periodic boundary conditions
-        if (sepx > p5lboxx):
-            sepx = sepx - lboxx
-        elif (sepx < -p5lboxx):
-            sepx = sepx + lboxx
-        sepy = positions[i][1] - positions[j][1]
-        # periodic boundary conditions
-        if (sepy > p5lboxy):
-            sepy = sepy - lboxy
-        elif (sepy < -p5lboxy):
-            sepy = sepy + lboxy
-        sepz = positions[i][2] - positions[j][2]
-        # periodic boundary conditions
-        if (sepz > p5lboxz):
-            sepz = sepz - lboxz
-        elif (sepz < -p5lboxz):
-            sepz = sepz + lboxz
-        # compute separation
-        rijsq = sepx**2 + sepy**2 + sepz**2
+# we only want to actually output g(r) for r values up to lbox / 2,
+# where lbox is the smallest box dimension.
+indxmax = int(len(rvals)*(0.5*min(lboxx, lboxy, lboxz))/rmax)
 
-        # unfortunately we have to compute square root somewhere it
-        # seems.
-        rij = rijsq**0.5
-        indx = int(rij / dr)
-        
-        nprval[indx] = nprval[indx] + 1
+nprval = getnr(positions, {'lboxx': lboxx, 'lboxy': lboxy,
+                           'lboxz': lboxz,
+                           'zperiodic': True,
+                           'dr': dr,
+                           'nrvals': len(rvals)})
 
 # we'll change to proper r_eff values later...
 rvalseff = rvals + 0.5*dr
@@ -70,6 +46,8 @@ grvals = (2.0 * boxvol / npar**2) * (nprval / volvals)
 
 # print out file name in header
 ostr = '# r, g(r) filename: {0}'.format(infile)
-for r, gr in zip(rvalseff, grvals):
+
+# note we only output up the indxmax, i.e. half the minimum box dimension
+for r, gr in zip(rvalseff[:indxmax], grvals[:indxmax]):
     ostr += '\n{0:.5f} {1:.5f}'.format(r, gr)
 print ostr
