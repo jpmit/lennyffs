@@ -9,6 +9,7 @@
 
 import sys
 import readwrite
+from ffsfunctions import getboxdims
 
 if len(sys.argv) != 4:
     sys.exit("Syntax len_removeparticles symbols infile.xyz outfile.xyz")
@@ -28,6 +29,9 @@ positions,symbols = readwrite.rxyz(infile,True)
 fin.close()
 npar = len(positions)
 
+# get boxdims from file if we have them
+boxdims = getboxdims(infile)
+
 outstr = ''
 np = 0 # number of particles not stripped
 for i in range(npar):
@@ -37,9 +41,12 @@ for i in range(npar):
                                            positions[i][1],
                                            positions[i][2])
         np = np + 1
-outstr = '%d\n\n%s' %(np, outstr)
+fullstr = '%d\n' %np
+if boxdims:
+    fullstr += '# boxdims %f %f %f' %(boxdims[0], boxdims[1], boxdims[2])
+fullstr = '%s\n%s' %(fullstr, outstr)
 
 # write to outfile
 fout = open(outfile,'w')
-fout.write(outstr)
+fout.write(fullstr)
 fout.close()
