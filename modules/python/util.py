@@ -5,6 +5,15 @@
 """
 Functions to aid with the utilities in the util/ directory,
 e.g. len_sk, len_neighbour, etc.
+
+FUNCTIONS:
+getnr       - Return array number of particles with each separation.
+boxdims_xyz - Return box dimensions from XYZ file if possible.  If
+              not possible (the file doesn't contain the dimensions),
+              return box dimensions from paras.pkl file.
+getndict    - Return dictionary with keys n**2 = nx**2 + ny**2 + nz**2,
+              values that are lists of the allowed (nx, ny, nz) tuples
+              corresponding to this value of n**2.
 """
 
 from ffsfunctions import getboxdims, getpickparams
