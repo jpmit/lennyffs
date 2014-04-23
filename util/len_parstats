@@ -39,4 +39,3 @@ for pt, pn in zip(PARTYPES, PARNAMES):
     st = '{0} : {1} ({2}%)'.format(name, num,
                                    100* float(pcount[pt]) / npar)
     print st
-
