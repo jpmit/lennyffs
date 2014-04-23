@@ -65,7 +65,8 @@ double py_nclustf(boost::python::numeric::array xpos,
 
 	  // fill up numneigh and lneigh, we can use either neighcut of
 	  // neighnearest for this
-	  neighnearest(allpars, simbox, numneigh, lneigh, 12);
+	  neighcut(allpars, simbox, numneigh, lneigh);
+	  //neighnearest(allpars, simbox, numneigh, lneigh, 12);
 
 	  // matrix of qlm values, for l = 6 only
 	  array2d q6lm(boost::extents[npartot][13]);
