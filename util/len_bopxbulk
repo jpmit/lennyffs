@@ -48,7 +48,7 @@ npar = len(positions)
 cpositions = np.array([positions[i] for i in range(npar)
                        if symbols[i] in XTALPARS])
 
-# second method of getting cluster size
+# get indices of particles in largest cluster and hence cluster size
 ncl = len(orderparam._clusnums(cpositions, params))
 
 print ncl

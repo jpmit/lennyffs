@@ -13,24 +13,37 @@ writemdpick     - write pickle file for restarting MD simulations,
                   this includes the positions as well as the velocities.
 readmdpick      - read pickle file for restarting MD simulations,
                   return positions and velocities.
-writexyztf      - write xyz file with particle symbols as classified
+writexyz_tf     - write xyz file with particle symbols as classified
                   by TF method.  Note this will compute order
                   parameters.
-writexyzld      - write xyz file with particle symbols as classified
+writexyz_ld     - write xyz file with particle symbols as classified
                   by LD method.  Note this will compute order
                   parameters. 
 """
 
 import os
 import orderparam
-import opfunctions
 import readwrite
 import pickle
+
+# lookup table for Lechner-Dellago (LD) method symbols
+_LD_SYMBOLS = {orderparam.LDFCC     : 'S', # FCC (yellow in jmol)
+               orderparam.LDHCP     : 'P', # HCP (orange in jmol)
+               orderparam.LDBCC     : 'F', # BCC (green in jmol)
+               orderparam.LDLIQUID  : 'N', # LIQUID (blue in jmol)
+               orderparam.LDICOS    : 'B', # ICOS (pink in jmol)
+               orderparam.LDSURFACE : 'O'  # SURFACE (red in jmol)
+               }
+# lookup table for Ten-Wolde-Frenkel (TF) method symbols
+_TF_SYMBOLS = {orderparam.TFLIQ     : 'N',
+               orderparam.TFXTAL    : 'S',
+               orderparam.TFSURF    : 'O'
+               }
 
 def writepickparams(params, fname='params.pkl'):
     """Write out parameters dictionary as .pkl file."""
     
-    fout = open(fname,'wb')
+    fout = open(fname, 'wb')
     pickle.dump(params, fout)
     fout.close()
     return
@@ -71,29 +84,29 @@ def readmdpick(fname):
     pfile.close()
     return positions, velocities
 
+def _get_box_kwargs(params):            
+    """If npt simulation, return dictionary with box dims.
+
+    This is used so that we can write box dimensions to the XYZ file.
+    """
+
+    if params['mctype'] == 'npt':
+        return {'boxdims': [params['lboxx'], params['lboxy'],
+                            params['lboxz']]}
+    return {}
+
 def writexyz_tf(fname, positions, params):
     """
     Write positions in xyz format with symbols as atom types, using
     TF approach for identifying crystalline particles.
     """
 
-    # surface atoms are red (O) , xtal yellow (S), others blue (N)
-    nparfl = params['npartot'] - params['nparsurf']
-    symbols = ['O']*params['nparsurf'] + ['N']*nparfl
+    # get TF classification
+    tfclass = orderparam._tfclass(positions, params)
+    # give each atom the correct symbol using lookup table
+    symbols = [_TF_SYMBOLS[i] for i in tfclass]
 
-    # if params contains stillsep, etc, get xtal particles
-    if 'stillsep' in params:
-        xparnums = opfunctions.getxpars(positions, params)
-        for pnum in xparnums:
-            symbols[pnum] = 'S'
-            
-    # if npt simulation, get box dims from params dictionary; we write
-    # this to the second line of the XYZ file.            
-    if params['mctype'] == 'npt':
-        kwargs = {'boxdims': [params['lboxx'], params['lboxy'],
-                              params['lboxz']]}
-    else:
-        kwargs = {}
+    kwargs = _get_box_kwargs(params)
         
     # write the file
     readwrite.wxyz(fname, positions, symbols, **kwargs)
@@ -105,27 +118,13 @@ def writexyz_ld(fname, positions, params):
     LD approach for identifying crystalline particles.
     """
 
-    # lookup table for symbols
-    stable = {0 : 'S', # FCC (yellow in jmol)
-              1 : 'P', # HCP (orange in jmol)
-              2 : 'F', # BCC (green in jmol)
-              3 : 'N', # LIQUID (blue in jmol)
-              4 : 'B', # ICOS (pink in jmol)
-              5 : 'O'  # SURFACE (red in jmol)
-              }
-
     # get LD classification
     ldclass = orderparam._ldclass(positions, params)
     # give each atom the correct symbol using lookup table
-    symbols = [stable[i] for i in ldclass]
-    
-    # if npt simulation, get box dims from params dictionary; we write
-    # this to the second line of the XYZ file.
-    if params['mctype'] == 'npt':
-        kwargs = {'boxdims': [params['lboxx'], params['lboxy'],
-                              params['lboxz']]}
-    else:
-        kwargs = {}
+    symbols = [_LD_SYMBOLS[i] for i in ldclass]
+
+    kwargs = _get_box_kwargs(params)
+
     # write the file
     readwrite.wxyz(fname, positions, symbols, **kwargs)
 

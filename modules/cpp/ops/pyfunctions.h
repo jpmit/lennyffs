@@ -28,6 +28,13 @@ double py_nclustf(boost::python::numeric::array,
 						const double, const double,
 						const double, const bool, const double,
 						const int, const double);
+std::vector<TFCLASS> py_tfclass(boost::python::numeric::array,
+										  boost::python::numeric::array,
+										  boost::python::numeric::array,
+										  const int, const int,
+										  const double, const double,
+										  const double, const bool, const double,
+										  const int, const double);
 double py_nclusld(boost::python::numeric::array,
 						boost::python::numeric::array,
 						boost::python::numeric::array, 

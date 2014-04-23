@@ -32,8 +32,21 @@ import graph
 import opfunctions
 import mcfuncs
 
-# Functions using Fortran extension module
+# constants needed to interface with C++ extension module
+# Mapping from C++ enum type LDCLASS to int
+LDNUMPOLY = 6
+LDFCC = 0
+LDHCP = 1
+LDBCC = 2
+LDLIQUID = 3
+LDICOS = 4
+LDSURFACE = 5
+# Mapping from C++ enum type TFCLASS to int
+TFLIQ = 0
+TFXTAL = 1
+TFSURF = 2
 
+# Functions using Fortran extension module
 def nclustf_fort(positions, params):
     """
     Number of particles in largest cluster, according to Ten-Wolde
@@ -74,16 +87,6 @@ def fractf_fort(positions, params):
     # we return the fraction of moving particles that are xtal
     return float(nxtal) / (params['npartot'] - params['nparsurf'])
 
-# Functions using C++ extension module
-# Mapping from C++ enum type LDCLASS to int
-LDNUMPOLY = 6
-LDFCC = 0
-LDHCP = 1
-LDBCC = 2
-LDLIQUID = 3
-LDICOS = 4
-LDSURFACE = 5
-
 def nclustf_cpp(positions, params):
     """
     Number of particles in largest cluster, according to Ten-Wolde
@@ -104,6 +107,24 @@ def nclustf_cpp(positions, params):
                             minlinks, thresh)
 
     return nclus
+
+def _tfclass(positions, params):
+    """Return list of particle classifications according to TF method."""
+    
+    npar = params['npartot']
+    nsep = params['stillsep']
+    nparsurf = params['nparsurf']
+    zperiodic = params['zperiodic']
+    thresh = params['q6link']
+    minlinks = params['q6numlinks']
+
+    parclass = mcfuncs.tfclass(positions[:,0], positions[:,1],
+                               positions[:,2], npar, nparsurf,
+                               params['lboxx'], params['lboxy'],
+                               params['lboxz'], zperiodic, nsep,
+                               minlinks, thresh)
+    return parclass
+
 
 def fractf_cpp(positions, params):
     """
@@ -191,14 +212,12 @@ def allfracldtf_cpp(positions, params):
            format(fractf_cpp(positions, params))
 
 def _ldclass(positions, params):
-    """Return list of particle classifications."""
+    """Return list of particle classifications according to LD method."""
     
     npar = params['npartot']
     nsep = params['stillsep']
     nparsurf = params['nparsurf']
     zperiodic = params['zperiodic']
-    thresh = params['q6link']
-    minlinks = params['q6numlinks']
 
     parclass = mcfuncs.ldclass(positions[:,0], positions[:,1],
                                positions[:,2], npar, nparsurf,

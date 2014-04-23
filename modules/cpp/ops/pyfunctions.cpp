@@ -8,6 +8,9 @@
 // Currently implemented:
 // py_nclustf        - size of largest crystalline cluster, according to
 //                     ten-Wolde Frenkel method.
+// py_tfclass        - return vector<TFCLASS> that contains classification
+//                     for every particle.  Each particle is idenfified as
+//                     LIQ (0), XTAL (1), SURF (2).
 // py_fracsolidtf    - fraction of crystalline particles (excluding surface
 //                     particles) according to ten-Wolde Frenkel method.
 // py_nclusld        - size of largest crystalline cluster, according to
@@ -87,8 +90,53 @@ double py_nclustf(boost::python::numeric::array xpos,
 	  // indices of particles in the largest cluster
 	  vector<int> tfcnums = largestclustertf(allpars, simbox, tfclass);
 	  return tfcnums.size();
+}
 
+// classification of particles using TF method
 
+vector<TFCLASS> py_tfclass(boost::python::numeric::array xpos,
+									boost::python::numeric::array ypos,
+									boost::python::numeric::array zpos,
+									const int npartot, const int nparsurf,
+									const double lboxx, const double lboxy,
+									const double lboxz, const bool zperiodic,
+									const double nsep, const int nlinks,
+									const double linkval)
+{
+	  // create vector of type "Particle"
+	  vector<Particle> allpars = getparticles(xpos, ypos, zpos,
+															npartot);
+
+	  // create "Box"
+	  Box simbox(lboxx, lboxy, lboxz, nsep, zperiodic);
+
+	  // store number of neighbours and neighbour list
+  	  vector<int> numneigh(npartot, 0);     // num neighbours for each particle
+	  vector<vector<int> > lneigh(npartot); // vector of neighbour particle nums for
+	                                        // each par
+
+	  // fill up numneigh and lneigh, we can use either neighcut of
+	  // neighnearest for this
+	  neighcut(allpars, simbox, numneigh, lneigh);
+	  //neighnearest(allpars, simbox, numneigh, lneigh, 12);
+
+	  // matrix of qlm values, for l = 6 only
+	  array2d q6lm(boost::extents[npartot][13]);
+	  q6lm = qlms(allpars, simbox, numneigh, lneigh, 6);
+
+	  // compute number of crystalline 'links'
+	  // first get normalised vectors qlm (-l <= m <= l) for computing
+	  // dot product Sij
+	  array2d qlmt = qlmtildes(q6lm, numneigh, 6);
+
+	  // do dot products Sij to get number of links
+	  vector<int> numlinks = getnlinks(qlmt, numneigh, lneigh, nparsurf,
+												  nlinks, linkval, 6);
+
+	  // classify particles using q4lbar etc.
+	  vector<TFCLASS> tfclass = classifyparticlestf(numlinks, nlinks, nparsurf);
+
+	  return tfclass;
 }
 
 // fraction of solid particles (excluding surface particles) according
@@ -244,7 +292,7 @@ double py_fracsolidld(boost::python::numeric::array xpos,
 	  return fracsolidld(ldclass, nparsurf);
 }
 
-// classification particles using LD
+// classification of particles using LD method
 
 vector<LDCLASS> py_ldclass(boost::python::numeric::array xpos,
 									boost::python::numeric::array ypos,

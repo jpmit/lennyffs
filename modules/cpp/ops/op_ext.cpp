@@ -17,7 +17,10 @@ BOOST_PYTHON_MODULE(op_ext)
 
 	  // Registration of converters.  These are defined in
 	  // pyfunctions.h.
+	  to_python_converter<TFCLASS, enum_to_python_int<TFCLASS> >();
 	  to_python_converter<LDCLASS, enum_to_python_int<LDCLASS> >();
+	  to_python_converter<std::vector<TFCLASS>,
+								 vector_to_python_list<TFCLASS> >();
 	  to_python_converter<std::vector<LDCLASS>,
 								 vector_to_python_list<LDCLASS> >();
 	  to_python_converter<std::vector<int>,
@@ -28,6 +31,7 @@ BOOST_PYTHON_MODULE(op_ext)
 //to_python_converter<std::vector<double>,
 
 	  def("nclustf", py_nclustf);
+	  def("tfclass", py_tfclass);	  
 	  def("nclusld", py_nclusld);	  
 	  def("fracsolidld", py_fracsolidld);
 	  def("fracsolidtf", py_fracsolidtf);
