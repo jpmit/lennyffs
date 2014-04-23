@@ -1,67 +1,102 @@
 #!/usr/bin/env python
 # direct.py
-# 19th September 2012
 # James Mithen
-#
-# Script for direct estimation of nulceation rate
-# i.e. not using FFS
+# j.mithen@surrey.ac.uk
+
+"""
+Script for direct estimation of nulceation rate i.e. not using FFS.
+At the moment this only works for Monte-Carlo integrators, but
+extending it to Molecular Dynamics integrators would be
+straightforward.
+"""
+
+import sys
 
 import initsim
 import writeoutput
 import energy
-import mccycle
-import bops
-import numpy as N
-import time
+import funcselector
 from copy import deepcopy
-from bops import bopxbulk
 from ffsfunctions import savelambda0config
 
-ncrit = 150 # critical nucleus value
+if len(sys.argv) != 2:
+    sys.exit("Syntax direct.py OP")
+
+# order parameter in product state
+try:
+    prodop = int(sys.argv[1])
+except ValueError:
+    sys.exit("OP must be an integer")
 
 # read input parameters and write to file
 params = initsim.getparams()
 writeoutput.writepickparams(params)
 writeoutput.writeparams(params)
 
+# From params dictionary create FuncSelector object.  This will handle
+# correct selection of the underlying fortran/C++ functions correctly
+# (the functions called depend on the potential, i.e. the value of
+# params['potential'], and also on the type of MC cycle wanted, i.e.
+# params['mctype'], and on the order parameter desired,
+# params['orderparam'].
+funcman = funcselector.FuncSelector(params)
+# TODO: totalenergy should be funcman.TotalEnergyFunc() but this does
+# not seem to be working (?).
+totalenergy = energy.len_totalenergy
+runcycle = funcman.MCCycleFunc()
+orderp = funcman.OrderParamFunc()
+writexyz = funcman.WriteXyzFunc()
+
 # initialize positions
 positions = initsim.initpositions(params)
+
+# we store the initial positions so that when we reach the product
+# state we can start all over again.
 initpositions = deepcopy(positions)
 
 # write initial positions to file if new simulation
 if params['simulation'] == 'new':
-    writeoutput.writexyz('initpositions.xyz',positions,params)
+    writeoutput.writexyz('initpositions.xyz', positions, params)
 
 # compute initial energy
-epot = energy.totalenergy(positions,params)
+epot = totalenergy(positions, params)
 epotinit = epot
 
-# open bopx file
-fout = open('bopx.out','w')
+# append mode in case we are running multiple versions of this script
+opfile = open('opval.out', 'a')
 
-# perform MC simulation
-nxtal, bopx = bopxbulk(positions,params)
-fout.write("BOPX: %d\n" %bopx)
-fout.flush()
+# write initial order parameter
+opval = orderp(positions, params)
+opfile.write('{0} {1}\n'.format(0, opval))
+opfile.flush()
+
 lamsamp = int(params['lambdasamp'])
 params['cycle'] = lamsamp
-ttot = 0
+cyclesdone = 0
 qhits = 0
+
+# we go to the product state 'totalqhits' times
 while (qhits < int(params['totalqhits'])):
     # do some cycles
-    positions, epot = mccycle.cycle(positions,params,epot)
-    ttot = ttot + lamsamp
-    # compute bopxbulk
-    nxtal, bopx = bopxbulk(positions,params)
-    fout.write("BOPX: %d\n" %bopx)
-    fout.flush()
-    # if we made a critical nucleus, record config and go back to start
-    if (bopx > ncrit):
+    positions, epot = runcycle(positions, params, epot)
+    cyclesdone += lamsamp
+    # compute order parameter
+    opval = orderp(positions, params)
+    opfile.write('{0} {1}\n'.format(cyclesdone, opval))
+    opfile.flush()
+    # if we reached the product state, record config and go back to
+    # start
+    if (opval >= prodop):
         qhits = qhits + 1
-        savelambda0config(qhits,ttot,positions,params)
-        # reset ttot and positions
-        ttot = 0
+        # hacky: pass qhits + 1 to ensure we are always appending to
+        # the 'times.out' file.  This means we can have multiple
+        # instances of this script running without overwriting
+        # 'times.out'.
+        savelambda0config(qhits + 1, cyclesdone, opval, positions,
+                          params, writexyz)
+        # reset cyclesdone and positions
+        cyclesdone = 0
         positions = initpositions
         epot = epotinit
 
-fout.close()
+opfile.close()

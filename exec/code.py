@@ -76,8 +76,8 @@ class MProgram(object):
                                         self.positions, self.velocities)                
 
         # number of times to call MC cycle function
-        self.ncall = int( np.ceil(self.params['ncycle'] /
-                                  float(self.params['opsamp'])) )
+        self.ncall = int(np.ceil(self.params['ncycle'] /
+                                 float(self.params['opsamp'])))
 
         # number of cycles each time we call MC cycle function
         self.params['cycle'] = min(self.params['ncycle'],

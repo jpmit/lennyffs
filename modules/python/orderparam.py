@@ -101,7 +101,7 @@ def nclustf_cpp(positions, params):
                             positions[:,2], npar, nparsurf,
                             params['lboxx'], params['lboxy'],
                             params['lboxz'], zperiodic, nsep,
-                            minlinks,thresh)
+                            minlinks, thresh)
 
     return nclus
 
