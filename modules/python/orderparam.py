@@ -8,9 +8,15 @@ and in C++.  The suffix of each function indicates whether the
 implementation is in fortran (fort) or C++ (cpp).
 
 FUNCTIONS:
+// FORTRAN FUNCTIONS (DEPRECATED)
+_getxpars       - Return array of particle numbers that are xtal,
+                  according to local bond order parameters.
+_getxgraph      - Return Graph of xtal particles, with nodes that are xtal
+                  pars, and edges between any two pars that are neighbours.
 nclustf_fort    - Number of particles in largest cluster according to TF
                   criterion.
 fractf_fort     - Fracition of xtal particles, according to TF criterion.
+// CPP FUNCTIONS
 nclustf_cpp     - Number of particles in largest cluster according to TF
                   criterion.
 fractf_cpp      - Fraction of xtal particles, according to TF criterion.
@@ -29,7 +35,6 @@ _q4w4q6w6       - Return q4bar, w4bar, q6bar, w6bar (the Lechner Dellago
 
 import numpy as np
 import graph
-import opfunctions
 import mcfuncs
 
 # constants needed to interface with C++ extension module
@@ -46,7 +51,90 @@ TFLIQ = 0
 TFXTAL = 1
 TFSURF = 2
 
+##########################################
 # Functions using Fortran extension module
+##########################################
+
+def _getxpars(positions,params):
+    """Return array of xtal particle numbers."""
+    
+    npar = params['npartot']
+    nsep = params['stillsep']
+    nparsurf = params['nparsurf']
+    zperiodic = params['zperiodic']
+    thresh = params['q6link']
+    minlinks = params['q6numlinks']
+
+    # call fortran routine to get xtal particles (see
+    # modules/fortran/bopsf.f90)
+    xpars, nxtal = mcfuncs.xpars(positions[:,0], positions[:,1],
+                                 positions[:,2], nparsurf,
+                                 params['lboxx'],
+                                 params['lboxy'], params['lboxz'],
+                                 zperiodic, nsep, minlinks, thresh)
+
+    # Note that the fortran routine returns xpars(1:npar).  Most of
+    # these entries will be zero, we only want the non-zero ones.
+    # Also note we subtract 1 from ALL of the xtal particle numbers
+    # returned from mcfuncs.xpars due to zero indexing in Python (and
+    # one indexing in Fortran).
+    return (xpars[:nxtal] - 1)
+
+# since we don't have a Fortran function that computes the largest
+# cluster, this is all done in Python (i.e. _getxgraph is not a
+# wrapper to a Fortran function).
+def _getxgraph(positions,params,xpars):
+    """
+    Create graph with xtal pars as nodes, edges between
+    neighbouring pars.
+    """
+
+    xgraph = graph.Graph(xpars)
+    stillsep = params['stillsep']
+    stillsepsq = stillsep**2.0
+    lboxx = params['lboxx']
+    lboxy = params['lboxy']
+    lboxz = params['lboxz']
+    zperiodic = params['zperiodic']
+
+    # half times box width for computing periodic bcs
+    p5lboxx = 0.5*lboxx
+    p5lboxy = 0.5*lboxy
+    p5lboxz = 0.5*lboxz
+    
+    for i in xpars:
+        # get distances to all other solid particles
+        for j in xpars:
+            if i != j:
+                sepx = positions[i][0] - positions[j][0]
+                # periodic boundary conditions
+                if (sepx > p5lboxx):
+                    sepx = sepx - lboxx
+                elif (sepx < -p5lboxx):
+                    sepx = sepx + lboxx
+                if (abs(sepx) < stillsep):
+                    sepy = positions[i][1] - positions[j][1]
+                    # periodic boundary conditions
+                    if (sepy > p5lboxy):
+                        sepy = sepy - lboxy
+                    elif (sepy < -p5lboxy):
+                        sepy = sepy + lboxy
+                    if (abs(sepy) < stillsep):
+                        sepz = positions[i][2] - positions[j][2]
+                        # periodic boundary conditions
+                        if (zperiodic):
+                            if (sepz > p5lboxz):
+                                sepz = sepz - lboxz
+                            elif (sepz < -p5lboxz):
+                                sepz = sepz + lboxz
+                        if (abs(sepz) < stillsep):
+                            # compute separation
+                            rijsq = sepx**2 + sepy**2 + sepz**2
+                            if rijsq < stillsepsq:
+                                # particles are in same cluster
+                                xgraph.add_edge(i,j)
+    return xgraph
+
 def nclustf_fort(positions, params):
     """
     Number of particles in largest cluster, according to Ten-Wolde
@@ -57,7 +145,7 @@ def nclustf_fort(positions, params):
     """
     
     # get all xtal particles
-    xpars = opfunctions.getxpars(positions,params)
+    xpars = _getxpars(positions,params)
     nxtal = len(xpars)
     
     # To compute ntf, we first create a graph with the xtal particles
@@ -65,7 +153,7 @@ def nclustf_fort(positions, params):
     # neighbouring particles i.e. particles whose separation is less
     # than the cutoff distance, which is params['stillsep'].  ntf is
     # the largest connected component of the graph.
-    xgraph = opfunctions.getxgraph(positions, params, xpars)
+    xgraph = _getxgraph(positions, params, xpars)
     comps = graph.connected_comps(xgraph)
     if nxtal > 0:
         ntf = len(comps[0])
@@ -81,11 +169,15 @@ def fractf_fort(positions, params):
     """
     
     # get all xtal particles
-    xpars = opfunctions.getxpars(positions, params)
+    xpars = _getxpars(positions, params)
     nxtal = len(xpars)
 
     # we return the fraction of moving particles that are xtal
     return float(nxtal) / (params['npartot'] - params['nparsurf'])
+
+##########################################
+# Functions using C++ extension module
+##########################################
 
 def nclustf_cpp(positions, params):
     """
@@ -242,7 +334,7 @@ def _ldclusnums(positions, params):
     print len(xtalnums)
     
     # graph for computing largest cluster
-    xgraph = opfunctions.getxgraph(positions, params, xtalnums)
+    xgraph = _getxgraph(positions, params, xtalnums)
     comps = graph.connected_comps(xgraph)
 
     return comps[0]
