@@ -19,6 +19,18 @@ import funcselector
 from copy import deepcopy
 from ffsfunctions import savelambda0config
 
+# if true, we write the order parameter each time it is measured to
+# stderr, otherwise we write order parameter to the file 'opval.out'.
+# Writing to stderr is useful if we are running multiple instances of
+# this script.  In both cases, we append the time at which we reach
+# phase B (i.e. the mean first passage time) to 'times.out'
+WRITE_TO_STDERR = True
+
+if WRITE_TO_STDERR:
+    opfile = sys.stderr
+else:
+    opfile = open('opval.out', 'a')
+
 if len(sys.argv) != 2:
     sys.exit("Syntax direct.py OP")
 
@@ -61,9 +73,6 @@ if params['simulation'] == 'new':
 # compute initial energy
 epot = totalenergy(positions, params)
 epotinit = epot
-
-# append mode in case we are running multiple versions of this script
-opfile = open('opval.out', 'a')
 
 # write initial order parameter
 opval = orderp(positions, params)
