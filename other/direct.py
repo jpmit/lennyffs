@@ -38,7 +38,7 @@ if len(sys.argv) != 2:
 try:
     prodop = int(sys.argv[1])
 except ValueError:
-    sys.exit("OP must be an integer")
+    sys.exit("OP in product state must be an integer")
 
 # read input parameters and write to file
 params = initsim.getparams()
@@ -75,8 +75,8 @@ epot = totalenergy(positions, params)
 epotinit = epot
 
 # write initial order parameter
-opval = orderp(positions, params)
-opfile.write('{0} {1}\n'.format(0, opval))
+opvalinit = orderp(positions, params)
+opfile.write('{0} {1}\n'.format(0, opvalinit))
 opfile.flush()
 
 lamsamp = int(params['lambdasamp'])
@@ -105,7 +105,9 @@ while (qhits < int(params['totalqhits'])):
                           params, writexyz)
         # reset cyclesdone and positions
         cyclesdone = 0
-        positions = initpositions
+        positions = deepcopy(initpositions)
         epot = epotinit
+        opfile.write('{0} {1}\n'.format(0, opvalinit))
+        opfile.flush()
 
 opfile.close()
