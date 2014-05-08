@@ -73,7 +73,7 @@ class MProgram(object):
             # velocities if we are doing an MD simulation.
             if self.params['mctype'] == 'md':
                 writeoutput.writemdpick('initpositions.pkl',
-                                        self.positions, self.velocities)                
+                                        self.positions, self.velocities)
 
         # number of times to call MC cycle function
         self.ncall = int(np.ceil(self.params['ncycle'] /
