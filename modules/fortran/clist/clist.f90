@@ -2,12 +2,16 @@
 ! James Mithen
 ! j.mithen@surrey.ac.uk
 !
-! Fortran subroutine for using cell lists. See Frenkel-Smit Appendix F.
+! Subroutines for using cell lists. See Frenkel-Smit Appendix F.
 !
 ! SUBROUTINES:
+! new_nlist   - create neighbour list from particle positions
+! getnumcells - return the number of cells in each dimension (x, y and z)
+! cellindx    - get the 3 indices of a cell (x, y, z) from its number
 
 subroutine new_nlist(xpos, ypos, zpos, rc, lboxx, lboxy, lboxz, npar,&
                      ncelx, ncely, ncelz, ll, hoc, rnx, rny, rnz)
+  !!! create new cell list
 
   implicit none
   integer, parameter :: db = 8 !selected_real_kind(13)

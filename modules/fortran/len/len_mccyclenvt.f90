@@ -19,13 +19,13 @@ subroutine len_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp, rc,&
   implicit none
   integer, parameter :: db = 8 !selected_real_kind(13)
 
-  ! subroutine arguments
   ! inputs
   integer, intent(in) :: ncycles, nsamp, npar, nsurf
   real(kind=db), intent(in) :: rc, rcsq, vrc, vrc2, lboxx, lboxy, lboxz
   real(kind=db), intent(in) :: eps4, maxdisp, r6mult, r12mult
   logical, intent(in) :: zperiodic, sameseed
-  ! outputs (note inout intent)
+
+  ! outputs
   real(kind=db), dimension(npar), intent(inout) :: xpos, ypos, zpos
   real(kind=db), intent(inout) :: etot
 
@@ -51,7 +51,7 @@ subroutine len_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp, rc,&
   ! get the number of cells and build the cell list
   call getnumcells(lboxx, lboxy, lboxz, rc, ncelx, ncely, ncelz)
   write(*,*) 'num cells', ncelx, ncely, ncelz
-  allocate( hoc(ncelx, ncely, ncelx) )
+  allocate(hoc(ncelx, ncely, ncelx))
   call new_nlist(xpos, ypos, zpos, rc, lboxx, lboxy, lboxz, npar,&
                  ncelx, ncely, ncelz, ll, hoc, rnx, rny, rnz)
 
@@ -67,7 +67,7 @@ subroutine len_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp, rc,&
 
         ! pick a particle at random from fluid particles
         call random_number(rsc)
-        ipar = int(rsc*nparfl) + 1 + nsurf
+        ipar = int(rsc * nparfl) + 1 + nsurf
         xposi = xpos(ipar)
         yposi = ypos(ipar)
         zposi = zpos(ipar)
@@ -80,9 +80,9 @@ subroutine len_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp, rc,&
 
         ! displace particle
         call random_number(rvec)
-        xposinew = xposi + maxdisp*(rvec(1) - 0.5_db)
-        yposinew = yposi + maxdisp*(rvec(2) - 0.5_db)
-        zposinew = zposi + maxdisp*(rvec(3) - 0.5_db)
+        xposinew = xposi + maxdisp * (rvec(1) - 0.5_db)
+        yposinew = yposi + maxdisp * (rvec(2) - 0.5_db)
+        zposinew = zposi + maxdisp * (rvec(3) - 0.5_db)
 
         if (zperiodic) then
            if (zposinew < 0.0_db) then
@@ -119,7 +119,7 @@ subroutine len_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp, rc,&
            accept = .True.
            if (enew > eold) then
               call random_number(rsc)
-              if (exp((eold - enew)*eps4) < rsc) accept = .False.
+              if (exp((eold - enew) * eps4) < rsc) accept = .False.
            end if
            ! update positions if move accepted
            if (accept) then
@@ -156,11 +156,11 @@ subroutine len_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp, rc,&
      end do
      
      ! write out energy after every nsamp cycles
-     if (mod(cy,nsamp) == 0) write(*,*) cy, etot
+     if (mod(cy, nsamp) == 0) write(*, *) cy, etot
      
   end do
 
   ! write out acceptance ratio
-  write(*,'("acceptance ratio", I7, I7, F7.3)') acmov, atmov, real(acmov)/atmov
+  write(*,'("acceptance ratio", I7, I7, F7.3)') acmov, atmov, real(acmov) / atmov
 
 end subroutine len_executecyclesnvt

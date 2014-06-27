@@ -9,14 +9,18 @@
 
 subroutine get_nr(xpos, ypos, zpos, lboxx, lboxy, lboxz,&
                   npar, zperiodic, dr, nrvals, nprval)
+  !!! Return number of particles with each separation
 
   implicit none
   integer, parameter :: db = 8 !selected_real_kind(13)
 
+  ! input
   real(kind=db), dimension(npar), intent(in) :: xpos, ypos, zpos
   real(kind=db), intent(in) :: lboxx, lboxy, lboxz, dr
   integer, intent(in) :: npar, nrvals
   logical, intent(in) :: zperiodic
+
+  ! output
   integer, dimension(nrvals), intent(out) :: nprval
   
   !f2py intent(in) :: xpos, ypos, zpos, lboxx, lboxy, lboxz, dr, npar, zperiodic, nrvals
@@ -25,12 +29,12 @@ subroutine get_nr(xpos, ypos, zpos, lboxx, lboxy, lboxz,&
   integer :: i, j, indx
   real(kind=db) :: sepx, sepy, sepz, p5lboxx, p5lboxy, p5lboxz, sepsq, sep
 
-  p5lboxx = 0.5_db*lboxx
-  p5lboxy = 0.5_db*lboxy
-  p5lboxz = 0.5_db*lboxz
+  p5lboxx = 0.5_db * lboxx
+  p5lboxy = 0.5_db * lboxy
+  p5lboxz = 0.5_db * lboxz
 
-  do i=1,npar
-     do j=i+1,npar
+  do i = 1, npar
+     do j = i + 1, npar
         sepx = xpos(i) - xpos(j)
         ! periodic boundary conditions
         if (sepx > p5lboxx) then
@@ -63,10 +67,3 @@ subroutine get_nr(xpos, ypos, zpos, lboxx, lboxy, lboxz,&
      end do
   end do
 end subroutine get_nr
-
-!subroutine get_sk(xpos, ypos, zpos, lboxx, lboxy, lboxz,&
-!                  npar, kmax)
-  
-
-
-!end subroutine get_sk

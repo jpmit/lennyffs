@@ -25,30 +25,30 @@ subroutine len_totalenergy(xpos, ypos, zpos, rc, rcsq,&
   implicit none
   integer, parameter :: db = 8 !selected_real_kind(13)
 
-  ! subroutine arguments
   ! inputs
   integer, intent(in) :: npar, nsurf
-  real(kind=db), intent(in) :: rc,rcsq,lboxx,lboxy,lboxz
-  real(kind=db), intent(in) :: vrc,vrc2,r6mult,r12mult
+  real(kind=db), intent(in) :: rc, rcsq, lboxx, lboxy, lboxz
+  real(kind=db), intent(in) :: vrc, vrc2, r6mult, r12mult
   logical, intent(in) :: zperiodic
-  real(kind=db), dimension(npar), intent(in) :: xpos,ypos,zpos
+  real(kind=db), dimension(npar), intent(in) :: xpos, ypos, zpos
+
   ! outputs
   real(kind=db), intent(out) :: epot
 
-  !f2py intent(in) :: xpos,ypos,zpos,rc,rcsq,lboxx,lboxy,lboxz
-  !f2py intent(in) :: vrc,vrc2,npar,nsurf,zperiodic,r6mult,r12mult
+  !f2py intent(in) :: xpos, ypos, zpos, rc, rcsq, lboxx, lboxy, lboxz
+  !f2py intent(in) :: vrc, vrc2, npar, nsurf, zperiodic, r6mult, r12mult
   !f2py intent(out) :: epot
 
-  integer :: ipar,jpar
-  real(kind=db) :: sepx,sepy,sepz,sepsq,r2i,r6i,r12i
+  integer :: ipar, jpar
+  real(kind=db) :: sepx, sepy, sepz, sepsq, r2i, r6i, r12i
   real(kind=db) :: p5lboxx, p5lboxy, p5lboxz
 
-  p5lboxx = 0.5_db*lboxx ! for periodic bcs
-  p5lboxy = 0.5_db*lboxy
-  p5lboxz = 0.5_db*lboxz
+  p5lboxx = 0.5_db * lboxx ! for periodic bcs
+  p5lboxy = 0.5_db * lboxy
+  p5lboxz = 0.5_db * lboxz
   epot = 0.0_db
-  do ipar = 1, npar-1
-     do jpar = ipar+1, npar
+  do ipar = 1, npar - 1
+     do jpar = ipar + 1, npar
         sepx = xpos(ipar) - xpos(jpar)
         ! periodic boundary conditions
         if (sepx > p5lboxx) then
@@ -56,7 +56,7 @@ subroutine len_totalenergy(xpos, ypos, zpos, rc, rcsq,&
         else if (sepx < -p5lboxx) then
            sepx = sepx + lboxx
         end if
-        !sepx = sepx - lboxx*nint(sepx/lboxx)
+        !sepx = sepx - lboxx * nint(sepx/lboxx)
         if (abs(sepx) < rc) then
            sepy = ypos(ipar) - ypos(jpar)
            ! periodic boundary conditions
@@ -65,7 +65,7 @@ subroutine len_totalenergy(xpos, ypos, zpos, rc, rcsq,&
            else if (sepy < -p5lboxy) then
               sepy = sepy + lboxy
            end if
-           !sepy = sepy - lboxy*nint(sepy/lboxy)         
+           !sepy = sepy - lboxy * nint(sepy/lboxy)         
            if (abs(sepy) < rc) then
               sepz = zpos(ipar) - zpos(jpar)
               if (zperiodic) then
@@ -79,7 +79,7 @@ subroutine len_totalenergy(xpos, ypos, zpos, rc, rcsq,&
               end if
               sepsq = sepx**2 + sepy**2 + sepz**2
               if (sepsq < rcsq) then
-                 r2i = 1.0_db/sepsq
+                 r2i = 1.0_db / sepsq
                  r6i = r2i**3
                  r12i = r6i**2
                  ! add contribution to total potential energy
@@ -88,7 +88,7 @@ subroutine len_totalenergy(xpos, ypos, zpos, rc, rcsq,&
                     epot = epot + r12i - r6i - vrc
                  else
                     ! at least one particle is a surface particle
-                    epot = epot + r12mult*r12i - r6mult*r6i - vrc2
+                    epot = epot + r12mult*r12i - r6mult * r6i - vrc2
                  end if
               end if
            end if
@@ -99,35 +99,35 @@ subroutine len_totalenergy(xpos, ypos, zpos, rc, rcsq,&
 
 end subroutine len_totalenergy
 
-subroutine len_energyipar(ipar,xposi,yposi,zposi,xpos,ypos,zpos,rc,rcsq,&
-                          lboxx,lboxy,lboxz,vrc,vrc2,npar,&
-                          nsurf,zperiodic,r6mult,r12mult,epot)
+subroutine len_energyipar(ipar, xposi, yposi, zposi, xpos, ypos, zpos, rc, rcsq,&
+                          lboxx, lboxy, lboxz, vrc, vrc2, npar,&
+                          nsurf, zperiodic, r6mult, r12mult, epot)
    !!! Computes potential energy of particle ipar (in units of 4epsilon)
 
   implicit none
   integer, parameter :: db = 8 !selected_real_kind(13)
 
-  ! subroutine arguments
   ! inputs
-  integer, intent(in) :: ipar,npar,nsurf
-  real(kind=db), intent(in) :: xposi,yposi,zposi,rc,rcsq,lboxx,lboxy,lboxz
-  real(kind=db), intent(in) :: vrc,vrc2,r6mult,r12mult
+  integer, intent(in) :: ipar, npar, nsurf
+  real(kind=db), intent(in) :: xposi, yposi, zposi, rc, rcsq, lboxx, lboxy, lboxz
+  real(kind=db), intent(in) :: vrc, vrc2, r6mult, r12mult
   logical, intent(in) :: zperiodic
-  real(kind=db), dimension(npar), intent(in) :: xpos,ypos,zpos
+  real(kind=db), dimension(npar), intent(in) :: xpos, ypos, zpos
+
   ! outputs
   real(kind=db), intent(out) :: epot
 
-  !f2py intent(in) :: ipar,xposi,yposi,zposi,xpos,ypos,zpos,rc,rcsq,lboxx,
-  !f2py intent(in) :: lboxy,lboxz,vrc,vrc2,npar,nsurf,zperiodic,r6mult,r12mult
+  !f2py intent(in) :: ipar, xposi, yposi, zposi, xpos, ypos, zpos, rc, rcsq, lboxx,
+  !f2py intent(in) :: lboxy, lboxz, vrc, vrc2, npar, nsurf, zperiodic, r6mult, r12mult
   !f2py intent(out) :: epot
 
   integer :: jpar
-  real(kind=db) :: sepx,sepy,sepz,sepsq,r2i,r6i,r12i
+  real(kind=db) :: sepx, sepy, sepz, sepsq, r2i, r6i, r12i
   real(kind=db) :: p5lboxx, p5lboxy, p5lboxz
 
-  p5lboxx = 0.5_db*lboxx ! for periodic bcs
-  p5lboxy = 0.5_db*lboxy
-  p5lboxz = 0.5_db*lboxz
+  p5lboxx = 0.5_db * lboxx ! for periodic bcs
+  p5lboxy = 0.5_db * lboxy
+  p5lboxz = 0.5_db * lboxz
   epot = 0.0_db
   do jpar = 1, npar
      if (ipar /= jpar) then
@@ -138,7 +138,7 @@ subroutine len_energyipar(ipar,xposi,yposi,zposi,xpos,ypos,zpos,rc,rcsq,&
         else if (sepx < -p5lboxx) then
            sepx = sepx + lboxx
         end if
-        !sepx = sepx - lboxx*nint(sepx/lboxx)
+        !sepx = sepx - lboxx * nint(sepx / lboxx)
         if (abs(sepx) < rc) then
            sepy = yposi - ypos(jpar)
            ! periodic boundary conditions
@@ -147,7 +147,7 @@ subroutine len_energyipar(ipar,xposi,yposi,zposi,xpos,ypos,zpos,rc,rcsq,&
            else if (sepy < -p5lboxy) then
               sepy = sepy + lboxy
            end if
-           !sepy = sepy - lboxy*nint(sepy/lboxy)         
+           !sepy = sepy - lboxy * nint(sepy / lboxy)         
            if (abs(sepy) < rc) then
               sepz = zposi - zpos(jpar)
               if (zperiodic) then
@@ -157,11 +157,11 @@ subroutine len_energyipar(ipar,xposi,yposi,zposi,xpos,ypos,zpos,rc,rcsq,&
                  else if (sepz < -p5lboxz) then
                     sepz = sepz + lboxz
                  end if
-                 !sepz = sepz - lboxz*nint(sepz/lboxz)
+                 !sepz = sepz - lboxz * nint(sepz / lboxz)
               end if
               sepsq = sepx**2 + sepy**2 + sepz**2
               if (sepsq < rcsq) then
-                 r2i = 1.0_db/sepsq
+                 r2i = 1.0_db / sepsq
                  r6i = r2i**3
                  r12i = r6i**2
                  ! add contribution to total potential energy
@@ -170,7 +170,7 @@ subroutine len_energyipar(ipar,xposi,yposi,zposi,xpos,ypos,zpos,rc,rcsq,&
                     epot = epot + r12i - r6i - vrc
                  else
                     ! at least one particle is a surface particle
-                    epot = epot + r12mult*r12i - r6mult*r6i - vrc2
+                    epot = epot + r12mult * r12i - r6mult * r6i - vrc2
                  end if
               end if
            end if
@@ -196,6 +196,7 @@ subroutine len_eij(ipar, jpar, xposi, yposi, zposi, xposj, yposj, zposj,&
   integer, intent(in) :: npar, nsurf
   logical, intent(in) :: zperiodic
   real(kind=db), intent(in) :: r6mult, r12mult
+
   ! outputs
   real(kind=db), intent(out) :: eij
 
@@ -209,18 +210,18 @@ subroutine len_eij(ipar, jpar, xposi, yposi, zposi, xposj, yposj, zposj,&
   eij = 0.0_db
   sepx = xposi - xposj
   ! periodic boundary conditions
-  if (sepx > 0.5*lboxx) then
+  if (sepx > 0.5 * lboxx) then
      sepx = sepx - lboxx
-  else if (sepx < -0.5*lboxx) then
+  else if (sepx < -0.5 * lboxx) then
      sepx = sepx + lboxx
   end if
 
   if (abs(sepx) < rc) then
      sepy = yposi - yposj
      ! periodic boundary conditions
-     if (sepy > 0.5*lboxy) then
+     if (sepy > 0.5 * lboxy) then
         sepy = sepy - lboxy
-     else if (sepy < -0.5*lboxy) then
+     else if (sepy < -0.5 * lboxy) then
         sepy = sepy + lboxy
      end if
 
@@ -228,15 +229,15 @@ subroutine len_eij(ipar, jpar, xposi, yposi, zposi, xposj, yposj, zposj,&
         sepz = zposi - zposj
         if (zperiodic) then
            ! periodic boundary conditions
-           if (sepz > 0.5*lboxz) then
+           if (sepz > 0.5 * lboxz) then
               sepz = sepz - lboxz
-           else if (sepz < -0.5*lboxz) then
+           else if (sepz < -0.5 * lboxz) then
               sepz = sepz + lboxz
            end if
         end if
         sepsq = sepx**2 + sepy**2 + sepz**2
         if (sepsq < rcsq) then
-           r2i = 1.0_db/sepsq
+           r2i = 1.0_db / sepsq
            r6i = r2i**3
            r12i = r6i**2
            ! add contribution to total potential energy
@@ -245,7 +246,7 @@ subroutine len_eij(ipar, jpar, xposi, yposi, zposi, xposj, yposj, zposj,&
               eij = r12i - r6i - vrc
            else
               ! at least one particle is a surface particle
-              eij = r12mult*r12i - r6mult*r6i - vrc2
+              eij = r12mult * r12i - r6mult * r6i - vrc2
            end if
         end if
      end if
@@ -283,9 +284,9 @@ subroutine len_totalencreatelist(xpos, ypos, zpos, rc, rcsq,&
   
   ! get the number of cells and build the cell list
   call getnumcells(lboxx, lboxy, lboxz, rc, ncelx, ncely, ncelz)
-  allocate( hoc(ncelx, ncely, ncelx) )
+  allocate(hoc(ncelx, ncely, ncelx))
   call new_nlist(xpos, ypos, zpos, rc, lboxx, lboxy, lboxz, npar,&
-       ncelx, ncely, ncelz, ll, hoc, rnx, rny, rnz)
+                 ncelx, ncely, ncelz, ll, hoc, rnx, rny, rnz)
   ! get total energy using cell list
   call len_totalenlist(ll, hoc, ncelx, ncely, ncelz, rnx, rny, rnz,&
                        xpos, ypos, zpos, rc, rcsq, lboxx, lboxy,&
@@ -338,7 +339,7 @@ subroutine len_totalenlist(ll, hoc, ncelx, ncely, ncelz,&
 
      ! go through each cell in turn (27 in total in three dimensions),
      ! and add pot energy between particle i and all particles in the
-     ! cell.  Note if
+     ! cell.
      if (ncelx == 1) then
         nceltot = 1
      else

@@ -19,13 +19,13 @@ subroutine gauss_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp,&
   implicit none
   integer, parameter :: db = 8 !selected_real_kind(13)
 
-  ! subroutine arguments
   ! inputs
   integer, intent(in) :: ncycles, nsamp, npar, nsurf
   real(kind=db), intent(in) :: rc, rcsq, vrc, vrc2, lboxx, lboxy, lboxz
   real(kind=db), intent(in) :: epsovert, maxdisp
   logical, intent(in) :: zperiodic, sameseed
-  ! outputs (note inout intent)
+
+  ! outputs
   real(kind=db), dimension(npar), intent(inout) :: xpos, ypos, zpos
   real(kind=db), intent(inout) :: etot
 
@@ -67,7 +67,7 @@ subroutine gauss_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp,&
 
         ! pick a particle at random from fluid particles
         call random_number(rsc)
-        ipar = int(rsc*nparfl) + 1 + nsurf
+        ipar = int(rsc * nparfl) + 1 + nsurf
         xposi = xpos(ipar)
         yposi = ypos(ipar)
         zposi = zpos(ipar)
@@ -80,9 +80,9 @@ subroutine gauss_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp,&
 
         ! displace particle
         call random_number(rvec)
-        xposinew = xposi + maxdisp*(rvec(1) - 0.5_db)
-        yposinew = yposi + maxdisp*(rvec(2) - 0.5_db)
-        zposinew = zposi + maxdisp*(rvec(3) - 0.5_db)
+        xposinew = xposi + maxdisp * (rvec(1) - 0.5_db)
+        yposinew = yposi + maxdisp * (rvec(2) - 0.5_db)
+        zposinew = zposi + maxdisp * (rvec(3) - 0.5_db)
 
         if (zperiodic) then
            if (zposinew < 0.0_db) then
@@ -119,7 +119,7 @@ subroutine gauss_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp,&
            accept = .True.
            if (enew > eold) then
               call random_number(rsc)
-              if (exp((eold - enew)*epsovert) < rsc) then
+              if (exp((eold - enew) * epsovert) < rsc) then
                  accept = .False.
               end if
            end if
@@ -159,8 +159,8 @@ subroutine gauss_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp,&
      end do
      
      ! write out energy after every nsamp cycles
-     if (mod(cy, nsamp) == 0) write(*,*) cy, etot
-     
+     if (mod(cy, nsamp) == 0) write(*, *) cy, etot
+
   end do
 
   ! write out acceptance ratio

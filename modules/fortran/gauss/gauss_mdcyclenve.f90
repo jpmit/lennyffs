@@ -18,13 +18,13 @@ subroutine gauss_executecyclesnve(xpos, ypos, zpos, xvel, yvel, zvel,&
   implicit none
   integer, parameter :: db = 8 !selected_real_kind(13)
 
-  ! subroutine arguments
   ! inputs
   integer, intent(in) :: ncycles, nsamp, npar, nsurf
   real(kind=db), intent(in) :: dt, rc, rcsq, vrc, vrc2
   real(kind=db), intent(in) :: lboxx, lboxy, lboxz, mass, temp
   logical, intent(in) :: zperiodic, vscale
-  ! outputs (note inout intent)
+
+  ! outputs
   real(kind=db), dimension(npar), intent(inout) :: xpos, ypos, zpos,&
                                                    xvel, yvel, zvel,&
                                                    fx, fy, fz
@@ -53,8 +53,8 @@ subroutine gauss_executecyclesnve(xpos, ypos, zpos, xvel, yvel, zvel,&
                  ncelx, ncely, ncelz, ll, hoc, rnx, rny, rnz)
   
   ! precompute half of timestep and half of timestep squared
-  p5dt = 0.5_db*dt
-  p5dtsq = 0.5_db*(dt**2)
+  p5dt = 0.5_db * dt
+  p5dtsq = 0.5_db * (dt**2)
 
   ! output initial PE, KE and total energy per particle
   call gauss_totalenlist(ll, hoc, ncelx, ncely, ncelz, rnx, rny,&
@@ -68,15 +68,15 @@ subroutine gauss_executecyclesnve(xpos, ypos, zpos, xvel, yvel, zvel,&
   ! (npar * T), which should fluctuate around the value 1.5.
   epottot2 = epottot / npar
   ekintot2 = ekintot / npar
-  write(*,*) 0, epottot2, ekintot2/temp, epottot2 + ekintot2
+  write(*,*) 0, epottot2, ekintot2 / temp, epottot2 + ekintot2
 
   do cy = 1, ncycles
      
      ! update positions using current values of velocity and force
      ! assume mass = 1 in our units for now
-     xpos = xpos + xvel*dt + fx*p5dtsq
-     ypos = ypos + yvel*dt + fy*p5dtsq
-     zpos = zpos + zvel*dt + fz*p5dtsq
+     xpos = xpos + xvel * dt + fx * p5dtsq
+     ypos = ypos + yvel * dt + fy * p5dtsq
+     zpos = zpos + zvel * dt + fz * p5dtsq
 
      ! apply periodic BCs
      do i = 1, npar
@@ -118,9 +118,9 @@ subroutine gauss_executecyclesnve(xpos, ypos, zpos, xvel, yvel, zvel,&
                           newfz)
   
      ! compute new velocities using new and old forces
-     xvel = xvel + (newfx + fx)*p5dt
-     yvel = yvel + (newfy + fy)*p5dt
-     zvel = zvel + (newfz + fz)*p5dt     
+     xvel = xvel + (newfx + fx) * p5dt
+     yvel = yvel + (newfy + fy) * p5dt
+     zvel = zvel + (newfz + fz) * p5dt     
 
      ! the new forces are now the current forces
      fx = newfx
@@ -131,9 +131,9 @@ subroutine gauss_executecyclesnve(xpos, ypos, zpos, xvel, yvel, zvel,&
      if (vscale) then
         sumv2 = sum(xvel**2 + yvel**2 + zvel**2) / npar
         fs = sqrt(3 * temp / sumv2)
-        xvel = fs*xvel
-        yvel = fs*yvel
-        zvel = fs*zvel
+        xvel = fs * xvel
+        yvel = fs * yvel
+        zvel = fs * zvel
      end if
 
      ! write out diagnostics after every nsamp cycles
@@ -147,7 +147,7 @@ subroutine gauss_executecyclesnve(xpos, ypos, zpos, xvel, yvel, zvel,&
         ! output PE/npar, KE/(npar*T) ~ 1.5 and total energy per particle
         epottot2 = epottot / npar
         ekintot2 = ekintot / npar
-        write(*,*) cy, epottot2, ekintot2/temp, epottot2 + ekintot2
+        write(*,*) cy, epottot2, ekintot2 / temp, epottot2 + ekintot2
      end if
 
   end do

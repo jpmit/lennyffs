@@ -18,11 +18,11 @@ subroutine initpositionsnosurff(npar, lboxx, lboxy, lboxz, rcinitsq,&
   implicit none
   integer, parameter :: db = 8 !selected_real_kind(13)
 
-  ! subroutine arguments
   ! inputs
   integer, intent(in) :: npar
   real(kind=db), intent(in) :: lboxx, lboxy, lboxz, rcinitsq
   logical, intent(in) :: sameseed
+
   ! outputs
   real(kind=db), dimension(npar), intent(out) :: xpos, ypos, zpos
 
@@ -37,22 +37,22 @@ subroutine initpositionsnosurff(npar, lboxx, lboxy, lboxz, rcinitsq,&
   ! initialize random number generator
   call init_random_seed(sameseed)
 
-  do i=1,npar
+  do i = 1, npar
      overlap = .TRUE. 
      do while (overlap .eqv. .TRUE.)
         overlap = .FALSE.
         call random_number(r)
-        xpos(i) = lboxx*r(1)
-        ypos(i) = lboxy*r(2)
-        zpos(i) = lboxz*r(3)
+        xpos(i) = lboxx * r(1)
+        ypos(i) = lboxy * r(2)
+        zpos(i) = lboxz * r(3)
         do j = 1, i - 1
            sepx = xpos(i) - xpos(j)
            sepy = ypos(i) - ypos(j)
            sepz = zpos(i) - zpos(j)
            ! periodic boundary conditions
-           sepx = sepx - lboxx*nint(sepx/lboxx)
-           sepy = sepy - lboxy*nint(sepy/lboxy)
-           sepz = sepz - lboxz*nint(sepz/lboxz)
+           sepx = sepx - lboxx * nint(sepx / lboxx)
+           sepy = sepy - lboxy * nint(sepy / lboxy)
+           sepz = sepz - lboxz * nint(sepz / lboxz)
            sepsq = sepx**2 + sepy**2 + sepz**2
            if (sepsq < rcinitsq) then
               overlap = .TRUE.
@@ -94,7 +94,7 @@ subroutine init_random_seed(same)
   if (same) then
      seed = (/ (i - 1, i = 1, n) /)
   else
-     call system_clock(count=clock)     
+     call system_clock(count=clock)
      seed = clock + getpid() + 37 * (/ (i - 1, i = 1, n) /)
   end if
      

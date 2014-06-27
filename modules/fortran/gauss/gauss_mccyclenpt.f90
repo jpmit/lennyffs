@@ -21,13 +21,13 @@ subroutine gauss_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp,&
   implicit none
   integer, parameter :: db = 8 !selected_real_kind(13)
 
-  ! subroutine arguments
   ! inputs
   integer, intent(in) :: ncycles, nsamp, npar, nsurf
   real(kind=db), intent(in) :: rc, rcsq, vrc, vrc2, press
   real(kind=db), intent(in) :: epsovert, maxdisp, maxvol
   logical, intent(in) :: zperiodic, sameseed
-  ! outputs (note inout intent)
+
+  ! outputs
   real(kind=db), dimension(npar), intent(inout) :: xpos, ypos, zpos
   real(kind=db), intent(inout) :: lboxx, lboxy, lboxz, etot
 
@@ -68,13 +68,13 @@ subroutine gauss_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp,&
   nparfl = npar - nsurf
   
   write(*,'(F12.6, F12.6, F12.6, F12.6)') etot, lboxx, lboxy, lboxz
-  do cy=1, ncycles
+  do cy = 1, ncycles
      ! each cycle is on average 1 move per fluid par + 1 vol move     
-     do it=1, nparfl+1 
+     do it = 1, nparfl + 1 
 
         ! pick a random number between [nsurf,ntot+1]
         call random_number(rsc)
-        ipar = int(rsc*(nparfl + 1)) + nsurf + 1
+        ipar = int(rsc * (nparfl + 1)) + nsurf + 1
 
         ! if ipar > npar, we attempt a volume move, else we attempt a
         ! positional move
@@ -86,7 +86,7 @@ subroutine gauss_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp,&
            lboxxold = lboxx
            lboxyold = lboxy
            lboxzold = lboxz
-           vboxold = lboxx*lboxy*lboxz
+           vboxold = lboxx * lboxy * lboxz
            lnvold = log(vboxold)
 
            ! random number between 0 and 1 for attempted volume move
@@ -113,14 +113,14 @@ subroutine gauss_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp,&
            end if
 
            ! new box dimensions
-           lboxx = lboxx*scalefacx
-           lboxy = lboxy*scalefacy
-           lboxz = lboxz*scalefacz
+           lboxx = lboxx * scalefacx
+           lboxy = lboxy * scalefacy
+           lboxz = lboxz * scalefacz
 
            ! rescale particle positions to new volume
-           xpos = xpos*scalefacx
-           ypos = ypos*scalefacy
-           zpos = zpos*scalefacz
+           xpos = xpos * scalefacx
+           ypos = ypos * scalefacy
+           zpos = zpos * scalefacz
 
            ! if z is periodic, and we have some 'surface' particles -
            ! this is the case, e.g., when we are studying a 'seed'
@@ -159,8 +159,8 @@ subroutine gauss_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp,&
                                   nsurf, zperiodic, etotnew)
 
            ! See FS p122 (Algorithm 11) for this acceptance rule
-           arg = epsovert*(etot - etotnew + press*(vboxold - vboxnew)) + &
-                 (nparfl + 1)*(lnvnew - lnvold)
+           arg = epsovert * (etot - etotnew + press * (vboxold - vboxnew)) + &
+                 (nparfl + 1) * (lnvnew - lnvold)
            accept = .True.
            if (arg < 0) then
               call random_number(rsc)
@@ -180,9 +180,9 @@ subroutine gauss_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp,&
                  ! positions.  Note this is for simulations with seed
                  ! particles.
                  if (zperiodic .and. nsurf > 0) then
-                    xpos(1:nsurf) = xpos(1:nsurf)*scalefacx
-                    ypos(1:nsurf) = ypos(1:nsurf)*scalefacy
-                    zpos(1:nsurf) = zpos(1:nsurf)*scalefacz
+                    xpos(1:nsurf) = xpos(1:nsurf) * scalefacx
+                    ypos(1:nsurf) = ypos(1:nsurf) * scalefacy
+                    zpos(1:nsurf) = zpos(1:nsurf) * scalefacz
                  end if
                  
                  ! old cell list info
@@ -217,9 +217,9 @@ subroutine gauss_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp,&
 
            ! displace particle
            call random_number(rvec)
-           xposinew = xposi + maxdisp*(rvec(1) - 0.5_db)
-           yposinew = yposi + maxdisp*(rvec(2) - 0.5_db)
-           zposinew = zposi + maxdisp*(rvec(3) - 0.5_db)
+           xposinew = xposi + maxdisp * (rvec(1) - 0.5_db)
+           yposinew = yposi + maxdisp * (rvec(2) - 0.5_db)
+           zposinew = zposi + maxdisp * (rvec(3) - 0.5_db)
 
            if (zperiodic) then
               if (zposinew < 0.0_db) then
@@ -256,7 +256,7 @@ subroutine gauss_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp,&
               accept = .True.
               if (enew > eold) then
                  call random_number(rsc)
-                 if (exp((eold - enew)*epsovert) < rsc) accept = .False.
+                 if (exp((eold - enew) * epsovert) < rsc) accept = .False.
               end if
 
               ! update positions if move accepted
@@ -294,13 +294,13 @@ subroutine gauss_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp,&
      end do
      
      ! write out energy after every nsamp cycles
-     if (mod(cy,nsamp) == 0) write(*,'(I7,F12.6, F12.6, F12.6, F12.6)') cy, etot, lboxx, lboxy, lboxz
+     if (mod(cy,nsamp) == 0) write(*, '(I7,F12.6, F12.6, F12.6, F12.6)') cy, etot, lboxx, lboxy, lboxz
      
   end do
 
   ! write out acceptance ratio
-  write(*,'("acceptance ratio", I7, I7, F7.3, I7, I7, F7.3)')&
-       acmovdisp,atmovdisp,real(acmovdisp)/atmovdisp,&
-       acmovvol,atmovvol,real(acmovvol)/atmovvol
+  write(*, '("acceptance ratio", I7, I7, F7.3, I7, I7, F7.3)')&
+       acmovdisp,atmovdisp, real(acmovdisp) / atmovdisp,&
+       acmovvol,atmovvol, real(acmovvol) / atmovvol
 
 end subroutine gauss_executecyclesnpt

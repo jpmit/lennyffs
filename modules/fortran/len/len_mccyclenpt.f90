@@ -21,13 +21,13 @@ subroutine len_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp, rc,&
   implicit none
   integer, parameter :: db = 8 !selected_real_kind(13)
 
-  ! subroutine arguments
   ! inputs
   integer, intent(in) :: ncycles, nsamp, npar, nsurf
   real(kind=db), intent(in) :: rc, rcsq, vrc, vrc2, press
   real(kind=db), intent(in) :: eps4, maxdisp, maxvol, r6mult, r12mult
   logical, intent(in) :: zperiodic, sameseed
-  ! outputs (note inout intent)
+
+  ! outputs
   real(kind=db), dimension(npar), intent(inout) :: xpos, ypos, zpos
   real(kind=db), intent(inout) :: lboxx, lboxy, lboxz, etot
 
@@ -67,14 +67,14 @@ subroutine len_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp, rc,&
   acmovvol = 0
   nparfl = npar - nsurf
   
-  write(*,'(F12.6, F12.6, F12.6, F12.6)') etot, lboxx, lboxy, lboxz
+  write(*, '(F12.6, F12.6, F12.6, F12.6)') etot, lboxx, lboxy, lboxz
   do cy = 1, ncycles
      ! each cycle is on average 1 move per fluid par + 1 vol move     
-     do it = 1, nparfl+1 
+     do it = 1, nparfl + 1 
 
         ! pick a random number between [nsurf+1, ntot+1]
         call random_number(rsc)
-        ipar = int(rsc*(nparfl + 1)) + nsurf + 1
+        ipar = int(rsc * (nparfl + 1)) + nsurf + 1
 
         ! if ipar > npar, we attempt a volume move, else we attempt a
         ! positional move
@@ -86,14 +86,14 @@ subroutine len_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp, rc,&
            lboxxold = lboxx
            lboxyold = lboxy
            lboxzold = lboxz
-           vboxold = lboxx*lboxy*lboxz
+           vboxold = lboxx * lboxy * lboxz
            lnvold = log(vboxold)
            
            ! random number between 0 and 1 for attempted volume move
            call random_number(rsc)
 
            ! new box volume
-           lnvnew = lnvold + maxvol*(rsc - 0.5_db)
+           lnvnew = lnvold + maxvol * (rsc - 0.5_db)
            vboxnew = exp(lnvnew)
 
            ! scale factor for multiplying each dimension of simulation
@@ -113,14 +113,14 @@ subroutine len_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp, rc,&
            end if
 
            ! new box dimensions
-           lboxx = lboxx*scalefacx
-           lboxy = lboxy*scalefacy
-           lboxz = lboxz*scalefacz
+           lboxx = lboxx * scalefacx
+           lboxy = lboxy * scalefacy
+           lboxz = lboxz * scalefacz
 
            ! rescale particle positions to new volume
-           xpos = xpos*scalefacx
-           ypos = ypos*scalefacy
-           zpos = zpos*scalefacz
+           xpos = xpos * scalefacx
+           ypos = ypos * scalefacy
+           zpos = zpos * scalefacz
 
            ! save old cell list info
            llold = ll
@@ -135,7 +135,7 @@ subroutine len_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp, rc,&
            ! get the number of cells and build the cell list
            call getnumcells(lboxx, lboxy, lboxz, rc, ncelx, ncely, ncelz)
            deallocate(hoc)
-           allocate( hoc(ncelx, ncely, ncelx) )
+           allocate(hoc(ncelx, ncely, ncelx))
            call new_nlist(xpos, ypos, zpos, rc, lboxx, lboxy, lboxz, npar,&
                           ncelx, ncely, ncelz, ll, hoc, rnx, rny, rnz)
 
@@ -148,8 +148,8 @@ subroutine len_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp, rc,&
 
            ! See FS p122 (Algorithm 11) for this acceptance rule
            
-           arg = eps4*(etot - etotnew + 0.25_db*press*(vboxold - vboxnew)) + &
-                 (nparfl + 1)*(lnvnew - lnvold)
+           arg = eps4 * (etot - etotnew + 0.25_db * press * (vboxold - vboxnew)) + &
+                 (nparfl + 1) * (lnvnew - lnvold)
            accept = .True.
            if (arg < 0) then
               call random_number(rsc)
@@ -194,9 +194,9 @@ subroutine len_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp, rc,&
 
            ! displace particle
            call random_number(rvec)
-           xposinew = xposi + maxdisp*(rvec(1) - 0.5_db)
-           yposinew = yposi + maxdisp*(rvec(2) - 0.5_db)
-           zposinew = zposi + maxdisp*(rvec(3) - 0.5_db)
+           xposinew = xposi + maxdisp * (rvec(1) - 0.5_db)
+           yposinew = yposi + maxdisp * (rvec(2) - 0.5_db)
+           zposinew = zposi + maxdisp * (rvec(3) - 0.5_db)
 
            if (zperiodic) then
               if (zposinew < 0.0_db) then
@@ -271,13 +271,13 @@ subroutine len_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp, rc,&
      end do
      
      ! write out energy after every nsamp cycles
-     if (mod(cy,nsamp) == 0) write(*,'(F12.6, F12.6, F12.6, F12.6)') etot, lboxx, lboxy, lboxz
+     if (mod(cy,nsamp) == 0) write(*, '(F12.6, F12.6, F12.6, F12.6)') etot, lboxx, lboxy, lboxz
      
   end do
 
   ! write out acceptance ratio
   write(*,'("acceptance ratio", I7, I7, F7.3, I7, I7, F7.3)')&
-       acmovdisp,atmovdisp,real(acmovdisp)/atmovdisp,&
-       acmovvol,atmovvol,real(acmovvol)/atmovvol
+        acmovdisp, atmovdisp, real(acmovdisp) / atmovdisp,&
+        acmovvol, atmovvol, real(acmovvol) / atmovvol
 
 end subroutine len_executecyclesnpt

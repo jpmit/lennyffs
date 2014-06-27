@@ -4,6 +4,11 @@
 !
 ! Subroutines for computing force on every particle, using the cell
 ! list construction for efficiency.
+!
+! SUBROUTINES:
+! gauss_fij             - compute force on particle i due to particle j
+! gauss_forcecreatelist - create cell list then return force on each par
+! gauss_forcelist       - compute force on every particle using cell list
 
 subroutine gauss_fij(ipar, jpar, xposi, yposi, zposi, xposj, yposj, zposj,&
                      lboxx, lboxy, lboxz, rc, rcsq,  npar, nsurf,&
@@ -20,6 +25,7 @@ subroutine gauss_fij(ipar, jpar, xposi, yposi, zposi, xposj, yposj, zposj,&
   real(kind=db), intent(in) :: lboxx, lboxy, lboxz, rc, rcsq
   integer, intent(in) :: npar, nsurf
   logical, intent(in) :: zperiodic
+
   ! outputs
   real(kind=db), intent(out) :: fx, fy, fz
 
@@ -37,9 +43,9 @@ subroutine gauss_fij(ipar, jpar, xposi, yposi, zposi, xposj, yposj, zposj,&
   ! the force on particle i should be in the negative x direction.
   sepx = xposj - xposi
   ! periodic boundary conditions
-  if (sepx > 0.5*lboxx) then
+  if (sepx > 0.5 * lboxx) then
      sepx = sepx - lboxx
-  else if (sepx < -0.5*lboxx) then
+  else if (sepx < -0.5 * lboxx) then
      sepx = sepx + lboxx
   end if
 
@@ -56,9 +62,9 @@ subroutine gauss_fij(ipar, jpar, xposi, yposi, zposi, xposj, yposj, zposj,&
         sepz = zposj - zposi
         if (zperiodic) then
            ! periodic boundary conditions
-           if (sepz > 0.5*lboxz) then
+           if (sepz > 0.5 * lboxz) then
               sepz = sepz - lboxz
-           else if (sepz < -0.5*lboxz) then
+           else if (sepz < -0.5 * lboxz) then
               sepz = sepz + lboxz
            end if
         end if
@@ -68,16 +74,16 @@ subroutine gauss_fij(ipar, jpar, xposi, yposi, zposi, xposj, yposj, zposj,&
            prefac = -2*exp(-sepsq)
            if (ipar > nsurf .and. jpar > nsurf) then
               ! both particles are fluid particles
-              fx = sepx*prefac
-              fy = sepy*prefac
-              fz = sepz*prefac
+              fx = sepx * prefac
+              fy = sepy * prefac
+              fz = sepz * prefac
            else
               ! at least one particle is a surface particle
               ! currently we are doing the same thing, but may
               ! want to add a different potential later
-              fx = sepx*prefac
-              fy = sepy*prefac
-              fz = sepz*prefac
+              fx = sepx * prefac
+              fy = sepy * prefac
+              fz = sepz * prefac
            end if
         end if
      end if
@@ -114,9 +120,9 @@ subroutine gauss_forcecreatelist(xpos, ypos, zpos, rc, rcsq,&
   
   ! get the number of cells and build the cell list
   call getnumcells(lboxx, lboxy, lboxz, rc, ncelx, ncely, ncelz)
-  allocate( hoc(ncelx, ncely, ncelx) )
+  allocate(hoc(ncelx, ncely, ncelx))
   call new_nlist(xpos, ypos, zpos, rc, lboxx, lboxy, lboxz, npar,&
-       ncelx, ncely, ncelz, ll, hoc, rnx, rny, rnz)
+                 ncelx, ncely, ncelz, ll, hoc, rnx, rny, rnz)
   ! get total energy using cell list
   call gauss_forcelist(ll, hoc, ncelx, ncely, ncelz, rnx, rny, rnz,&
                        xpos, ypos, zpos, rc, rcsq, lboxx, lboxy,&
@@ -144,6 +150,7 @@ subroutine gauss_forcelist(ll, hoc, ncelx, ncely, ncelz,&
   real(kind=db), intent(in) :: rc, rcsq, lboxx, lboxy, lboxz
   integer, intent(in) :: npar, nsurf
   logical, intent(in) :: zperiodic
+  
   ! outputs
   real(kind=db), dimension(npar), intent(out) :: fx, fy, fz
 
