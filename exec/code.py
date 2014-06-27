@@ -8,7 +8,7 @@ This is the main Monte-Carlo (MC) code.  This code just performs a
 certain number of MC cycles, governed by the parameters in the 'in'
 file.  It will calculate the 'order parameter' every so often, and
 save the configuration every so often (for both of these, how often is
-specified in the input file. For Forward Flux Sampling (FFS)
+specified in the input file). For Forward Flux Sampling (FFS)
 simulations, see codeffs.py.
 """
 
