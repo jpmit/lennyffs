@@ -1,0 +1,53 @@
+# simulation parameters
+simulation restart
+restartfile equil.xyz
+
+# interaction potential parameters
+potential gauss
+rcut 3.7
+
+# fluid parameters
+nstar 0.125
+Tstar 0.00262
+nparfl 20000
+rcinit 0.6
+
+# surface parameters
+surface no
+boxvol  382388.279813
+
+# box parameters
+# lboxx, lboxy, lboxz will override boxvol above
+#lboxz 8.253591
+
+# MC parameters
+mctype npt
+pressure 0.01
+ncycle 400000
+nsamp 10
+maxdisp 0.6
+maxvol 0.01
+
+# nsave must be a multiple of opsamp below
+nsave 10000
+writexyz ld
+
+# order parameters
+orderparam allfrac
+opsamp 1000
+stillsep 3.0
+q6link 0.65
+q6numlinks 6
+
+# ffs
+useffs no
+lambdaA 5
+numint 1
+lambdas 10,20
+totalqhits 50
+nshots 300
+nbatch 1
+minsuccess 50
+lambdasamp 10
+pruning no
+prunprob 0.2
