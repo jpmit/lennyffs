@@ -9,8 +9,7 @@
 #include "particle.h"
 #include "box.h"
 
-graph getxgraph(const std::vector<Particle>&, const std::vector<int>&,
-					 const Box&);
+graph getxgraph(const std::vector<Particle>&, const std::vector<int>&, const Box&);
 std::vector<int> largestcomponent(const graph&);
 
 #endif

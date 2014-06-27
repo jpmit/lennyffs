@@ -9,8 +9,8 @@
 
 struct Particle
 {
-	  double pos[3];
-	  char symbol; // for outputting e.g. jmol
+   double pos[3];
+   char symbol; // for outputting e.g. jmol
 };
 
 #endif

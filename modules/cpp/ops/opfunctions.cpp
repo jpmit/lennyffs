@@ -22,12 +22,14 @@ using std::complex;
 
 inline int fact(const int n)
 {
-	  int ifact = 1;
-	  if (n < 2)
-			 return ifact;
-	  for (int j = 2; j != n + 1; ++j)
-			 ifact *= j;
-	  return ifact;
+   int ifact = 1;
+   if (n < 2) {
+      return ifact;
+   }
+   for (int j = 2; j != n + 1; ++j) {
+      ifact *= j;
+   }
+   return ifact;
 }
 
 // Computes the associated Legendre polynomial P_l^m(x), for positive
@@ -35,57 +37,57 @@ inline int fact(const int n)
 
 double plm(const int lval, const int mval, const double x)
 {
-	  double somx2,pm1m,pll;
+   double somx2,pm1m,pll;
 
-	  // first compute P_m^m
-	  double pmm = 1.0;
-	  double fact = 1.0;
+   // first compute P_m^m
+   double pmm = 1.0;
+   double fact = 1.0;
 
-	  if (mval > 0) {
-			 somx2 = sqrt(1.0 - x*x);
-			 for (int i = 1; i <= mval; ++i) {
-					pmm = -pmm*fact*somx2;
-					fact = fact + 2.0;
-			 }
-	  }
+   if (mval > 0) {
+      somx2 = sqrt(1.0 - x*x);
+      for (int i = 1; i <= mval; ++i) {
+         pmm = -pmm*fact*somx2;
+         fact = fact + 2.0;
+      }
+   }
 
-	  if (lval == mval) {
-			 return pmm;
-	  }
-	  else {
-			 // compute P_m+1^m
-			 pm1m = (2*mval + 1)*x*pmm;
-			 if (lval == mval + 1) {
-					return pm1m;
-			 }
-			 else {
-					// compute P_l^m if not already returned
-					for (int i = mval + 2; i <= lval; ++i) {
-						  pll = (x*(2*i - 1)*pm1m - (i+mval-1)*pmm)/(i-mval);
-						  pmm = pm1m;
-						  pm1m = pll;
-					}
-					return pll;
-			 }
-	  }
+   if (lval == mval) {
+      return pmm;
+   }
+   else {
+      // compute P_m+1^m
+      pm1m = (2*mval + 1)*x*pmm;
+      if (lval == mval + 1) {
+         return pm1m;
+      }
+      else {
+         // compute P_l^m if not already returned
+         for (int i = mval + 2; i <= lval; ++i) {
+            pll = (x*(2*i - 1)*pm1m - (i+mval-1)*pmm)/(i-mval);
+            pmm = pm1m;
+            pm1m = pll;
+         }
+         return pll;
+      }
+   }
 }
 
 // Spherical harmonic Y(l,m,theta,phi).
 
 complex<double> ylm(const int lval, const int mval,
-						  const double costheta, const double phi)
+                    const double costheta, const double phi)
 {
-	  int absm = abs(mval);
-	  double coeff = sqrt((2.0*lval + 1.0)*fact(lval-absm)/
-								 (4.0*PI*fact(lval+absm)));
-	  if (mval < 0) {
-			 coeff = coeff * pow(-1,mval);
-	  }
+   int absm = abs(mval);
+   double coeff = sqrt((2.0 * lval + 1.0)*fact(lval - absm) /
+                       (4.0 * PI * fact(lval + absm)));
+   if (mval < 0) {
+      coeff = coeff * pow(-1, mval);
+   }
 
-	  double plmval = plm(lval, absm, costheta);
+   double plmval = plm(lval, absm, costheta);
 
-	  complex<double> res(cos(mval*phi),sin(mval*phi));
-	  res = res * coeff * plmval;
+   complex<double> res(cos(mval * phi), sin(mval * phi));
+   res = res * coeff * plmval;
 
-	  return res;
+   return res;
 }

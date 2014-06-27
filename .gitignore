@@ -10,3 +10,6 @@ test
 boost
 *.so
 *.o
+# scripts used for reformatting source etc
+*.sh
+*.el

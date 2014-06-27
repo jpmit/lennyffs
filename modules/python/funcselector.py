@@ -132,7 +132,7 @@ class FuncSelector(object):
         elif cls.option[cls.ORDERPARAM] == cls.ALLFRACLD:
             return orderparam.allfracld_cpp
         elif cls.option[cls.ORDERPARAM] == cls.ALLFRAC:
-            return orderparam.allfracldtf_cpp        
+            return orderparam.allfracldtf_cpp
         elif cls.option[cls.ORDERPARAM] == cls.NONE:
             return orderparam.nothing
 

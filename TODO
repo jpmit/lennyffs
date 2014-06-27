@@ -1,0 +1,4 @@
+* Refactor C++ source file modules/cpp/ops/pyfunctions.cpp ; currently
+  a lot of code is being repeated.  However, any refactoring must
+  preserve speed to some extent, since many of these functions are
+  called every MC cycle (actually usually every 10 or so).
