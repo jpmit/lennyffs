@@ -182,7 +182,7 @@ def fractf_fort(positions, params):
 def nclustf_cpp(positions, params):
     """
     Number of particles in largest cluster, according to Ten-Wolde
-    Frenkel criterion.  This uses the C++ extension module.
+    Frenkel criterion.
     """
 
     npar = params['npartot']
@@ -191,12 +191,13 @@ def nclustf_cpp(positions, params):
     zperiodic = params['zperiodic']
     thresh = params['q6link']
     minlinks = params['q6numlinks']
+    usenearest = params['usenearest']
 
     nclus = mcfuncs.nclustf(positions[:,0], positions[:,1],
                             positions[:,2], npar, nparsurf,
                             params['lboxx'], params['lboxy'],
                             params['lboxz'], zperiodic, nsep,
-                            minlinks, thresh)
+                            minlinks, thresh, usenearest)
 
     return nclus
 
@@ -209,19 +210,20 @@ def _tfclass(positions, params):
     zperiodic = params['zperiodic']
     thresh = params['q6link']
     minlinks = params['q6numlinks']
+    usenearest = params['usenearest']
 
     parclass = mcfuncs.tfclass(positions[:,0], positions[:,1],
                                positions[:,2], npar, nparsurf,
                                params['lboxx'], params['lboxy'],
                                params['lboxz'], zperiodic, nsep,
-                               minlinks, thresh)
+                               minlinks, thresh, usenearest)
     return parclass
 
 
 def fractf_cpp(positions, params):
     """
     Fraction of particles in largest cluster, according to Ten-Wolde
-    Frenkel criterion.  This uses the C++ extension module.
+    Frenkel criterion.
     """
     
     npar = params['npartot']
@@ -230,19 +232,20 @@ def fractf_cpp(positions, params):
     zperiodic = params['zperiodic']
     thresh = params['q6link']
     minlinks = params['q6numlinks']
+    usenearest = params['usenearest']
 
     nclus = mcfuncs.fracsolidtf(positions[:,0], positions[:,1],
                                 positions[:,2], npar, nparsurf,
                                 params['lboxx'], params['lboxy'],
                                 params['lboxz'], zperiodic, nsep,
-                                minlinks, thresh)
+                                minlinks, thresh, usenearest)
 
     return nclus
 
 def nclusld_cpp(positions, params):
     """
     Number of particles in largest cluster, according to
-    Lechner-Dellago criterion.  This uses the C++ extension module.
+    Lechner-Dellago criterion.
     """
     
     npar = params['npartot']
@@ -251,11 +254,13 @@ def nclusld_cpp(positions, params):
     zperiodic = params['zperiodic']
     thresh = params['q6link']
     minlinks = params['q6numlinks']
+    usenearest = params['usenearest']
 
     nclus = mcfuncs.nclusld(positions[:,0], positions[:,1],
                             positions[:,2], npar, nparsurf,
                             params['lboxx'], params['lboxy'],
-                            params['lboxz'], zperiodic, nsep)
+                            params['lboxz'], zperiodic, nsep,
+                            usenearest)
 
     return nclus
 
@@ -271,11 +276,13 @@ def fracld_cpp(positions, params):
     zperiodic = params['zperiodic']
     thresh = params['q6link']
     minlinks = params['q6numlinks']
+    usenearest = params['usenearest']
 
     frac = mcfuncs.fracsolidld(positions[:,0], positions[:,1],
                                positions[:,2], npar, nparsurf,
                                params['lboxx'], params['lboxy'],
-                               params['lboxz'], zperiodic, nsep)
+                               params['lboxz'], zperiodic, nsep,
+                               usenearest)
     
     return frac
 
@@ -310,11 +317,13 @@ def _ldclass(positions, params):
     nsep = params['stillsep']
     nparsurf = params['nparsurf']
     zperiodic = params['zperiodic']
+    usenearest = params['usenearest']
 
     parclass = mcfuncs.ldclass(positions[:,0], positions[:,1],
                                positions[:,2], npar, nparsurf,
                                params['lboxx'], params['lboxy'],
-                               params['lboxz'], zperiodic, nsep)
+                               params['lboxz'], zperiodic, nsep,
+                               usenearest)
     return parclass
 
 def _ldclusnums(positions, params):
@@ -350,7 +359,7 @@ def _clusnums(cpositions, params):
                                   cpositions[:,2], len(cpositions),
                                   params['lboxx'], params['lboxy'],
                                   params['lboxz'], params['zperiodic'],
-                                  params['stillsep'])
+                                  params['stillsep'], params['usenearest'])
 
 def _q4w4q6w6(positions, params):
     """Return LD order parameters."""
@@ -361,7 +370,8 @@ def _q4w4q6w6(positions, params):
                                  params['nparsurf'],
                                  params['lboxx'], params['lboxy'],
                                  params['lboxz'], params['zperiodic'],
-                                 params['stillsep'])
+                                 params['stillsep'],
+                                 params['usenearest'])
 
     # the C++ function returns a long list with q4 values followed by
     # w4 values followed by q6values followed by w6 values.  Split

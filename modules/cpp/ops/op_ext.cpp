@@ -25,8 +25,8 @@ BOOST_PYTHON_MODULE(op_ext)
 
    // The string is the function name called from python
    def("nclustf", py_nclustf);
-   def("tfclass", py_tfclass);     
-   def("nclusld", py_nclusld);     
+   def("tfclass", py_tfclass);
+   def("nclusld", py_nclusld);
    def("fracsolidld", py_fracsolidld);
    def("fracsolidtf", py_fracsolidtf);
    def("ldclass", py_ldclass);

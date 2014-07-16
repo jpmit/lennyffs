@@ -55,7 +55,8 @@ double py_nclustf(boost::python::numeric::array xpos,
                   const double lboxx, const double lboxy,
                   const double lboxz, const bool zperiodic,
                   const double nsep, const int nlinks,
-                  const double linkval)
+                  const double linkval,
+                  const bool usenearest)
 {
    // create vector of type "Particle"
    vector<Particle> allpars = getparticles(xpos, ypos, zpos, npartot);
@@ -68,8 +69,12 @@ double py_nclustf(boost::python::numeric::array xpos,
    vector<vector<int> > lneigh(npartot); // neighbour particle nums for each par
 
    // fill up numneigh and lneigh, we can use either neighcut or neighnearest for this
-   neighcut(allpars, simbox, numneigh, lneigh);
-   //neighnearest(allpars, simbox, numneigh, lneigh, 12);
+   if (usenearest == true) {
+      neighnearest(allpars, simbox, numneigh, lneigh, 12);
+   }
+   else {
+      neighcut(allpars, simbox, numneigh, lneigh);
+   }
 
    // matrix of qlm values, for l = 6 only
    array2d q6lm(boost::extents[npartot][13]);
@@ -101,7 +106,8 @@ vector<TFCLASS> py_tfclass(boost::python::numeric::array xpos,
                            const double lboxx, const double lboxy,
                            const double lboxz, const bool zperiodic,
                            const double nsep, const int nlinks,
-                           const double linkval)
+                           const double linkval,
+                           const bool usenearest)
 {
    // create vector of type "Particle"
    vector<Particle> allpars = getparticles(xpos, ypos, zpos, npartot);
@@ -115,8 +121,12 @@ vector<TFCLASS> py_tfclass(boost::python::numeric::array xpos,
 
    // fill up numneigh and lneigh, we can use either neighcut of
    // neighnearest for this
-   neighcut(allpars, simbox, numneigh, lneigh);
-   //neighnearest(allpars, simbox, numneigh, lneigh, 12);
+   if (usenearest == true) {
+      neighnearest(allpars, simbox, numneigh, lneigh, 12);
+   }
+   else {
+      neighcut(allpars, simbox, numneigh, lneigh);
+   }
 
    // matrix of qlm values, for l = 6 only
    array2d q6lm(boost::extents[npartot][13]);
@@ -147,7 +157,7 @@ double py_fracsolidtf(boost::python::numeric::array xpos,
                       const double lboxx, const double lboxy,
                       const double lboxz, const bool zperiodic,
                       const double nsep, const int nlinks,
-                      const double linval)
+                      const double linval, const bool usenearest)
 {
    // create vector of type "Particle"
    vector<Particle> allpars = getparticles(xpos, ypos, zpos, npartot);
@@ -161,7 +171,12 @@ double py_fracsolidtf(boost::python::numeric::array xpos,
 
    // fill up numneigh and lneigh, we can use either neighcut of
    // neighnearest for this
-   neighnearest(allpars, simbox, numneigh, lneigh, 12);
+   if (usenearest == true) {
+      neighnearest(allpars, simbox, numneigh, lneigh, 12);
+   }
+   else {
+      neighcut(allpars, simbox, numneigh, lneigh);
+   }
 
    // matrix of qlm values, for l = 6 only
    array2d q6lm(boost::extents[npartot][13]);
@@ -191,7 +206,7 @@ double py_nclusld(boost::python::numeric::array xpos,
                   const int npartot, const int nparsurf,
                   const double lboxx, const double lboxy,
                   const double lboxz, const bool zperiodic,
-                  const double nsep)
+                  const double nsep, const bool usenearest)
 {
    // create vector of type "Particle"
    vector<Particle> allpars = getparticles(xpos, ypos, zpos, npartot);
@@ -205,7 +220,12 @@ double py_nclusld(boost::python::numeric::array xpos,
 
    // fill up numneigh and lneigh, we can use either neighcut or
    // neighnearest for this
-   neighnearest(allpars, simbox, numneigh, lneigh, 12);
+   if (usenearest == true) {
+      neighnearest(allpars, simbox, numneigh, lneigh, 12);
+   }
+   else {
+      neighcut(allpars, simbox, numneigh, lneigh);
+   }
 
    // matrix of qlm values, for l = 4 and l = 6
    array2d q4lm(boost::extents[npartot][9]);
@@ -243,7 +263,7 @@ double py_fracsolidld(boost::python::numeric::array xpos,
                       const int npartot,  const int nparsurf,
                       const double lboxx, const double lboxy,
                       const double lboxz, const bool zperiodic,
-                      const double nsep)
+                      const double nsep, const bool usenearest)
 {
    // create vector of type "Particle"
    vector<Particle> allpars = getparticles(xpos, ypos, zpos, npartot);
@@ -257,7 +277,12 @@ double py_fracsolidld(boost::python::numeric::array xpos,
 
    // fill up numneigh and lneigh, we can use either neighcut or
    // neighnearest for this
-   neighnearest(allpars, simbox, numneigh, lneigh, 12);
+   if (usenearest == true) {
+      neighnearest(allpars, simbox, numneigh, lneigh, 12);
+   }
+   else {
+      neighcut(allpars, simbox, numneigh, lneigh);
+   }
 
    // matrix of qlm values, for l = 4 and l = 6
    array2d q4lm(boost::extents[npartot][9]);
@@ -290,7 +315,7 @@ vector<LDCLASS> py_ldclass(boost::python::numeric::array xpos,
                            const int npartot, const int nparsurf,
                            const double lboxx, const double lboxy,
                            const double lboxz, const bool zperiodic,
-                           const double nsep)
+                           const double nsep, const bool usenearest)
 {
    // create vector of type "Particle"
    vector<Particle> allpars = getparticles(xpos, ypos, zpos, npartot);
@@ -302,10 +327,14 @@ vector<LDCLASS> py_ldclass(boost::python::numeric::array xpos,
    vector<int> numneigh(npartot, 0);     // num neighbours for each particle
    vector<vector<int> > lneigh(npartot); // vector of neighbour par nums for each par
 
-   // fill up numneigh and lneigh, we can use either neighcut of
+   // fill up numneigh and lneigh, we can use either neighcut or
    // neighnearest for this
-   //neighcut(allpars, simbox, numneigh, lneigh);          
-   neighnearest(allpars, simbox, numneigh, lneigh, 12);
+   if (usenearest == true) {
+      neighnearest(allpars, simbox, numneigh, lneigh, 12);
+   }
+   else {
+      neighcut(allpars, simbox, numneigh, lneigh);
+   }
 
    // matrix of qlm values, for l = 4 and l = 6
    array2d q4lm(boost::extents[npartot][9]);
@@ -361,7 +390,7 @@ vector<double> py_q4w4q6w6(boost::python::numeric::array xpos,
                            const int npartot, const int nparsurf,
                            const double lboxx, const double lboxy,
                            const double lboxz, const bool zperiodic,
-                           const double nsep)
+                           const double nsep, const bool usenearest)
 {
    // create vector of type "Particle"
    vector<Particle> allpars = getparticles(xpos, ypos, zpos, npartot);
@@ -375,8 +404,12 @@ vector<double> py_q4w4q6w6(boost::python::numeric::array xpos,
 
    // fill up numneigh and lneigh, we can use either neighcut of
    // neighnearest for this
-   //neighcut(allpars, simbox, numneigh, lneigh);          
-   neighnearest(allpars, simbox, numneigh, lneigh, 12);
+   if (usenearest == true) {
+      neighnearest(allpars, simbox, numneigh, lneigh, 12);
+   }
+   else {
+      neighcut(allpars, simbox, numneigh, lneigh);
+   }
 
    // matrix of qlm values, for l = 4 and l = 6
    array2d q4lm(boost::extents[npartot][9]);
