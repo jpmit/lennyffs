@@ -44,3 +44,12 @@ class Param(object):
 
     def __repr__(self):
         return self.__str__()
+
+def get_defaults():
+    """Return dictionary of default parameters"""
+
+    defaults = {}
+    for (k, v) in DEFAULTS.values():
+        p = Param(k, v)
+        defaults[p.name] = p.value
+    return defaults

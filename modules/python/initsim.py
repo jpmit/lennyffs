@@ -59,7 +59,7 @@ def readparams():
         if line:
             # note that this interface should handle conversion from
             # string to e.g. int correctly
-            p = params.Param(line[0],line[1])
+            p = params.Param(line[0], line[1])
             if p.value is None:
                 # something went wrong, we should have had an error
                 # msg on stdout
@@ -82,6 +82,13 @@ def getparams():
     if not pdict:
         # something went wrong reading params file
         sys.exit("Error: I couldn't read the 'in' file properly")
+
+    # add in any default values
+    defaults = params.get_defaults()
+
+    # overwrite any values in defaults that currently exist
+    defaults.update(pdict)
+    pdict = defaults
         
     # check that the input actually makes sense, can we actually do a
     # simulation with this info?
@@ -103,14 +110,6 @@ def checkparams(pdict):
 
 def addparams(pdict):
     """Add some useful parameters to the dictionary."""
-    
-    # if type of mc simulation not specified, default to nvt
-    if 'mctype' not in pdict:
-        pdict['mctype'] = 'nvt'
-
-    # if sameseed not given, default to false (use random seed)
-    if 'sameseed' not in pdict:
-        pdict['sameseed'] = False
         
     # eps/k_bT
     pdict['epsovert'] = 1.0 / pdict['Tstar']

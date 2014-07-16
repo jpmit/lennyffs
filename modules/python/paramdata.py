@@ -26,9 +26,9 @@ BOOL = 'bool'
 PDICT = {# simulation params
          'simulation': STRING,
          'restartfile': STRING,
-         
+
          # interaction potential params
-         'potential' : STRING,
+         'potential': STRING,
          'rcut': FLOAT,
          'r6mult': FLOAT,
          'r12mult': FLOAT,
@@ -64,7 +64,7 @@ PDICT = {# simulation params
          'nsamp': INT,
          'maxdisp': FLOAT,
          'maxvol': FLOAT,
-         'sameseed' : BOOL,
+         'sameseed': BOOL,
 
          # parameters for saving
          'nsave': INT,
@@ -75,7 +75,8 @@ PDICT = {# simulation params
          'opsamp' : INT,
          'stillsep': FLOAT,
          'q6link': FLOAT,
-         'q6numlinks':INT,
+         'q6numlinks': INT,
+         'usenearest': BOOL,
 
          # FFS params
          'useffs': BOOL,
@@ -93,7 +94,7 @@ PDICT = {# simulation params
          'prunprob': FLOAT,
 
          # overrides (useful when be have surface particles)
-         'o_zperiodic' : BOOL,
+         'o_zperiodic': BOOL,
          'o_boxvol': FLOAT,
          'o_nparsurf': INT,
 
@@ -102,6 +103,18 @@ PDICT = {# simulation params
          'mass': FLOAT,
          'vscale': BOOL,
          }
+
+# default values, arranged alphabetically.  These are used if the
+# parameter is not specified in the input file.
+DEFAULTS = {
+    'mctype': 'nvt',
+    'sameseed': 'yes',
+    'usenearest': 'yes'
+    }
+
+def get_defaults():
+    for (k, v) in _DEFAULTS.values():
+        
 
 def _strtointlist(s):
     """
@@ -129,9 +142,9 @@ def _strtobool(s):
     else:
         raise ValueError, 'could not convert "{0}" to boolean'.\
               format(s)
-        
+
 # functions for converting from string to another type.  Note that
 # 'int', 'float', 'str' and 'bool' are built-in Python functions.
-    
+
 FUNCS = {INT: int, FLOAT: float, STRING: str, BOOL: _strtobool,
          INTLIST: _strtointlist}
