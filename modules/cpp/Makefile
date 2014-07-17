@@ -33,11 +33,7 @@ OBJ = $(addprefix $(OBJDIR)/, conncomponents.o opfunctions.o \
 		  pyfunctions.o qlmfunctions.o pyutil.o neighbours.o)
 
 $(TARGET).so: $(TARGET).o $(OBJ)
-	g++ -shared -Wl,--export-dynamic $(TARGET).o $(OBJ) -L$(BOOST_LIB) \
-	-Bdynamic -l:libboost_python.so -L/usr/lib/python$(PYTHON_VERSION)/config \
-	-Bstatic -lpython$(PYTHON_VERSION) -o $(LIBNAME).so
-
-$(TARGET): $(TARGET).cpp pyfunctions.h
+	g++ -shared -Wl,-soname,"$(LIBNAME).so" -L$(BOOST_LIB) $(OBJ) $(TARGET).o -lboost_python -fPIC -o $(LIBNAME).so
 
 conncomponents.o: conncomponents.h typedefs.h particle.h box.h
 

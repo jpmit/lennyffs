@@ -17,37 +17,37 @@ double py_fracsolidld(boost::python::numeric::array,
                       boost::python::numeric::array,
                       boost::python::numeric::array, 
                       const int, const int, const double, const double,
-                      const double, const bool, const double);
+                      const double, const bool, const double, const bool);
 double py_fracsolidtf(boost::python::numeric::array,
                       boost::python::numeric::array,
                       boost::python::numeric::array, 
                       const int, const int, const double, const double,
                       const double, const bool, const double, const int,
-                      const double);
+                      const double, const bool);
 double py_nclustf(boost::python::numeric::array,
                   boost::python::numeric::array,
                   boost::python::numeric::array,
                   const int, const int,
                   const double, const double,
                   const double, const bool, const double,
-                  const int, const double);
+                  const int, const double, const bool);
 std::vector<TFCLASS> py_tfclass(boost::python::numeric::array,
                                 boost::python::numeric::array,
                                 boost::python::numeric::array,
                                 const int, const int,
                                 const double, const double,
                                 const double, const bool, const double,
-                                const int, const double);
+                                const int, const double, const bool);
 double py_nclusld(boost::python::numeric::array,
                   boost::python::numeric::array,
                   boost::python::numeric::array, 
                   const int, const int, const double, const double,
-                  const double, const bool, const double);
+                  const double, const bool, const double, const bool);
 std::vector<LDCLASS> py_ldclass(boost::python::numeric::array,
                                 boost::python::numeric::array,
                                 boost::python::numeric::array, 
                                 const int, const int, const double, const double,
-                                const double, const bool, const double);
+                                const double, const bool, const double, const bool);
 std::vector<int> py_largestcluster(boost::python::numeric::array,
                                    boost::python::numeric::array,
                                    boost::python::numeric::array, 
@@ -57,7 +57,7 @@ std::vector<double> py_q4w4q6w6(boost::python::numeric::array,
                                 boost::python::numeric::array,
                                 boost::python::numeric::array, 
                                 const int, const int, const double, const double,
-                                const double, const bool, const double);
+                                const double, const bool, const double, const bool);
 std::vector<int> py_numneighcut(boost::python::numeric::array,
                                 boost::python::numeric::array,
                                 boost::python::numeric::array,
