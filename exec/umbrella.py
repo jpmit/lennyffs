@@ -176,6 +176,15 @@ class MProgram(object):
             random.seed()
             temprand = random.random()
 
+            #TESTING-----------------------------------------
+            print '------------------------------------------'
+            print 'tempN',tempN,'self.N',self.N,
+            print 'tempw',tempw,'self.w',self.w
+            print 'temprand',temprand,'biasprob',biasprob
+            print 'self.N0',self.N0
+            print '------------------------------------------'
+            #TESTING-----------------------------------------
+
             if temprand > biasprob:
                 self.positions = deepcopy(temppositions)
                 self.params['lboxx'], self.params['lboxy'], self.params['lboxz'] = templboxx, templboxy, templboxz
