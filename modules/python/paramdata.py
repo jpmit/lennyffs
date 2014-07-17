@@ -102,13 +102,24 @@ PDICT = {# simulation params
          'dt': FLOAT,
          'mass': FLOAT,
          'vscale': BOOL,
+
+         # umbrella paramaters
+         'nunbiased': INT,
+         'numbrellacycles': INT,
+         'N0': INT,
+         'k': FLOAT
          }
 
 # default values, arranged alphabetically.  These are used if the
 # parameter is not specified in the input file.
 DEFAULTS = {
+    'k': 0.01,
     'mctype': 'nvt',
     'sameseed': 'no',
+    'N0': 0,
+    'numbrellacycles': 1000,
+    'nunbiased': 10,
+    'sameseed': 'yes',
     'usenearest': 'yes'
     }
 
