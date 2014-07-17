@@ -108,7 +108,7 @@ PDICT = {# simulation params
 # parameter is not specified in the input file.
 DEFAULTS = {
     'mctype': 'nvt',
-    'sameseed': 'yes',
+    'sameseed': 'no',
     'usenearest': 'yes'
     }
 
