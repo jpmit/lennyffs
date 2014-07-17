@@ -50,6 +50,6 @@ def get_defaults():
 
     defaults = {}
     for (k, v) in DEFAULTS.items():
-        p = Param(k, v)
+        p = Param(str(k),str(v))
         defaults[p.name] = p.value
     return defaults
