@@ -119,7 +119,7 @@ DEFAULTS = {
     'usenearest': 'yes'
     # umbrella sampling
     'N0': 0,
-    'numbrellacycles': 1000,
+    'numbrellacycles': '1000',
     'nunbiased': 10,
     }
 

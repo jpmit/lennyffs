@@ -21,6 +21,8 @@ import force
 import mccycle
 import time
 import sys
+from copy import deepcopy
+import random
 
 class MProgram(object):
     """The main MC/MD program."""
@@ -76,7 +78,7 @@ class MProgram(object):
                                         self.positions, self.velocities)
 
         # number of times to call MC cycle function
-        self.numbrellacycles = self.params['numbrellacycles'],
+        self.numbrellacycles = self.params['numbrellacycles']
          
 
         # number of cycles each time we call MC cycle function
@@ -147,9 +149,10 @@ class MProgram(object):
         cyclesdone = 0
         opfile.write('{0} {1}\n'.format(0, self.orderp(self.positions,
                                                        self.params)))
-        #Initialise w
+        #Initialise w and N
         self.N0 = self.params['N0']
-        self.w = wfunc(self.orderp(self.positions,self.params),self.N0)
+        self.N = self.orderp(self.positions,self.params)
+        self.w = wfunc(self.N,self.N0,self.params['k'])
         
         starttime = time.time()
 
@@ -168,7 +171,7 @@ class MProgram(object):
 
             #w test and revert to temp values if rejected
             self.N = self.orderp(self.positions,self.params)
-            self.w = wfunc(self.N,self.N0)
+            self.w = wfunc(self.N,self.N0,self.params['k'])
             biasprob = min(1.0,np.exp(-1.0*(self.w-tempw)))
             random.seed()
             temprand = random.random()
@@ -205,6 +208,12 @@ class MProgram(object):
                              .format(self.params['lboxx']*\
                                      self.params['lboxy']*\
                                      self.params['lboxz']))
+
+#------------------------------------------------------
+#Bias function definition
+def wfunc(N,N0,k):
+    return  0.5*k*(N-N0)**2
+#------------------------------------------------------
 
 if __name__ == '__main__':
     mcprog = MProgram()
