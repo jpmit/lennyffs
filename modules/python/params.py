@@ -49,7 +49,7 @@ def get_defaults():
     """Return dictionary of default parameters"""
 
     defaults = {}
-    for (k, v) in DEFAULTS.values():
+    for (k, v) in DEFAULTS.items():
         p = Param(k, v)
         defaults[p.name] = p.value
     return defaults
