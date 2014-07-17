@@ -112,10 +112,6 @@ DEFAULTS = {
     'usenearest': 'yes'
     }
 
-def get_defaults():
-    for (k, v) in _DEFAULTS.values():
-        
-
 def _strtointlist(s):
     """
     Converts string e.g. '[0,2,3,4,6]' to a Python list of integers.
