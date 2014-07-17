@@ -116,11 +116,11 @@ DEFAULTS = {
     'k': 0.01,
     'mctype': 'nvt',
     'sameseed': 'no',
+    'usenearest': 'yes'
+    # umbrella sampling
     'N0': 0,
     'numbrellacycles': 1000,
     'nunbiased': 10,
-    'sameseed': 'yes',
-    'usenearest': 'yes'
     }
 
 def _strtointlist(s):
