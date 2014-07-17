@@ -176,15 +176,6 @@ class MProgram(object):
             random.seed()
             temprand = random.random()
 
-            #TESTING-----------------------------------------
-            print '------------------------------------------'
-            print 'tempN',tempN,'self.N',self.N,
-            print 'tempw',tempw,'self.w',self.w
-            print 'temprand',temprand,'biasprob',biasprob
-            print 'self.N0',self.N0
-            print '------------------------------------------'
-            #TESTING-----------------------------------------
-
             if temprand > biasprob:
                 self.positions = deepcopy(temppositions)
                 self.params['lboxx'], self.params['lboxy'], self.params['lboxz'] = templboxx, templboxy, templboxz
@@ -200,7 +191,7 @@ class MProgram(object):
             opfile.flush()
             # write out pos file if required
             if (cyclesdone % self.params['nsave'] == 0):
-                self.writexyz('pos{0}.xyz'.format(cy), self.positions,
+                self.writexyz('pos{0}.xyz'.format(cyclesdone), self.positions,
                               self.params)
 
         endtime = time.time()
