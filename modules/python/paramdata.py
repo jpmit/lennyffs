@@ -121,10 +121,10 @@ DEFAULTS = {
     'k': 0.01,
     'mctype': 'nvt',
     'sameseed': 'no',
-    'usenearest': 'yes'
+    'usenearest': 'yes',
     # umbrella sampling
     'N0': 0,
-    'numbrellacycles': 1000,
+    'numbrellacycles': '1000',
     'nunbiased': 10,
     # initialisation with seed
     'seed': 'no',
