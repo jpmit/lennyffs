@@ -354,6 +354,8 @@ def initpositions(params):
     else:
         if params['surface']:
             return initpositionssurf(params)
+        elif params['seed']:
+            return initpositionsseed(params)
         else:
             return initpositionsnosurf(params)
 
@@ -478,6 +480,48 @@ def initflpositionslayer(params):
                         params['dzsurf']*(params['nlayersurf'] - 1) + 
                        (params['fllayerspace']*params['dzsurf']))
     return flpositions
+
+def initseedpositions(params):
+    """Initialize seed particle positions."""
+
+    # find the N such that 4 * N^3 >= nparseed
+    N = int(np.ceil((params['nparseed'] / 4.0)**(1.0 / 3.0)))
+    
+    # alatt is conventional unit cell size assuming fcc
+    alatt = 2.0**(2.0 / 3.0) / pdict['seeddensity']**(1.0 / 3.0)
+
+
+    nremaining = params['nparseed']
+    
+    # while (nremaining > 0):
+        # * get next lattice point triplet from
+        # (0,0,0), (1,0,0) etc. (Python generators?)
+        # * add 4 particles (or fewer if nremaining < 4)
+        # in fcc positions using alatt above
+        # * subtract number of added particles from
+        # nremaining
+
+    # (?) displace seed to be *roughly* in center of box
+        
+    pass
+    
+
+def initpositionsseed(params):
+    """
+    Initialize positions with seed present.  Note that the seed is not
+    treated as a surface.
+    """
+
+    # initialise randomly nparfl - nparseed 
+    params['nparfl'] = params['nparfl'] - params['nparseed']
+    flpositions = initflpositionsrandom(params)
+    params['nparfl'] = params['nparfl'] + params['nparseed']
+
+    # initialise seed of nparseed particles
+    seedpositions = initseedpositions(params)
+
+    allpositions = np.append(seedpositions, flpositions, axis=0)
+    return allpositions
     
 def initpositionssurf(params):
     """Initialize positions with surface present."""

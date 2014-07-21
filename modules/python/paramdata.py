@@ -112,6 +112,11 @@ PDICT = {# simulation params
          # window parameters
          'numwindows': INT,
          'windowsep': INT
+
+         # initialisation with seed
+         'seed': BOOL,
+         'nparseed': INT,
+         'seeddensity': FLOAT
          }
 
 # default values, arranged alphabetically.  These are used if the
@@ -127,6 +132,8 @@ DEFAULTS = {
     'numwindows': 10,
     'nunbiased': 10,
     'windowsep': 100
+    # initialisation with seed
+    'seed': 'no',
     }
 
 def _strtointlist(s):
