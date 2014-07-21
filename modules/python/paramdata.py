@@ -107,20 +107,26 @@ PDICT = {# simulation params
          'nunbiased': INT,
          'numbrellacycles': INT,
          'N0': INT,
-         'k': FLOAT
+         'k': FLOAT,
+
+         # window parameters
+         'numwindows': INT,
+         'windowsep': INT
          }
 
 # default values, arranged alphabetically.  These are used if the
 # parameter is not specified in the input file.
 DEFAULTS = {
-    'k': 0.01,
+    'k': 0.1,
     'mctype': 'nvt',
     'sameseed': 'no',
     'usenearest': 'yes',
     # umbrella sampling
     'N0': 0,
-    'numbrellacycles': '1000',
+    'numbrellacycles': 1000,
+    'numwindows': 10,
     'nunbiased': 10,
+    'windowsep': 100
     }
 
 def _strtointlist(s):
