@@ -107,7 +107,12 @@ PDICT = {# simulation params
          'nunbiased': INT,
          'numbrellacycles': INT,
          'N0': INT,
-         'k': FLOAT
+         'k': FLOAT,
+
+         # initialisation with seed
+         'seed': BOOL,
+         'nparseed': INT,
+         'seeddensity': FLOAT
          }
 
 # default values, arranged alphabetically.  These are used if the
@@ -121,6 +126,8 @@ DEFAULTS = {
     'N0': 0,
     'numbrellacycles': 1000,
     'nunbiased': 10,
+    # initialisation with seed
+    'seed': 'no',
     }
 
 def _strtointlist(s):
