@@ -109,6 +109,10 @@ PDICT = {# simulation params
          'N0': INT,
          'k': FLOAT,
 
+         # window parameters
+         'numwindows': INT,
+         'windowsep': INT,
+
          # initialisation with seed
          'seed': BOOL,
          'nparseed': INT,
@@ -118,14 +122,16 @@ PDICT = {# simulation params
 # default values, arranged alphabetically.  These are used if the
 # parameter is not specified in the input file.
 DEFAULTS = {
-    'k': 0.01,
+    'k': 0.1,
     'mctype': 'nvt',
     'sameseed': 'no',
     'usenearest': 'yes',
     # umbrella sampling
     'N0': 0,
-    'numbrellacycles': '1000',
+    'numbrellacycles': 1000,
+    'numwindows': 10,
     'nunbiased': 10,
+    'windowsep': 100,
     # initialisation with seed
     'seed': 'no',
     }

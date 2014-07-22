@@ -25,6 +25,8 @@ import time
 import sys
 from copy import deepcopy
 import random
+import os
+import pickle
 
 class MProgram(object):
     """The main MC/MD program."""
@@ -40,7 +42,10 @@ class MProgram(object):
         else:
             self.iwind = ''
         # read input parameters and write to file
-        self.params = initsim.getparams()
+        if iwind != '' and os.path.exists('params{0}'.format(iwind)):
+            self.params = pickle.load('params{0}.pkl'.format(iwind))
+        else:
+            self.params = initsim.getparams()
         if self.iwind == '':  #indexed pkl files wil already exist otherwise
             # pickled version 'params.pkl'
             writeoutput.writepickparams(self.params)
