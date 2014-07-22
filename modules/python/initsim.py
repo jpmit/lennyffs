@@ -371,13 +371,26 @@ def initpositionsnosurf(params):
     rcinitsq = rcinit**2.0
     pos = np.empty([nparfl,3])
 
+    # excluded region: no fluid particles will be placed in this
+    # region.  We default to False so that fluid particles are placed
+    # throughout the whole box.
+    exregion = params.get('exregion', False)
+    exxmin = params.get('exxmin', 0.0)
+    exxmax = params.get('exxmax', 0.0)
+    exymin = params.get('exymin', 0.0)
+    exymax = params.get('exymax', 0.0)
+    exzmin = params.get('exzmin', 0.0)
+    exzmax = params.get('exzmax', 0.0)    
+
     pos[:,0], pos[:,1], pos[:,2] = mcfuncs.\
                                    initpositionsnosurff(nparfl, lboxx,
                                                         lboxy, lboxz,
                                                         rcinitsq,
-                                                        # no excluded region
-                                                        False,
-                                                        0, 0, 0, 0, 0, 0,
+                                                        # excluded region
+                                                        exregion,
+                                                        exxmin, exxmax,
+                                                        exymin, exymax,
+                                                        exzmin, exzmax,
                                                         sameseed)
 
     return pos
@@ -521,14 +534,23 @@ def initpositionsseed(params):
     treated as a surface.
     """
 
+    # initialise seed of nparseed particles
+    seedpositions = initseedpositions(params)
+    
+    # set excluded region for fluid particles based on seed positions...
+    params['exregion'] = True
+    params['exxmin'] = min(seedpositions[:, 0])
+    params['exxmax'] = max(seedpositions[:, 0])
+    params['exymin'] = min(seedpositions[:, 1])
+    params['exymax'] = max(seedpositions[:, 1])
+    params['exzmin'] = min(seedpositions[:, 2])
+    params['exzmax'] = max(seedpositions[:, 2])    
+    
     # initialise randomly nparfl - nparseed 
     params['nparfl'] = params['nparfl'] - params['nparseed']
     flpositions = initpositionsnosurf(params)
     #print len(flpositions)
     params['nparfl'] = params['nparfl'] + params['nparseed']
-
-    # initialise seed of nparseed particles
-    seedpositions = initseedpositions(params)
 
     if len(seedpositions) == 0:
         allpositions = flpositions
