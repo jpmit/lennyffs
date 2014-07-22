@@ -10,7 +10,8 @@
 ! initrandomseed       - initialise (seed) random number generator
 
 subroutine initpositionsnosurff(npar, lboxx, lboxy, lboxz, rcinitsq,&
-                                xpos, ypos, zpos, sameseed)
+                                xpos, ypos, zpos, oregion, oxmin, oxmax,&
+                                oymin, oymax, ozmin, ozmax, sameseed)
 
   !!! Initializes particles at random positions in cubic box of
   !!! dimensions lboxx*lboxy*lboxz
@@ -21,7 +22,8 @@ subroutine initpositionsnosurff(npar, lboxx, lboxy, lboxz, rcinitsq,&
   ! inputs
   integer, intent(in) :: npar
   real(kind=db), intent(in) :: lboxx, lboxy, lboxz, rcinitsq
-  logical, intent(in) :: sameseed
+  real(kind=db), intent(in) :: oxmin, oxmax, oymin, oymax, ozmin, ozmax  
+  logical, intent(in) :: oregion, sameseed
 
   ! outputs
   real(kind=db), dimension(npar), intent(out) :: xpos, ypos, zpos
@@ -30,7 +32,7 @@ subroutine initpositionsnosurff(npar, lboxx, lboxy, lboxz, rcinitsq,&
   !f2py intent(out) :: xpos, ypos, zpos
 
   integer :: i, j
-  logical :: overlap
+  logical :: reject
   real(kind=db) :: sepx, sepy, sepz, sepsq
   real(kind=db), dimension(3) :: r
 
@@ -38,13 +40,25 @@ subroutine initpositionsnosurff(npar, lboxx, lboxy, lboxz, rcinitsq,&
   call init_random_seed(sameseed)
 
   do i = 1, npar
-     overlap = .TRUE. 
-     do while (overlap .eqv. .TRUE.)
-        overlap = .FALSE.
+     reject = .TRUE. 
+     do while (reject .eqv. .TRUE.)
+        reject = .FALSE.
         call random_number(r)
         xpos(i) = lboxx * r(1)
         ypos(i) = lboxy * r(2)
         zpos(i) = lboxz * r(3)
+
+        ! have we put the particle in the overlap region?
+        if (oregion) then
+           if ((xpos(i) > oxmin) .and. (xpos(i) < oxmax)&
+                .and. (ypos(i) > oymin) .and. (ypos(i) < oymax)&
+                .and. (zpos(i) > ozmin) .and. (zpos(i) < ozmax)) then
+              reject = .TRUE.
+              cycle ! next iteration of while loop
+           end if
+        end if
+
+        ! have we put the particle too close to another?
         do j = 1, i - 1
            sepx = xpos(i) - xpos(j)
            sepy = ypos(i) - ypos(j)
@@ -55,7 +69,7 @@ subroutine initpositionsnosurff(npar, lboxx, lboxy, lboxz, rcinitsq,&
            sepz = sepz - lboxz * nint(sepz / lboxz)
            sepsq = sepx**2 + sepy**2 + sepz**2
            if (sepsq < rcinitsq) then
-              overlap = .TRUE.
+              reject = .TRUE.
               exit
            end if
         end do
