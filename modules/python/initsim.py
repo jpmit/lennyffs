@@ -485,13 +485,16 @@ def initseedpositions(params):
     """Initialize seed particle positions."""
 
     # find the N such that 4 * N^3 >= nparseed
-    N = int(np.ceil((params['nparseed'] / 4.0)**(1.0 / 3.0)))
+    #N = int(np.ceil((params['nparseed'] / 4.0)**(1.0 / 3.0)))
     
     # alatt is conventional unit cell size assuming fcc
-    alatt = 2.0**(2.0 / 3.0) / pdict['seeddensity']**(1.0 / 3.0)
+    alatt = 2.0**(2.0 / 3.0) / params['seeddensity']**(1.0 / 3.0)
 
 
-    nremaining = params['nparseed']
+    seedpositions = np.zeros(params['nparseed'])
+    #for coords in maketriples(self.params['nparseed']):
+    seedpositions = alatt*np.array([c for c in maketriples(params['nparseed'])]) #+ (params['boxvol']**(1/3))/2
+    
     
     # while (nremaining > 0):
         # * get next lattice point triplet from
@@ -503,7 +506,7 @@ def initseedpositions(params):
 
     # (?) displace seed to be *roughly* in center of box
         
-    pass
+    return seedpositions
     
 
 def initpositionsseed(params):
@@ -514,13 +517,19 @@ def initpositionsseed(params):
 
     # initialise randomly nparfl - nparseed 
     params['nparfl'] = params['nparfl'] - params['nparseed']
-    flpositions = initflpositionsrandom(params)
+    flpositions = initpositionsnosurf(params)
+    #print len(flpositions)
     params['nparfl'] = params['nparfl'] + params['nparseed']
 
     # initialise seed of nparseed particles
     seedpositions = initseedpositions(params)
 
-    allpositions = np.append(seedpositions, flpositions, axis=0)
+    if len(seedpositions) == 0:
+        allpositions = flpositions
+    elif len(flpositions) == 0:
+        allpositions = seedpositions
+    else:
+        allpositions = np.append(seedpositions, flpositions, axis=0)
     return allpositions
     
 def initpositionssurf(params):
@@ -599,3 +608,42 @@ def initvelocities(params):
     vels = (vels - sumv)*fs
 
     return vels
+
+
+def maketriples(Ntot):
+    count = 0
+    if count == Ntot:
+        raise StopIteration
+    i,j,k = 3*(0,)
+    yield (i,j,k)
+    count += 1
+    if count == Ntot:
+        raise StopIteration
+    nmax = 0
+    while True:
+        nmax += 1
+        for n in range(-nmax,nmax+1):
+            for m in range(-nmax,nmax+1):
+                for l in range(-nmax,nmax+1):
+                    if nmax in (n,m,l) or -nmax in (n,m,l):
+                        
+                        yield (n,m,l)
+                        count += 1
+                        if count == Ntot:
+                            raise StopIteration
+
+                        yield (n+0.5,m+0.5,l)
+                        count += 1
+                        if count == Ntot:
+                            raise StopIteration
+
+                        yield (n,m+0.5,l+0.5)
+                        count += 1
+                        if count == Ntot:
+                            raise StopIteration
+
+                        yield (n+0.5,m,l+0.5)
+                        count += 1
+                        if count == Ntot:
+                             raise StopIteration
+        

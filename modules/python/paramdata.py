@@ -111,7 +111,7 @@ PDICT = {# simulation params
 
          # window parameters
          'numwindows': INT,
-         'windowsep': INT
+         'windowsep': INT,
 
          # initialisation with seed
          'seed': BOOL,
@@ -131,7 +131,7 @@ DEFAULTS = {
     'numbrellacycles': 1000,
     'numwindows': 10,
     'nunbiased': 10,
-    'windowsep': 100
+    'windowsep': 100,
     # initialisation with seed
     'seed': 'no',
     }
