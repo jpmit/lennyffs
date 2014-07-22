@@ -42,8 +42,8 @@ class MProgram(object):
         else:
             self.iwind = ''
         # read input parameters and write to file
-        if iwind != '' and os.path.exists('params{0}'.format(iwind)):
-            self.params = pickle.load('params{0}.pkl'.format(iwind))
+        if self.iwind != '' and os.path.exists('params{0}.pkl'.format(self.iwind)):
+            self.params = pickle.load(open('params{0}.pkl'.format(self.iwind)))
         else:
             self.params = initsim.getparams()
         if self.iwind == '':  #indexed pkl files wil already exist otherwise
@@ -64,7 +64,8 @@ class MProgram(object):
         self.orderp = funcman.OrderParamFunc()
         self.writexyz = funcman.WriteXyzFunc()
 
-        # initialize positions 
+        # initialize positions
+        #print self.params['simulation']
         self.positions = initsim.initpositions(self.params)
 
         # write initial positions to file if new simulation

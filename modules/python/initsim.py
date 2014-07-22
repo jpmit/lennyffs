@@ -509,20 +509,14 @@ def initseedpositions(params):
     # alatt is conventional unit cell size assuming fcc
     alatt = 2.0**(2.0 / 3.0) / params['seeddensity']**(1.0 / 3.0)
 
-
-    seedpositions = np.zeros(params['nparseed'])
     #for coords in maketriples(self.params['nparseed']):
-    seedpositions = alatt*np.array([c for c in maketriples(params['nparseed'])]) #+ (params['boxvol']**(1/3))/2
-    
-    
-    # while (nremaining > 0):
-        # * get next lattice point triplet from
-        # (0,0,0), (1,0,0) etc. (Python generators?)
-        # * add 4 particles (or fewer if nremaining < 4)
-        # in fcc positions using alatt above
-        # * subtract number of added particles from
-        # nremaining
+    #print params['nparseed']
+    seedpositions = alatt*np.array([c for c in maketriples(params['nparseed'])])
 
+    if params['nparseed'] != 0:
+        seedpositions = np.array([[params['lboxx']/2,params['lboxy']/2,params['lboxz']/2]])+seedpositions
+    
+    
     # (?) displace seed to be *roughly* in center of box
         
     return seedpositions
@@ -538,19 +532,25 @@ def initpositionsseed(params):
     seedpositions = initseedpositions(params)
     
     # set excluded region for fluid particles based on seed positions...
-    params['exregion'] = True
-    params['exxmin'] = min(seedpositions[:, 0])
-    params['exxmax'] = max(seedpositions[:, 0])
-    params['exymin'] = min(seedpositions[:, 1])
-    params['exymax'] = max(seedpositions[:, 1])
-    params['exzmin'] = min(seedpositions[:, 2])
-    params['exzmax'] = max(seedpositions[:, 2])    
+    if params['nparseed'] != 0:
+        params['exregion'] = True
+        params['exxmin'] = min(seedpositions[:, 0])
+        params['exxmax'] = max(seedpositions[:, 0])
+        params['exymin'] = min(seedpositions[:, 1])
+        params['exymax'] = max(seedpositions[:, 1])
+        params['exzmin'] = min(seedpositions[:, 2])
+        params['exzmax'] = max(seedpositions[:, 2])
+    else:
+        params['exregion'] = False
     
     # initialise randomly nparfl - nparseed 
     params['nparfl'] = params['nparfl'] - params['nparseed']
     flpositions = initpositionsnosurf(params)
     #print len(flpositions)
     params['nparfl'] = params['nparfl'] + params['nparseed']
+
+    #print len(seedpositions),len(flpositions)
+    #print params['nparseed'],params['nparfl']
 
     if len(seedpositions) == 0:
         allpositions = flpositions
