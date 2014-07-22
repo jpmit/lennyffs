@@ -375,6 +375,9 @@ def initpositionsnosurf(params):
                                    initpositionsnosurff(nparfl, lboxx,
                                                         lboxy, lboxz,
                                                         rcinitsq,
+                                                        # no excluded region
+                                                        False,
+                                                        0, 0, 0, 0, 0, 0,
                                                         sameseed)
 
     return pos
@@ -457,6 +460,9 @@ def initflpositionsrandom(params):
                                  initpositionsnosurff(nparfl, lboxx,
                                                       lboxy, lboxzfl,
                                                       rcinitsq,
+                                                      # no excluded region
+                                                      False,
+                                                      0, 0, 0, 0, 0, 0,
                                                       sameseed)
     pos[:,2] = pos[:,2] + zspace
 
