@@ -17,6 +17,7 @@ class Windowmaker(object):
         #Add making master-pickles here
 
     def prep_windows(self):
+        """Produces initial positions and parameter files"""
         bashscript = open('wumbash.sh','w')
         for wcentre in self.windowcentres:
             self.params['restartfile'] = 'initialpositions{0}.xyz'.format(wcentre)
@@ -24,10 +25,7 @@ class Windowmaker(object):
             self.params['nparseed'] = wcentre
             pickle.dump(self.params, open('params{0}.pkl'.format(wcentre),'w'))
             bashscript.write(str(os.path.split(self.dir)[0].join(['qsub -cwd -b y python ','/umbrella.py -w {0}\n'.format(wcentre)])))
-            #print self.params['nparseed']
             positions = initsim.initpositionsseed(self.params)
-            #print len(positions)
-            #print positions
             self.writexyz('initialpositions{0}.xyz'.format(wcentre), positions, self.params)
         bashscript.close()
     

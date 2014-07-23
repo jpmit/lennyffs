@@ -65,7 +65,6 @@ class MProgram(object):
         self.writexyz = funcman.WriteXyzFunc()
 
         # initialize positions
-        #print self.params['simulation']
         self.positions = initsim.initpositions(self.params)
 
         # write initial positions to file if new simulation
@@ -123,7 +122,13 @@ class MProgram(object):
             biasprob = min(1.0,np.exp(-1.0*(self.w-tempw)))
             random.seed()
             temprand = random.random()
-
+            
+            print '--------------------------------------------------'
+            print 'self.N',self.N,'tempN',tempN
+            print 'self.w',self.w,'tempw',tempw
+            print 'temprand',temprand,'biasprob',biasprob
+            print '--------------------------------------------------'
+            
             if temprand > biasprob:
                 self.positions = deepcopy(temppositions)
                 self.params['lboxx'], self.params['lboxy'], self.params['lboxz'] = templboxx, templboxy, templboxz
