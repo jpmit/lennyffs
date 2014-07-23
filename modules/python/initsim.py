@@ -512,20 +512,15 @@ def initflpositionslayer(params):
 def initseedpositions(params):
     """Initialize seed particle positions."""
 
-    # find the N such that 4 * N^3 >= nparseed
-    #N = int(np.ceil((params['nparseed'] / 4.0)**(1.0 / 3.0)))
-    
     # alatt is conventional unit cell size assuming fcc
     alatt = 2.0**(2.0 / 3.0) / params['seeddensity']**(1.0 / 3.0)
 
-    #for coords in maketriples(self.params['nparseed']):
+    # generate seed particle positions from maketriples and scale by alatt
     seedpositions = alatt*np.array([c for c in maketriples(int(params['correction']*params['nparseed']))])
 
+    # shift seed cluster to centre of ox
     if params['nparseed'] != 0:
         seedpositions = np.array([[params['lboxx']/2,params['lboxy']/2,params['lboxz']/2]])+seedpositions
-    
-    
-    # (?) displace seed to be *roughly* in center of box
         
     return seedpositions
     
@@ -535,7 +530,8 @@ def initpositionsseed(params):
     Initialize positions with seed present.  Note that the seed is not
     treated as a surface.
     """
-
+    # allow correction for particles lost at surface of cluster, where
+    # neighbour conditions are not met due to fluid
     params['correction'] = 2
     # initialise seed of nparseed particles
     seedpositions = initseedpositions(params)
@@ -557,6 +553,7 @@ def initpositionsseed(params):
     flpositions = initpositionsnosurf(params)
     params['nparfl'] = params['nparfl'] + int(params['correction']*params['nparseed'])
 
+    # combine the 2 lists if both exist, else return the one that does
     if len(seedpositions) == 0:
         allpositions = flpositions
     elif len(flpositions) == 0:

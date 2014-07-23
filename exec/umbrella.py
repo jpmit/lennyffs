@@ -105,7 +105,7 @@ class MProgram(object):
 
         for cy in range(self.numbrellacycles):
 
-            #Store values that may be reverted if bias-chain is rejected
+            # Store values that may be reverted if bias-chain is rejected
             temppositions = deepcopy(self.positions)
             templboxx, templboxy, templboxz = self.params['lboxx'], self.params['lboxy'], self.params['lboxz']
             tempepot = epot
@@ -116,18 +116,19 @@ class MProgram(object):
                                                  self.params,
                                                  epot)
 
-            #w test and revert to temp values if rejected
+            # w test and revert to temp values if rejected
             self.N = self.orderp(self.positions,self.params)
             self.w = wfunc(self.N,self.N0,self.params['k'])
             biasprob = min(1.0,np.exp(-1.0*(self.w-tempw)))
             random.seed()
             temprand = random.random()
-            
-            print '--------------------------------------------------'
-            print 'self.N',self.N,'tempN',tempN
-            print 'self.w',self.w,'tempw',tempw
-            print 'temprand',temprand,'biasprob',biasprob
-            print '--------------------------------------------------'
+
+            # uncomment next 5 lines for testing
+            #print '--------------------------------------------------'
+            #print 'self.N',self.N,'tempN',tempN
+            #print 'self.w',self.w,'tempw',tempw
+            #print 'temprand',temprand,'biasprob',biasprob
+            #print '--------------------------------------------------'
             
             if temprand > biasprob:
                 self.positions = deepcopy(temppositions)

@@ -4,7 +4,11 @@ import os
 import funcselector
 
 class Windowmaker(object):
-    """Produces window parameters to run with umbrella.py"""
+    """
+    Produces window parameters to run with umbrella.py
+    NOTE: the bash script produced is configured to run
+          on the computer cluster
+    """
 
     def __init__(self):
 
