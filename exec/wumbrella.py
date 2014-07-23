@@ -2,6 +2,7 @@ import initsim
 import pickle
 import os
 import funcselector
+import visfunc
 
 class Windowmaker(object):
     """
@@ -32,10 +33,16 @@ class Windowmaker(object):
             positions = initsim.initpositionsseed(self.params)
             self.writexyz('initialpositions{0}.xyz'.format(wcentre), positions, self.params)
         bashscript.close()
+
+    def visualise_potentials(self):
+        visfunc.run_png(self.params['numwindows'],
+                        self.params['windowsep'],
+                        self.params['k'])
     
             
             
 if __name__ == '__main__':
     windowmaker = Windowmaker()
     windowmaker.prep_windows()
+    windowmaker.visualise_potentials()
     
