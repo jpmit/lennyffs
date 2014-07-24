@@ -108,6 +108,7 @@ PDICT = {# simulation params
          'numbrellacycles': INT,
          'N0': INT,
          'k': FLOAT,
+         'umbequilcycles': INT,
 
          # window parameters
          'numwindows': INT,
@@ -134,6 +135,7 @@ DEFAULTS = {
     'windowsep': 100,
     # initialisation with seed
     'seed': 'no',
+    'umbequilcycles': 0,
     }
 
 def _strtointlist(s):

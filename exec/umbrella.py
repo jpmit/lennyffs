@@ -52,6 +52,12 @@ class MProgram(object):
             # human readable version 'params.out'
             writeoutput.writeparams(self.params)
 
+        # allow some equilibration cycles
+        if self.params['umbequilcycles'] > 0:
+            self.params['umbequil'] = True
+        else:
+            self.params['umbequil'] = False
+
         # From params dictionary create FuncSelector object.  This
         # will handle correct selection of the underlying fortran/C++
         # functions correctly (the functions called depend on the
@@ -89,8 +95,12 @@ class MProgram(object):
         # compute initial energy
         epot = self.totalenergy(self.positions, self.params)
 
-        # file for writing order parameter
-        opfile = open('opval{0}.out'.format(self.iwind),'w')
+        # file for writing order parameter - opvalequil for equilibration
+        # and opval for sampling cycles
+        if self.params['umbequil'] == True and self.params['umbequilcycles'] > 0:
+            opfile = open('opvalequil{0}.out'.format(self.iwind),'w')
+        else:
+            opfile = open('opval{0}.out'.format(self.iwind),'w')
 
         # write time 0 and initial orderp
         cyclesdone = 0
@@ -128,6 +138,7 @@ class MProgram(object):
             #print 'self.N',self.N,'tempN',tempN
             #print 'self.w',self.w,'tempw',tempw
             #print 'temprand',temprand,'biasprob',biasprob
+            #print 'k', self.params['k']
             #print '--------------------------------------------------'
             
             if temprand > biasprob:
@@ -142,6 +153,13 @@ class MProgram(object):
             opfile.write('{0} {1}\n'.format(cyclesdone,
                                             self.orderp(self.positions,
                                                         self.params)))
+            # switch to opval.out when equilibration is complete
+            if self.params['umbequil'] == True and int(self.params['umbequilcycles']) <= cyclesdone:
+                opfile.flush()
+                opfile.close()
+                opfile = open('opval{0}.out'.format(self.iwind),'w')
+                self.params['umbequil'] = False
+            
             opfile.flush()
             # write out pos file if required
             if (cyclesdone % self.params['nsave'] == 0):
@@ -164,9 +182,9 @@ class MProgram(object):
                                      self.params['lboxz']))
 
 #------------------------------------------------------
-#Bias function definition
-def wfunc(N,N0,k):
-    return  0.5*k*(N-N0)**2
+#Bias function definition       
+def wfunc(N,N0,k):               
+    return  0.5*k*(N-N0)**2     
 #------------------------------------------------------
 
 if __name__ == '__main__':
