@@ -159,8 +159,7 @@ class MProgram(object):
         # if we were npt, print new box volume
         if self.params['mctype'] == 'npt':
             sys.stderr.write('new box volume: {0}\n'\
-                             .format(self.iwind,
-                                     self.params['lboxx']*\
+                             .format(self.params['lboxx']*\
                                      self.params['lboxy']*\
                                      self.params['lboxz']))
 
