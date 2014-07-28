@@ -3,6 +3,7 @@ import pickle
 import os
 import funcselector
 import visfunc
+from sys import argv
 
 class Windowmaker(object):
     """
@@ -19,7 +20,10 @@ class Windowmaker(object):
         funcman = funcselector.FuncSelector(self.params)
         self.writexyz = funcman.WriteXyzFunc()
         self.params['simulation'] = 'restart'
-        #Add making master-pickles here
+        # if queue_name_form supplied, the queue name will be this with the
+        # window index appended
+        self.queue_name_form = 'unnamed'
+        # add making master-pickles here
 
     def prep_windows(self):
         """Produces initial positions and parameter files"""
@@ -29,7 +33,14 @@ class Windowmaker(object):
             self.params['N0'] = wcentre
             self.params['nparseed'] = wcentre
             pickle.dump(self.params, open('params{0}.pkl'.format(wcentre),'w'))
-            bashscript.write(str(os.path.split(self.dir)[0].join(['qsub -cwd -b y python ','/umbrella.py -w {0}\n'.format(wcentre)])))
+
+            # name option added to qsub command in bash script if queue_name_form supplied
+            if self.queue_name_form == 'unnamed':
+                namepart = ''
+            else:
+                namepart = ' -N \"{0}-window{1}\"'.format(self.queue_name_form,wcentre)
+                
+            bashscript.write(str(os.path.split(self.dir)[0].join(['qsub -cwd -b{0} y python '.format(namepart),'/umbrella.py -w {0}\n'.format(wcentre)])))
             positions = initsim.initpositionsseed(self.params)
             self.writexyz('initialpositions{0}.xyz'.format(wcentre), positions, self.params)
         bashscript.close()
@@ -43,6 +54,8 @@ class Windowmaker(object):
             
 if __name__ == '__main__':
     windowmaker = Windowmaker()
+    if argv[1:2] != []:
+        windowmaker.queue_name_form = argv[1]
     windowmaker.prep_windows()
     windowmaker.visualise_potentials()
     
