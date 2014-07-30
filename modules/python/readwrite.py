@@ -59,7 +59,7 @@ def wxyz(fname, positions, symbols, **kwargs):
         fstr += '# boxdims {0}\n'.format(' '.join([str(d) for d in
                                                    kwargs['boxdims']]))
     elif 'header' in kwargs:
-        fstr += header + '\n'
+        fstr += kwargs['header'] + '\n'
     else:
         fstr += '\n'
 
