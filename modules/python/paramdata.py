@@ -117,7 +117,9 @@ PDICT = {# simulation params
          # initialisation with seed
          'seed': BOOL,
          'nparseed': INT,
-         'seeddensity': FLOAT
+         'seeddensity': FLOAT,
+         'seedform': STRING,
+         'seedgencorrection': FLOAT,
          }
 
 # default values, arranged alphabetically.  These are used if the
@@ -135,6 +137,8 @@ DEFAULTS = {
     'windowsep': 100,
     # initialisation with seed
     'seed': 'no',
+    'seedform': 'sc',
+    'seedgencorrection': 1.0,
     'umbequilcycles': 0,
     }
 

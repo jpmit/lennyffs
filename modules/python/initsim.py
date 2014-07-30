@@ -63,7 +63,6 @@ def readparams():
         # skip comments (rudimentary method)
         if '#' in line:
             continue
-
         line = line.split()
         if line:
             # note that this interface should handle conversion from
@@ -101,7 +100,7 @@ def getparams():
         
     # check that the input actually makes sense, can we actually do a
     # simulation with this info?
-    pdict = checkparams(pdict) 
+    pdict = checkparams(pdict)
 
     # add some parameters to the dictionary that are useful
     pdict = addparams(pdict)
@@ -512,11 +511,20 @@ def initflpositionslayer(params):
 def initseedpositions(params):
     """Initialize seed particle positions."""
 
-    # alatt is conventional unit cell size assuming fcc
-    alatt = 2.0**(2.0 / 3.0) / params['seeddensity']**(1.0 / 3.0)
+    if params['seedform'] == 'fcc':
+        pars_in_cell = 4.0
+    elif params['seedform'] == 'bcc':
+        pars_in_cell = 2.0
+    elif parms['seedform'] == 'sc':
+        pars_in_cell = 1.0
+    else:
+        pars_in_cell = 1.0
+        
+    # alatt is conventional unit cell size
+    alatt = (pars_in_cell/params['seeddensity'])**(1.0/3.0)
 
     # generate seed particle positions from maketriples and scale by alatt
-    seedpositions = alatt*np.array([c for c in maketriples(int(params['correction']*params['nparseed']))])
+    seedpositions = alatt*np.array([c for c in maketriples(int(params['seedgencorrection']*params['nparseed']), params['seedform'])])
 
     # shift seed cluster to centre of ox
     if params['nparseed'] != 0:
@@ -532,7 +540,7 @@ def initpositionsseed(params):
     """
     # allow correction for particles lost at surface of cluster, where
     # neighbour conditions are not met due to fluid
-    params['correction'] = 2
+    #params['seedgencorrection'] = 2.0
     # initialise seed of nparseed particles
     seedpositions = initseedpositions(params)
     
@@ -549,9 +557,9 @@ def initpositionsseed(params):
         params['exregion'] = False
     
     # initialise randomly nparfl - nparseed 
-    params['nparfl'] = params['nparfl'] - int(params['correction']*params['nparseed'])
+    params['nparfl'] = params['nparfl'] - int(params['seedgencorrection']*params['nparseed'])
     flpositions = initpositionsnosurf(params)
-    params['nparfl'] = params['nparfl'] + int(params['correction']*params['nparseed'])
+    params['nparfl'] = params['nparfl'] + int(params['seedgencorrection']*params['nparseed'])
 
     # combine the 2 lists if both exist, else return the one that does
     if len(seedpositions) == 0:
@@ -640,7 +648,7 @@ def initvelocities(params):
     return vels
 
 
-def maketriples(Ntot):
+def maketriples(Ntot,structure):
     """
     Generates co-ordinates for a roughly-cubic FCC seed
     particle of Ntot particles
@@ -660,24 +668,36 @@ def maketriples(Ntot):
             for m in range(-nmax,nmax+1):
                 for l in range(-nmax,nmax+1):
                     if nmax in (n,m,l) or -nmax in (n,m,l):
-                        
                         yield (n,m,l)
                         count += 1
                         if count == Ntot:
                             raise StopIteration
 
-                        yield (n+0.5,m+0.5,l)
-                        count += 1
-                        if count == Ntot:
-                            raise StopIteration
+                        if structure == 'fcc':
 
-                        yield (n,m+0.5,l+0.5)
-                        count += 1
-                        if count == Ntot:
-                            raise StopIteration
+                            yield (n+0.5,m+0.5,l)
+                            count += 1
+                            if count == Ntot:
+                                raise StopIteration
 
-                        yield (n+0.5,m,l+0.5)
-                        count += 1
-                        if count == Ntot:
-                             raise StopIteration
-        
+                            yield (n,m+0.5,l+0.5)
+                            count += 1
+                            if count == Ntot:
+                                raise StopIteration
+
+                            yield (n+0.5,m,l+0.5)
+                            count += 1
+                            if count == Ntot:
+                                 raise StopIteration
+                             
+                        elif structure == 'bcc':
+
+                            yield (n+0.5,m+0.5,l+0.5)
+                            count += 1
+                            if count == Ntot:
+                                raise StopIteration
+
+                        elif structure == 'sc':
+                            print 'here'
+                            continue
+                            
