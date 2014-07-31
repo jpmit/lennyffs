@@ -111,7 +111,6 @@ subroutine gauss_forcecreatelist(xpos, ypos, zpos, rc, rcsq,&
   !f2py intent(in) :: xpos, ypos, zpos, rc, rcsq, lboxx, lboxy, lboxz
   !f2py intent(in) :: npar, nsurf, zperiodic
   !f2py intent(out) :: fx, fy, fz
-  !f2py depend(npar) :: xpos, ypox, zpos, fx, fy, fz
 
   integer, dimension(npar) :: ll
   integer, allocatable, dimension(:,:,:) :: hoc  

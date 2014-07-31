@@ -265,7 +265,6 @@ subroutine gauss_totalencreatelist(xpos, ypos, zpos, rc, rcsq,&
   !f2py intent(in) :: xpos, ypos, zpos, rc, rcsq, lboxx, lboxy, lboxz
   !f2py intent(in) :: vrc, vrc2, npar, nsurf, zperiodic
   !f2py intent(out) :: etot
-  !f2py depend(npar) :: xpos, ypox, zpos
 
   integer, dimension(npar) :: ll
   integer, allocatable, dimension(:,:,:) :: hoc  
@@ -379,7 +378,6 @@ subroutine gauss_kineticen(xvel, yvel, zvel, npar, ekintot)
 
   !f2py intent(in) :: xvel, yvel, zvel, npar
   !f2py intent(out) :: ekintot
-  !f2py depend(npar) :: xvel, yvel, zvel
 
   ekintot = 0.5_db * sum(xvel**2 + yvel**2 + zvel**2)
 end subroutine gauss_kineticen

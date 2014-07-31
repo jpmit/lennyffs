@@ -275,7 +275,6 @@ subroutine len_totalencreatelist(xpos, ypos, zpos, rc, rcsq,&
   !f2py intent(in) :: xpos, ypos, zpos, rc, rcsq, lboxx, lboxy, lboxz
   !f2py intent(in) :: vrc, vrc2, npar, nsurf, zperiodic, r6mult, r12mult
   !f2py intent(out) :: etot
-  !f2py depend(npar) :: xpos, ypos, zpos
 
   integer, dimension(npar) :: ll
   integer, allocatable, dimension(:,:,:) :: hoc  
