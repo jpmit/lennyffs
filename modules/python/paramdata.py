@@ -122,18 +122,21 @@ PDICT = {# simulation params
 # default values, arranged alphabetically.  These are used if the
 # parameter is not specified in the input file.
 DEFAULTS = {
-    'k': 0.1,
+    'k': '0.1',
     'mctype': 'nvt',
     'sameseed': 'no',
     'usenearest': 'yes',
     # umbrella sampling
-    'N0': 0,
-    'numbrellacycles': 1000,
-    'numwindows': 10,
-    'nunbiased': 10,
-    'windowsep': 100,
+    'N0': '0',
+    'numbrellacycles': '1000',
+    'numwindows': '10',
+    'nunbiased': '10',
+    'windowsep': '100',
     # initialisation with seed
     'seed': 'no',
+    # legacy surface parameters
+    'r6mult': '1.0',
+    'r12mult': '1.0'
     }
 
 def _strtointlist(s):
