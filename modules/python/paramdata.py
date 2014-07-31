@@ -108,6 +108,7 @@ PDICT = {# simulation params
          'numbrellacycles': INT,
          'N0': INT,
          'k': FLOAT,
+         'umbequilcycles': INT,
 
          # window parameters
          'numwindows': INT,
@@ -116,7 +117,9 @@ PDICT = {# simulation params
          # initialisation with seed
          'seed': BOOL,
          'nparseed': INT,
-         'seeddensity': FLOAT
+         'seeddensity': FLOAT,
+         'seedform': STRING,
+         'seedgencorrection': FLOAT,
          }
 
 # default values, arranged alphabetically.  These are used if the
@@ -126,14 +129,20 @@ DEFAULTS = {
     'mctype': 'nvt',
     'sameseed': 'no',
     'usenearest': 'yes',
+
     # umbrella sampling
     'N0': '0',
     'numbrellacycles': '1000',
     'numwindows': '10',
     'nunbiased': '10',
     'windowsep': '100',
+
     # initialisation with seed
     'seed': 'no',
+    'seedform': 'sc',
+    'seedgencorrection': '1.0',
+    'umbequilcycles': '0',
+
     # legacy surface parameters
     'r6mult': '1.0',
     'r12mult': '1.0'

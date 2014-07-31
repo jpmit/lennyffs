@@ -11,24 +11,33 @@ modules/python/ase. The entire codebase and documentation for ASE is
 available at https://wiki.fysik.dtu.dk/ase/.
 
 FUNCTIONS:
-readparams            - read parameters from 'in' and return as
-                        dictionary.
-getparams             - read params, make them numerical, add any
-                        missing.
-checkparams           - a few sanity checks on the parameters we read.
-addparams             - add useful parameters to params dictionary.
-addparamssurf         - add parameters to params dictionary if have
-                        surface.
-addparamsnosurf       - add parameters to params dictionary if no
-                        surface.
-initpositions         - wrapper for initialising particle positions.
-restartpositions      - return positions of pars from restart file.
-initpositionsnosurf   - init particle positions if no surface.
-initlatticepositions  - init particle positions on a lattice.
-initflpositionsrandom - init fluid positions randomly above surface.
-initflpositionslayer  - init fluid positions in layers above surface.
-initpositionssurf     - init particle positions if have surface.
-initvelocities        - init particle velocities (for MD simulation).
+readparams                  - read parameters from 'in' and return as
+                              dictionary.
+getparams                   - read params, make them numerical, add any
+                              missing.
+checkparams                 - a few sanity checks on the parameters we read.
+addparams                   - add useful parameters to params dictionary.
+addparamssurf               - add parameters to params dictionary if have
+                              surface.
+addparamsnosurf             - add parameters to params dictionary if no
+                              surface.
+initpositionsvelocities     - wrapper for initialising particle positions
+                              and velocities for MD.
+initpositions               - wrapper for initialising particle positions.
+initpositionsnosurf         - init particle positions if no surface.
+initlatticepositions        - init particle positions on a lattice.
+initflpositionsrandom       - init fluid positions randomly above surface.
+initflpositionslayer        - init fluid positions in layers above surface.
+initseedpositions           - init seed particle positions for umbrella
+                              sampling
+initpositionsseed           - init positions of fluid around seed using
+                              a defined excluded region
+initpositionssurf           - init particle positions if have surface.
+initvelocitiesgauss         - init velocites from Maxwell-Boltzmann
+                              distribution at desired temperature
+initvelocities              - init particle velocities (for MD simulation).
+maketriples                 - a generator for seed particle co-ordinates
+                              for umbrella-sampling
 """
 
 import sys
@@ -54,7 +63,6 @@ def readparams():
         # skip comments (rudimentary method)
         if '#' in line:
             continue
-
         line = line.split()
         if line:
             # note that this interface should handle conversion from
@@ -92,7 +100,7 @@ def getparams():
         
     # check that the input actually makes sense, can we actually do a
     # simulation with this info?
-    pdict = checkparams(pdict) 
+    pdict = checkparams(pdict)
 
     # add some parameters to the dictionary that are useful
     pdict = addparams(pdict)
@@ -503,27 +511,24 @@ def initflpositionslayer(params):
 def initseedpositions(params):
     """Initialize seed particle positions."""
 
-    # find the N such that 4 * N^3 >= nparseed
-    #N = int(np.ceil((params['nparseed'] / 4.0)**(1.0 / 3.0)))
-    
-    # alatt is conventional unit cell size assuming fcc
-    alatt = 2.0**(2.0 / 3.0) / params['seeddensity']**(1.0 / 3.0)
+    if params['seedform'] == 'fcc':
+        pars_in_cell = 4.0
+    elif params['seedform'] == 'bcc':
+        pars_in_cell = 2.0
+    elif parms['seedform'] == 'sc':
+        pars_in_cell = 1.0
+    else:
+        pars_in_cell = 1.0
+        
+    # alatt is conventional unit cell size
+    alatt = (pars_in_cell/params['seeddensity'])**(1.0/3.0)
 
+    # generate seed particle positions from maketriples and scale by alatt
+    seedpositions = alatt*np.array([c for c in maketriples(int(params['seedgencorrection']*params['nparseed']), params['seedform'])])
 
-    seedpositions = np.zeros(params['nparseed'])
-    #for coords in maketriples(self.params['nparseed']):
-    seedpositions = alatt*np.array([c for c in maketriples(params['nparseed'])]) #+ (params['boxvol']**(1/3))/2
-    
-    
-    # while (nremaining > 0):
-        # * get next lattice point triplet from
-        # (0,0,0), (1,0,0) etc. (Python generators?)
-        # * add 4 particles (or fewer if nremaining < 4)
-        # in fcc positions using alatt above
-        # * subtract number of added particles from
-        # nremaining
-
-    # (?) displace seed to be *roughly* in center of box
+    # shift seed cluster to centre of ox
+    if params['nparseed'] != 0:
+        seedpositions = np.array([[params['lboxx']/2,params['lboxy']/2,params['lboxz']/2]])+seedpositions
         
     return seedpositions
     
@@ -533,25 +538,30 @@ def initpositionsseed(params):
     Initialize positions with seed present.  Note that the seed is not
     treated as a surface.
     """
-
+    # allow correction for particles lost at surface of cluster, where
+    # neighbour conditions are not met due to fluid
+    #params['seedgencorrection'] = 2.0
     # initialise seed of nparseed particles
     seedpositions = initseedpositions(params)
     
     # set excluded region for fluid particles based on seed positions...
-    params['exregion'] = True
-    params['exxmin'] = min(seedpositions[:, 0])
-    params['exxmax'] = max(seedpositions[:, 0])
-    params['exymin'] = min(seedpositions[:, 1])
-    params['exymax'] = max(seedpositions[:, 1])
-    params['exzmin'] = min(seedpositions[:, 2])
-    params['exzmax'] = max(seedpositions[:, 2])    
+    if params['nparseed'] != 0:
+        params['exregion'] = True
+        params['exxmin'] = min(seedpositions[:, 0])
+        params['exxmax'] = max(seedpositions[:, 0])
+        params['exymin'] = min(seedpositions[:, 1])
+        params['exymax'] = max(seedpositions[:, 1])
+        params['exzmin'] = min(seedpositions[:, 2])
+        params['exzmax'] = max(seedpositions[:, 2])
+    else:
+        params['exregion'] = False
     
     # initialise randomly nparfl - nparseed 
-    params['nparfl'] = params['nparfl'] - params['nparseed']
+    params['nparfl'] = params['nparfl'] - int(params['seedgencorrection']*params['nparseed'])
     flpositions = initpositionsnosurf(params)
-    #print len(flpositions)
-    params['nparfl'] = params['nparfl'] + params['nparseed']
+    params['nparfl'] = params['nparfl'] + int(params['seedgencorrection']*params['nparseed'])
 
+    # combine the 2 lists if both exist, else return the one that does
     if len(seedpositions) == 0:
         allpositions = flpositions
     elif len(flpositions) == 0:
@@ -638,7 +648,11 @@ def initvelocities(params):
     return vels
 
 
-def maketriples(Ntot):
+def maketriples(Ntot,structure):
+    """
+    Generates co-ordinates for a roughly-cubic FCC seed
+    particle of Ntot particles
+    """
     count = 0
     if count == Ntot:
         raise StopIteration
@@ -654,24 +668,36 @@ def maketriples(Ntot):
             for m in range(-nmax,nmax+1):
                 for l in range(-nmax,nmax+1):
                     if nmax in (n,m,l) or -nmax in (n,m,l):
-                        
                         yield (n,m,l)
                         count += 1
                         if count == Ntot:
                             raise StopIteration
 
-                        yield (n+0.5,m+0.5,l)
-                        count += 1
-                        if count == Ntot:
-                            raise StopIteration
+                        if structure == 'fcc':
 
-                        yield (n,m+0.5,l+0.5)
-                        count += 1
-                        if count == Ntot:
-                            raise StopIteration
+                            yield (n+0.5,m+0.5,l)
+                            count += 1
+                            if count == Ntot:
+                                raise StopIteration
 
-                        yield (n+0.5,m,l+0.5)
-                        count += 1
-                        if count == Ntot:
-                             raise StopIteration
-        
+                            yield (n,m+0.5,l+0.5)
+                            count += 1
+                            if count == Ntot:
+                                raise StopIteration
+
+                            yield (n+0.5,m,l+0.5)
+                            count += 1
+                            if count == Ntot:
+                                 raise StopIteration
+                             
+                        elif structure == 'bcc':
+
+                            yield (n+0.5,m+0.5,l+0.5)
+                            count += 1
+                            if count == Ntot:
+                                raise StopIteration
+
+                        elif structure == 'sc':
+                            print 'here'
+                            continue
+                            

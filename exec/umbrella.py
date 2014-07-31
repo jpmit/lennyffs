@@ -42,8 +42,8 @@ class MProgram(object):
         else:
             self.iwind = ''
         # read input parameters and write to file
-        if iwind != '' and os.path.exists('params{0}'.format(iwind)):
-            self.params = pickle.load('params{0}.pkl'.format(iwind))
+        if self.iwind != '' and os.path.exists('params{0}.pkl'.format(self.iwind)):
+            self.params = pickle.load(open('params{0}.pkl'.format(self.iwind)))
         else:
             self.params = initsim.getparams()
         if self.iwind == '':  #indexed pkl files wil already exist otherwise
@@ -51,6 +51,12 @@ class MProgram(object):
             writeoutput.writepickparams(self.params)
             # human readable version 'params.out'
             writeoutput.writeparams(self.params)
+
+        # allow some equilibration cycles
+        if self.params['umbequilcycles'] > 0:
+            self.params['umbequil'] = True
+        else:
+            self.params['umbequil'] = False
 
         # From params dictionary create FuncSelector object.  This
         # will handle correct selection of the underlying fortran/C++
@@ -64,7 +70,7 @@ class MProgram(object):
         self.orderp = funcman.OrderParamFunc()
         self.writexyz = funcman.WriteXyzFunc()
 
-        # initialize positions 
+        # initialize positions
         self.positions = initsim.initpositions(self.params)
 
         # write initial positions to file if new simulation
@@ -89,8 +95,12 @@ class MProgram(object):
         # compute initial energy
         epot = self.totalenergy(self.positions, self.params)
 
-        # file for writing order parameter
-        opfile = open('opval{0}.out'.format(self.iwind),'w')
+        # file for writing order parameter - opvalequil for equilibration
+        # and opval for sampling cycles
+        if self.params['umbequil'] == True and self.params['umbequilcycles'] > 0:
+            opfile = open('opvalequil{0}.out'.format(self.iwind),'w')
+        else:
+            opfile = open('opval{0}.out'.format(self.iwind),'w')
 
         # write time 0 and initial orderp
         cyclesdone = 0
@@ -105,7 +115,7 @@ class MProgram(object):
 
         for cy in range(self.numbrellacycles):
 
-            #Store values that may be reverted if bias-chain is rejected
+            # Store values that may be reverted if bias-chain is rejected
             temppositions = deepcopy(self.positions)
             templboxx, templboxy, templboxz = self.params['lboxx'], self.params['lboxy'], self.params['lboxz']
             tempepot = epot
@@ -116,13 +126,21 @@ class MProgram(object):
                                                  self.params,
                                                  epot)
 
-            #w test and revert to temp values if rejected
+            # w test and revert to temp values if rejected
             self.N = self.orderp(self.positions,self.params)
             self.w = wfunc(self.N,self.N0,self.params['k'])
             biasprob = min(1.0,np.exp(-1.0*(self.w-tempw)))
             random.seed()
             temprand = random.random()
 
+            # uncomment next 5 lines for testing
+            #print '--------------------------------------------------'
+            #print 'self.N',self.N,'tempN',tempN
+            #print 'self.w',self.w,'tempw',tempw
+            #print 'temprand',temprand,'biasprob',biasprob
+            #print 'k', self.params['k']
+            #print '--------------------------------------------------'
+            
             if temprand > biasprob:
                 self.positions = deepcopy(temppositions)
                 self.params['lboxx'], self.params['lboxy'], self.params['lboxz'] = templboxx, templboxy, templboxz
@@ -135,6 +153,13 @@ class MProgram(object):
             opfile.write('{0} {1}\n'.format(cyclesdone,
                                             self.orderp(self.positions,
                                                         self.params)))
+            # switch to opval.out when equilibration is complete
+            if self.params['umbequil'] == True and int(self.params['umbequilcycles']) <= cyclesdone:
+                opfile.flush()
+                opfile.close()
+                opfile = open('opval{0}.out'.format(self.iwind),'w')
+                self.params['umbequil'] = False
+            
             opfile.flush()
             # write out pos file if required
             if (cyclesdone % self.params['nsave'] == 0):
@@ -152,15 +177,14 @@ class MProgram(object):
         # if we were npt, print new box volume
         if self.params['mctype'] == 'npt':
             sys.stderr.write('new box volume: {0}\n'\
-                             .format(self.iwind,
-                                     self.params['lboxx']*\
+                             .format(self.params['lboxx']*\
                                      self.params['lboxy']*\
                                      self.params['lboxz']))
 
 #------------------------------------------------------
-#Bias function definition
-def wfunc(N,N0,k):
-    return  0.5*k*(N-N0)**2
+#Bias function definition       
+def wfunc(N,N0,k):               
+    return  0.5*k*(N-N0)**2     
 #------------------------------------------------------
 
 if __name__ == '__main__':
