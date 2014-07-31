@@ -38,6 +38,7 @@ class FuncSelector(object):
     NPT = 'npt'
     MD  = 'md'
     # choices for orderparam
+    Q6 = 'q6global' # global Q6 of entire system
     NTF = 'ntf' # largest cluster according to TF
     NLD = 'nld' # largest cluster according to LD
     FRACTF = 'fractf' # frac xtal particles according to TF
@@ -52,7 +53,7 @@ class FuncSelector(object):
     # the first on the list is taken as the default here (!)
     OPTIONS = {POTENTIAL : [LEN, GAUSS],
                MCTYPE : [NVT, NPT, MD],
-               ORDERPARAM: [NTF, NLD, FRACTF, FRACLD, ALLFRACLD,
+               ORDERPARAM: [Q6, NTF, NLD, FRACTF, FRACLD, ALLFRACLD,
                             ALLFRAC, NONE],
                WRITEXYZ: [TF, LD, NOOP]
                }
@@ -120,8 +121,10 @@ class FuncSelector(object):
     @classmethod
     def OrderParamFunc(cls):
         """Return function that computes an MC cycle."""
-        
-        if cls.option[cls.ORDERPARAM] == cls.NTF:
+
+        if cls.option[cls.ORDERPARAM] == cls.Q6:
+            return orderparam.q6global_cpp
+        elif cls.option[cls.ORDERPARAM] == cls.NTF:
             return orderparam.nclustf_cpp
         elif cls.option[cls.ORDERPARAM] == cls.NLD:
             return orderparam.nclusld_cpp

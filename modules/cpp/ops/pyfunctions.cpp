@@ -46,6 +46,47 @@
 using std::vector;
 using std::cout;
 
+
+// global order parameter Q6 of whole system (including surface if
+// there is one).
+
+double py_q6global(boost::python::numeric::array xpos,
+                   boost::python::numeric::array ypos,
+                   boost::python::numeric::array zpos,
+                   const int npartot, const int nparsurf,
+                   const double lboxx, const double lboxy,
+                   const double lboxz, const bool zperiodic,
+                   const double nsep,
+                   const bool usenearest)
+{
+   // create vector of type "Particle"
+   vector<Particle> allpars = getparticles(xpos, ypos, zpos, npartot);
+
+   // create "Box"
+   Box simbox(lboxx, lboxy, lboxz, nsep, zperiodic);
+
+   // store number of neighbours and neighbour list
+   vector<int> numneigh(npartot, 0);     // num neighbours for each particle
+   vector<vector<int> > lneigh(npartot); // neighbour particle nums for each par
+
+   // fill up numneigh and lneigh, we can use either neighcut or neighnearest for this
+   if (usenearest == true) {
+      neighnearest(allpars, simbox, numneigh, lneigh, 12);
+   }
+   else {
+      neighcut(allpars, simbox, numneigh, lneigh);
+   }
+
+   // matrix of qlm values, for l = 6 only
+   array2d q6lm(boost::extents[npartot][13]);
+   q6lm = qlms(allpars, simbox, numneigh, lneigh, 6);
+
+   // get Q6
+   double qval = Qpars(q6lm, range(0, npartot), 6);
+
+   return qval;
+}
+
 // size of largest crystalline cluster, according to TF method.
 
 double py_nclustf(boost::python::numeric::array xpos,

@@ -24,6 +24,13 @@ double py_fracsolidtf(boost::python::numeric::array,
                       const int, const int, const double, const double,
                       const double, const bool, const double, const int,
                       const double, const bool);
+double py_q6global(boost::python::numeric::array,
+                   boost::python::numeric::array,
+                   boost::python::numeric::array,
+                   const int, const int,
+                   const double, const double,
+                   const double, const bool,
+                   const double, const bool);
 double py_nclustf(boost::python::numeric::array,
                   boost::python::numeric::array,
                   boost::python::numeric::array,

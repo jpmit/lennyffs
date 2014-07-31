@@ -24,6 +24,7 @@ BOOST_PYTHON_MODULE(op_ext)
    to_python_converter<std::vector<double>, vector_to_python_list<double> >();
 
    // The string is the function name called from python
+   def("q6global", py_q6global);   
    def("nclustf", py_nclustf);
    def("tfclass", py_tfclass);
    def("nclusld", py_nclusld);

@@ -179,6 +179,28 @@ def fractf_fort(positions, params):
 # Functions using C++ extension module
 ##########################################
 
+def q6global_cpp(positions, params):
+    """
+    Global order parameter Q6.
+    See ten Wolde et al. Faraday Discuss. 1996
+    """
+
+    npar = params['npartot']
+    nsep = params['stillsep']
+    nparsurf = params['nparsurf']
+    zperiodic = params['zperiodic']
+    thresh = params['q6link']
+    minlinks = params['q6numlinks']
+    usenearest = params['usenearest']
+
+    q6 = mcfuncs.q6global(positions[:,0], positions[:,1],
+                          positions[:,2], npar, nparsurf,
+                          params['lboxx'], params['lboxy'],
+                          params['lboxz'], zperiodic, nsep,
+                          usenearest)
+
+    return q6
+
 def nclustf_cpp(positions, params):
     """
     Number of particles in largest cluster, according to Ten-Wolde
