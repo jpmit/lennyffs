@@ -38,9 +38,9 @@ class Windowmaker(object):
             if self.queue_name_form == 'unnamed':
                 namepart = ''
             else:
-                namepart = ' -N \"{0}-window{1}\"'.format(self.queue_name_form,wcentre)
+                namepart = ' -N \"{0}-win{1}\"'.format(self.queue_name_form,wcentre)
                 
-            bashscript.write(str(os.path.split(self.dir)[0].join(['qsub -cwd -b{0} y python '.format(namepart),'/umbrella.py -w {0}\n'.format(wcentre)])))
+            bashscript.write(str(os.path.split(self.dir)[0].join(['qsub {0} -cwd -b y python '.format(namepart),'/umbrella.py -w {0}\n'.format(wcentre)])))
             positions = initsim.initpositionsseed(self.params)
             self.writexyz('initialpositions{0}.xyz'.format(wcentre), positions, self.params)
         bashscript.close()
