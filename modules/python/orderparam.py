@@ -17,6 +17,7 @@ nclustf_fort    - Number of particles in largest cluster according to TF
                   criterion.
 fractf_fort     - Fracition of xtal particles, according to TF criterion.
 // CPP FUNCTIONS
+q6global_cpp    - Global Q6 of the system.
 nclustf_cpp     - Number of particles in largest cluster according to TF
                   criterion.
 fractf_cpp      - Fraction of xtal particles, according to TF criterion.
