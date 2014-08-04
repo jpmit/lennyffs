@@ -1,0 +1,49 @@
+#! /usr/bin/env python
+
+# len_q6global
+# James Mithen
+# Compute global Q6 of the system.
+
+import sys
+import os
+import numpy as np
+import readwrite
+import orderparam
+from ffsfunctions import getpickparams, getboxdims
+
+if len(sys.argv) != 2:
+    sys.exit("Syntax len_q6global infile.xyz")
+
+infile = sys.argv[1]
+fin = open(infile,'r')
+
+try:
+    params = getpickparams()
+except IOError:
+    sys.exit("Error: could not open file params.pkl")
+
+# box dimensions: if these are written in the XYZ file, as they would
+# be for an NPT simulation, we use the ones in the XYZ file to
+# overwrite those in the parameters dictionary.
+boxdims = getboxdims(infile)
+if boxdims:
+    params['lboxx'] = boxdims[0]
+    params['lboxy'] = boxdims[1]
+    params['lboxz'] = boxdims[2]
+
+# for compatibility with older params.pkl files that dont contain
+# 'usenearest' key which controls whether we look at the 12 nearest
+# neighbours (if True) or simply all neighbours within some cutoff
+# radius.
+if 'usenearest' not in params:
+    params['usenearest'] = False
+
+# read particle positions from infile
+positions, symbols = readwrite.rxyz(infile, True)
+fin.close()
+npar = len(positions)
+
+# get indices of particles in largest cluster and hence cluster size
+q6global = orderparam.q6global_cpp(positions, params)
+
+print q6global
