@@ -24,8 +24,8 @@ class VisFunc:
         self.y = [self.func(xval) for xval in self.x]
 
     def plot(self):
-        plt.title('Bias factors vs Cluster sizes')
-        plt.xlabel('Cluster size')
+        plt.title('Bias factors vs Order Parameter Values')
+        plt.xlabel('Order Parameter')
         plt.ylabel('Bias factor')
         plt.plot(self.x,self.y)
 
@@ -33,7 +33,7 @@ class VisFunc:
 def runplot(numwindows,windsep,k):
     visfunc = VisFunc()
     visfunc.k = k
-    visfunc.domain = [0,float(windsep)*float(numwindows),1]
+    visfunc.domain = [0,float(windsep)*float(numwindows),float(windsep)/100.0]
     
     for n in range(int(numwindows)):
         visfunc.centre = float(windsep)*n

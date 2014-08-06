@@ -30,8 +30,8 @@ class Windowmaker(object):
         bashscript = open('wumbash.sh','w')
         for wcentre in self.windowcentres:
             self.params['restartfile'] = 'initialpositions{0}.xyz'.format(wcentre)
-            self.params['N0'] = wcentre
-            self.params['nparseed'] = wcentre
+            self.params['umb_centre'] = wcentre
+            self.params['nparseed'] = initsim.deduce_seed_size(self.params)
             pickle.dump(self.params, open('params{0}.pkl'.format(wcentre),'w'))
 
             # name option added to qsub command in bash script if queue_name_form supplied

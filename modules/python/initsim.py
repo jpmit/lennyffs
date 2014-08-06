@@ -508,6 +508,19 @@ def initflpositionslayer(params):
                        (params['fllayerspace']*params['dzsurf']))
     return flpositions
 
+def deduce_seed_size(params):
+    """Determine required seed size based on parameters"""
+    if params['umb_orderptype'] == 'clustersize':
+        return params['umb_centre']
+    if params['umb_orderptype'] == 'q6global':
+        if params['seedform'] == 'fcc':
+            perfectQ6 = 0.57452
+        if params['seedform'] == 'bcc':
+            perfectQ6 = 0.51069
+        if params['seedform'] == 'sc':
+            perfectQ6 = 0.35355
+        return (params['umb_centre']/perfectQ6)*params['nparfl']
+
 def initseedpositions(params):
     """Initialize seed particle positions."""
 
@@ -515,7 +528,7 @@ def initseedpositions(params):
         pars_in_cell = 4.0
     elif params['seedform'] == 'bcc':
         pars_in_cell = 2.0
-    elif parms['seedform'] == 'sc':
+    elif params['seedform'] == 'sc':
         pars_in_cell = 1.0
     else:
         pars_in_cell = 1.0
@@ -526,7 +539,7 @@ def initseedpositions(params):
     # generate seed particle positions from maketriples and scale by alatt
     seedpositions = alatt*np.array([c for c in maketriples(int(params['seedgencorrection']*params['nparseed']), params['seedform'])])
 
-    # shift seed cluster to centre of ox
+    # shift seed cluster to centre of box
     if params['nparseed'] != 0:
         seedpositions = np.array([[params['lboxx']/2,params['lboxy']/2,params['lboxz']/2]])+seedpositions
         

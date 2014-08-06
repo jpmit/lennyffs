@@ -107,9 +107,9 @@ class MProgram(object):
         opfile.write('{0} {1}\n'.format(0, self.orderp(self.positions,
                                                        self.params)))
         #Initialise w and N
-        self.N0 = self.params['N0']
-        self.N = self.orderp(self.positions,self.params)
-        self.w = wfunc(self.N,self.N0,self.params['k'])
+        self.umb_centre = self.params['umb_centre']
+        self.umb_op = self.orderp(self.positions,self.params)
+        self.w = wfunc(self.umb_op,self.umb_centre,self.params['k'])
         
         starttime = time.time()
 
@@ -120,32 +120,24 @@ class MProgram(object):
             templboxx, templboxy, templboxz = self.params['lboxx'], self.params['lboxy'], self.params['lboxz']
             tempepot = epot
             tempw = self.w
-            tempN = self.N
+            tempumb_op = self.umb_op
             
             self.positions, epot = self.runcycle(self.positions,
                                                  self.params,
                                                  epot)
 
             # w test and revert to temp values if rejected
-            self.N = self.orderp(self.positions,self.params)
-            self.w = wfunc(self.N,self.N0,self.params['k'])
+            self.umb_op = self.orderp(self.positions,self.params)
+            self.w = wfunc(self.umb_op,self.umb_centre,self.params['k'])
             biasprob = min(1.0,np.exp(-1.0*(self.w-tempw)))
             random.seed()
             temprand = random.random()
-
-            # uncomment next 5 lines for testing
-            #print '--------------------------------------------------'
-            #print 'self.N',self.N,'tempN',tempN
-            #print 'self.w',self.w,'tempw',tempw
-            #print 'temprand',temprand,'biasprob',biasprob
-            #print 'k', self.params['k']
-            #print '--------------------------------------------------'
             
             if temprand > biasprob:
                 self.positions = deepcopy(temppositions)
                 self.params['lboxx'], self.params['lboxy'], self.params['lboxz'] = templboxx, templboxy, templboxz
                 self.w = tempw
-                self.N = tempN
+                self.umb_op = tempumb_op
                 epot = tempepot
             
             cyclesdone += self.params['cycle']
@@ -183,8 +175,8 @@ class MProgram(object):
 
 #------------------------------------------------------
 #Bias function definition       
-def wfunc(N,N0,k):               
-    return  0.5*k*(N-N0)**2     
+def wfunc(umb_op,umb_centre,k):               
+    return  0.5*k*(umb_op-umb_centre)**2     
 #------------------------------------------------------
 
 if __name__ == '__main__':

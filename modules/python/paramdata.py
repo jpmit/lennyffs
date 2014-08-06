@@ -106,13 +106,14 @@ PDICT = {# simulation params
          # umbrella paramaters
          'nunbiased': INT,
          'numbrellacycles': INT,
-         'N0': INT,
+         'umb_centre': FLOAT,
          'k': FLOAT,
          'umbequilcycles': INT,
+         'umb_orderptype': STRING,
 
          # window parameters
          'numwindows': INT,
-         'windowsep': INT,
+         'windowsep': FLOAT,
 
          # initialisation with seed
          'seed': BOOL,
@@ -131,7 +132,6 @@ DEFAULTS = {
     'usenearest': 'yes',
 
     # umbrella sampling
-    'N0': '0',
     'numbrellacycles': '1000',
     'numwindows': '10',
     'nunbiased': '10',
@@ -141,6 +141,8 @@ DEFAULTS = {
     'seed': 'no',
     'seedform': 'sc',
     'seedgencorrection': '1.0',
+    'umb_centre': '0.0',
+    'umb_orderptype': 'clustersize',
     'umbequilcycles': '0',
 
     # legacy surface parameters
