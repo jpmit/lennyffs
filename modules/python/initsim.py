@@ -520,6 +520,8 @@ def deduce_seed_size(params):
         if params['seedform'] == 'sc':
             perfectQ6 = 0.35355
         return (params['umb_centre']/perfectQ6)*params['nparfl']
+    if params['umb_orderptype'] == 'potenergy':
+        return 0.0
 
 def initseedpositions(params):
     """Initialize seed particle positions."""
@@ -569,7 +571,7 @@ def initpositionsseed(params):
     else:
         params['exregion'] = False
     
-    # initialise randomly nparfl - nparseed 
+    # initialise randomly nparfl - nparseed
     params['nparfl'] = params['nparfl'] - int(params['seedgencorrection']*params['nparseed'])
     flpositions = initpositionsnosurf(params)
     params['nparfl'] = params['nparfl'] + int(params['seedgencorrection']*params['nparseed'])

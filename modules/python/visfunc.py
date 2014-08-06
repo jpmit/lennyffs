@@ -30,13 +30,13 @@ class VisFunc:
         plt.plot(self.x,self.y)
 
 
-def runplot(numwindows,windsep,k):
+def runplot(numwindows,windsep,k,firstwindow):
     visfunc = VisFunc()
     visfunc.k = k
-    visfunc.domain = [0,float(windsep)*float(numwindows),float(windsep)/100.0]
+    visfunc.domain = [float(firstwindow),float(windsep)*float(numwindows) + float(firstwindow),float(windsep)/100.0]
     
     for n in range(int(numwindows)):
-        visfunc.centre = float(windsep)*n
+        visfunc.centre = float(firstwindow) + float(windsep)*n
         visfunc.evalfunc()
         visfunc.plot()
 
@@ -45,8 +45,8 @@ def run(numwindows,windsep,k):
     plt.show()
 
     
-def run_png(numwindows,windsep,k):
-    runplot(numwindows,windsep,k)
+def run_png(numwindows,windsep,k,firstwindow):
+    runplot(numwindows,windsep,k,firstwindow)
     plt.savefig('biasfactors.png', bbox_inches='tight')
 
 if __name__ == '__main__':
