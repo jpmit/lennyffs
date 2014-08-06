@@ -140,13 +140,15 @@ class FuncSelector(object):
         elif cls.option[cls.ORDERPARAM] == cls.POTENERGY:
             # potential energy OP depends on the interaction type
             if cls.option[cls.POTENTIAL] == cls.LEN:
-                # output potential energy in units of epsilon, rather
-                # than in units of 4 epsilon
+                # output potential energy per particle in units of
+                # epsilon, rather than in units of 4 epsilon
                 def len_totalen_epsilon(positions, params):
-                    return 4.0 * energy.len_totalenlist(positions, params)
+                    return 4.0 * energy.len_totalenlist(positions, params) / params['npartot']
                 return len_totalen_epsilon
             elif cls.option[cls.POTENTIAL] == cls.GAUSS:
-                return energy.gauss_totalenlist
+                def gauss_totalen_epsilon(positions, params):
+                    return energy.gauss_totalenlist(positions, params) / params['npartot']
+                return gauss_totalen_epsilon
         elif cls.option[cls.ORDERPARAM] == cls.NONE:
             return orderparam.nothing
 
