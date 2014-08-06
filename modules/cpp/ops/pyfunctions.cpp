@@ -9,6 +9,7 @@
 // prefix (see op_ext.cpp).
 //
 // Currently implemented:
+// py_q6global       - global order parameter Q6 of whole system.
 // py_nclustf        - size of largest crystalline cluster, according to
 //                     ten-Wolde Frenkel method.
 // py_tfclass        - return vector<TFCLASS> that contains classification
