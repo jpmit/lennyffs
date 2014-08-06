@@ -45,6 +45,7 @@ class FuncSelector(object):
     FRACLD = 'fracld' # frac xtal particles according to LD
     ALLFRACLD = 'allfracld' # frac of all polymorphs (LD)
     ALLFRAC = 'allfrac' # frac of all polymorphs (LD) + TF xtal frac
+    POTENERGY = 'potenergy' # potential energy of the system
     NONE = 'none'
     # choices for writexyz
     LD = 'ld'
@@ -136,6 +137,12 @@ class FuncSelector(object):
             return orderparam.allfracld_cpp
         elif cls.option[cls.ORDERPARAM] == cls.ALLFRAC:
             return orderparam.allfracldtf_cpp
+        elif cls.option[cls.ORDERPARAM] == cls.POTENERGY:
+            # potential energy OP depends on the interaction type
+            if cls.option[cls.POTENTIAL] == cls.LEN:
+                return energy.len_totalenlist
+            elif cls.option[cls.POTENTIAL] == cls.GAUSS:
+                return energy.gauss_totalenlist
         elif cls.option[cls.ORDERPARAM] == cls.NONE:
             return orderparam.nothing
 
