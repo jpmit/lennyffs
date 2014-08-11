@@ -36,7 +36,7 @@ PDICT = {# simulation params
          'r12mult': FLOAT,
          # for ipl (inverse power law potential), this controls the
          # exponent (it should be positive).
-         'potexponent': FLOAT
+         'potexponent': FLOAT,
 
          # fluid params
          'nstar': FLOAT,

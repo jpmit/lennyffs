@@ -90,7 +90,7 @@ class FuncSelector(object):
         elif cls.option[cls.POTENTIAL] == cls.GAUSS:
             # this uses neighbour lists
             return energy.gauss_totalenlist
-        elif cls.option[cls.POTENTIAL] == cls.IPL
+        elif cls.option[cls.POTENTIAL] == cls.IPL:
             return energy.ipl_totalenlist
 
     @classmethod

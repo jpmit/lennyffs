@@ -42,7 +42,7 @@ def ipl_cyclenvt(positions, params, etot):
     # setup and call the fortran subroutine
     xpos,ypos,zpos = positions[:,0],positions[:,1],positions[:,2]
     xpos, ypos, zpos, etot  = mcfuncs.\
-                              len_executecyclesnvt(xpos, ypos, zpos,
+                              ipl_executecyclesnvt(xpos, ypos, zpos,
                                                    ncycle, nsamp,
                                                    rc, rcsq, vrc,
                                                    vrc2, lboxx, lboxy,
@@ -83,7 +83,7 @@ def ipl_cyclenpt(positions, params, etot):
     # setup and call the fortran subroutine
     xpos, ypos, zpos = positions[:,0], positions[:,1], positions[:,2]
     xpos,ypos,zpos,lx,ly,lz,etot  = mcfuncs.\
-                                    len_executecyclesnpt(xpos, ypos,
+                                    ipl_executecyclesnpt(xpos, ypos,
                                                          zpos,
                                                          ncycle, nsamp,
                                                          rc, rcsq, vrc,

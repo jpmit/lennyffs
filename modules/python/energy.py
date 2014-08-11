@@ -80,7 +80,7 @@ def ipl_energyipar(ipar, positions, params, nparsurf = None):
 
     # ipar + 1 converts between zero indexing (Python) and one
     # indexing (Fortran).
-    etot = mcfuncs.len_energyipar(ipar + 1, positions[ipar][0],
+    etot = mcfuncs.ipl_energyipar(ipar + 1, positions[ipar][0],
                                   positions[ipar][1],
                                   positions[ipar][2],
                                   positions[:,0], positions[:,1],
@@ -107,7 +107,7 @@ def ipl_totalenlist(positions, params):
     potexponent = params['potexponent']
 
     # note that the function creates the list for us
-    etot = mcfuncs.len_totalencreatelist(positions[:,0],
+    etot = mcfuncs.ipl_totalencreatelist(positions[:,0],
                                          positions[:,1],
                                          positions[:,2], rcut,
                                          rcsq, lboxx,
