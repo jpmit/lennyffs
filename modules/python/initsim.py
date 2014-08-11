@@ -128,7 +128,10 @@ def addparams(pdict):
     pdict['rcsq'] = rc2
     
     # potentials at cutoff
-    if pdict['potential'] == 'len':
+    if pdict['potential'] == 'ipl':
+        vrc = 1.0 / pdict['rcut']**pdict['potexponent']
+        vrc2 = vrc
+    elif pdict['potential'] == 'len':
         rc2i = 1.0/rc2
         rc6i = rc2i**3
         rc12i = rc6i**2
@@ -141,12 +144,11 @@ def addparams(pdict):
             pdict['r6mult'] = pdict['r12mult'] = 1.0
             
         vrc2 = pdict['r12mult']*rc12i - pdict['r6mult']*rc6i
-
     elif pdict['potential'] == 'gauss':
         vrc = np.exp(-rc2)
         vrc2 = vrc
 
-    # for len, this is in units of 4eps, for gauss in units of eps
+    # for len, this is in units of 4eps, for gauss and IPL in units of eps
     pdict['vrc'] = vrc 
     pdict['vrc2'] = vrc2
 

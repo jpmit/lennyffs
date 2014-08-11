@@ -30,8 +30,13 @@ PDICT = {# simulation params
          # interaction potential params
          'potential': STRING,
          'rcut': FLOAT,
+         # for lennard-jones potential, these parameters control the
+         # surface-fluid interaction potential scaling
          'r6mult': FLOAT,
          'r12mult': FLOAT,
+         # for ipl (inverse power law potential), this controls the
+         # exponent (it should be positive).
+         'potexponent': FLOAT
 
          # fluid params
          'nstar': FLOAT,

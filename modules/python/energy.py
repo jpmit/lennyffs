@@ -9,10 +9,22 @@ modules/fortran/gauss/gauss_energy.f90 for the Fortran
 implementations).
 
 FUNCTIONS:
+ipl_totalenergy   - computes total potential energy of system, including
+                    surface, for IPL potential.
+ipl_energyipar    - computes potential energy between a single particle
+                    and all others, for IPL potential.
+ipl_totalenlist -   computes total potential energy of system, including
+                    surface, for IPL potential.  This uses cell lists
+                    for efficiency, and therefore should be preferred to
+                    len_totalenergy above.
 len_totalenergy   - computes total potential energy of system, including
                     surface, for Lennard-Jones potential.
 len_energyipar    - computes potential energy between a single particle
                     and all others, for Lennard-Jones potential.
+len_totalenlist -   computes total potential energy of system, including
+                    surface, for Lennard-Jones potential.  This uses cell
+                    lists for efficiency, and therefore should be preferred
+                    to len_totalenergy above.
 gauss_totalenergy - computes total potential energy of system, including
                     surface, for Gaussian potential.
 gauss_energyipar  - computes potential energy between a single particle
@@ -24,6 +36,85 @@ gauss_totalenlist - computes total potential energy of system, including
 """
 
 import mcfuncs
+
+# this is deprecated, use ipl_totalenlist below, which uses cell lists
+# for efficiency.
+def ipl_totalenergy(positions, params):
+    """Compute total energy of system, including surface."""
+
+    rcut = params['rcut']
+    rcsq = params['rcsq']
+    lboxx = params['lboxx']
+    lboxy = params['lboxy']
+    lboxz = params['lboxz']
+    vrc = params['vrc']
+    vrc2 = params['vrc2']
+    nparsurf = params['nparsurf']
+    zperiodic = params['zperiodic']
+    potexponent = params['potexponent']
+
+    etot = mcfuncs.ipl_totalenergy(positions[:,0], positions[:,1],
+                                   positions[:,2], rcut, rcsq, lboxx,
+                                   lboxy, lboxz, vrc, vrc2, nparsurf,
+                                   zperiodic, potexponent)
+    return etot
+
+# this function is used for the utilites but shouldn't be needed by
+# the main code.
+def ipl_energyipar(ipar, positions, params, nparsurf = None):
+    """Compute energy of particle ipar with all other particles."""
+
+    rcut = params['rcut']
+    rcsq = params['rcsq']
+    lboxx = params['lboxx']
+    lboxy = params['lboxy']
+    lboxz = params['lboxz']
+    vrc = params['vrc']
+    vrc2 = params['vrc2']
+    zperiodic = params['zperiodic']
+    potexponent = params['potexponent']
+
+    # particles {1,...,nsurf} use r6mult and r12 mult.
+    if nparsurf is None:
+        nparsurf = params['nparsurf']
+
+    # ipar + 1 converts between zero indexing (Python) and one
+    # indexing (Fortran).
+    etot = mcfuncs.len_energyipar(ipar + 1, positions[ipar][0],
+                                  positions[ipar][1],
+                                  positions[ipar][2],
+                                  positions[:,0], positions[:,1],
+                                  positions[:,2], rcut, rcsq, lboxx,
+                                  lboxy, lboxz, vrc, vrc2, nparsurf,
+                                  zperiodic, potexponent)
+    return etot
+
+def ipl_totalenlist(positions, params):
+    """
+    Compute total energy of system, including surface, using cell
+    list.
+    """    
+    
+    rcut = params['rcut']
+    rcsq = params['rcsq']
+    lboxx = params['lboxx']
+    lboxy = params['lboxy']
+    lboxz = params['lboxz']
+    vrc = params['vrc']
+    vrc2 = params['vrc2']
+    nparsurf = params['nparsurf']
+    zperiodic = params['zperiodic']
+    potexponent = params['potexponent']
+
+    # note that the function creates the list for us
+    etot = mcfuncs.len_totalencreatelist(positions[:,0],
+                                         positions[:,1],
+                                         positions[:,2], rcut,
+                                         rcsq, lboxx,
+                                         lboxy, lboxz, vrc,
+                                         vrc2, nparsurf,
+                                         zperiodic, potexponent)
+    return etot
 
 # this is deprecated, use len_totalenlist below, which uses cell lists
 # for efficiency.

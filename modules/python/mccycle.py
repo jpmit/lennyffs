@@ -7,6 +7,8 @@ Wrapper to Fortran code for performing the Monte Carlo
 simulation. This just calls the relevant fortran subroutine.
 
 FUNCTIONS:
+ipl_cyclenvt   - NVT MC for IPL potential.
+ipl_cyclenpt   - NPT MC for IPL potential.
 len_cyclenvt   - NVT MC for Lennard-Jones potential.
 len_cyclenpt   - NPT MC for Lennard-Jones potential.
 gauss_cyclenvt - NVT MC for Gaussian potential.
@@ -15,6 +17,92 @@ gauss_cyclemd  - NVE MD (not MC!) for Gaussian potential.
 """
 
 import mcfuncs
+
+def ipl_cyclenvt(positions, params, etot):
+    """Performs the requested number of cycles of NVT MC."""
+
+    # ncycle is the number of MC cycles we perform (one cycle consists
+    # of on average a single displacement move per moving particle).
+    ncycle = params['cycle']
+    nsamp = params['nsamp']
+    rc = params['rcut']
+    rcsq = params['rcsq']
+    vrc = params['vrc']
+    vrc2 = params['vrc2']
+    lboxx = params['lboxx']
+    lboxy = params['lboxy']
+    lboxz = params['lboxz']
+    eps4 = 4.0/params['Tstar']    
+    maxdisp = params['maxdisp']
+    nparsurf = params['nparsurf']
+    zperiodic = params['zperiodic']
+    potexponent = params['potexponent']
+    ss = params['sameseed']
+
+    # setup and call the fortran subroutine
+    xpos,ypos,zpos = positions[:,0],positions[:,1],positions[:,2]
+    xpos, ypos, zpos, etot  = mcfuncs.\
+                              len_executecyclesnvt(xpos, ypos, zpos,
+                                                   ncycle, nsamp,
+                                                   rc, rcsq, vrc,
+                                                   vrc2, lboxx, lboxy,
+                                                   lboxz, eps4,
+                                                   maxdisp, nparsurf,
+                                                   zperiodic, ss,
+                                                   potexponent,
+                                                   etot)
+    
+    positions[:,0], positions[:,1], positions[:,2] = xpos, ypos, zpos
+
+    return positions, etot
+
+def ipl_cyclenpt(positions, params, etot):
+    """Performs the requested number of cycles of NPT MC."""
+
+    # ncycle is the number of MC cycles we perform (one cycle consists
+    # of on average a single displacement move per moving particle AND
+    # a single volume move).
+    ncycle = params['cycle']
+    nsamp = params['nsamp']
+    rc = params['rcut']
+    rcsq = params['rcsq']
+    vrc = params['vrc']
+    vrc2 = params['vrc2']
+    lboxx = params['lboxx']
+    lboxy = params['lboxy']
+    lboxz = params['lboxz']
+    eps4 = 4.0/params['Tstar']    
+    maxdisp = params['maxdisp']
+    maxvol = params['maxvol']
+    nparsurf = params['nparsurf']
+    zperiodic = params['zperiodic']
+    potexponent = params['potexponent']
+    pressure = params['pressure']
+    ss = params['sameseed']
+
+    # setup and call the fortran subroutine
+    xpos, ypos, zpos = positions[:,0], positions[:,1], positions[:,2]
+    xpos,ypos,zpos,lx,ly,lz,etot  = mcfuncs.\
+                                    len_executecyclesnpt(xpos, ypos,
+                                                         zpos,
+                                                         ncycle, nsamp,
+                                                         rc, rcsq, vrc,
+                                                         vrc2,
+                                                         pressure,
+                                                         lboxx, lboxy,
+                                                         lboxz, eps4,
+                                                         maxdisp,
+                                                         maxvol,
+                                                         nparsurf,
+                                                         zperiodic, ss,
+                                                         potexponent, etot)
+    # update box dimensions
+    params['lboxx'] = lx
+    params['lboxy'] = ly
+    params['lboxz'] = lz
+    positions[:,0], positions[:,1], positions[:,2] = xpos, ypos, zpos
+
+    return positions, etot
 
 def len_cyclenvt(positions, params, etot):
     """Performs the requested number of cycles of NVT MC."""

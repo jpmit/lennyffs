@@ -33,6 +33,7 @@ class FuncSelector(object):
     # choices for potential
     LEN = 'len'
     GAUSS = 'gauss'
+    IPL = 'ipl'
     # choices for mctype
     NVT = 'nvt'
     NPT = 'npt'
@@ -89,6 +90,8 @@ class FuncSelector(object):
         elif cls.option[cls.POTENTIAL] == cls.GAUSS:
             # this uses neighbour lists
             return energy.gauss_totalenlist
+        elif cls.option[cls.POTENTIAL] == cls.IPL
+            return energy.ipl_totalenlist
 
     @classmethod
     def EnergyIparFunc(cls):
@@ -98,6 +101,8 @@ class FuncSelector(object):
             return energy.len_energyipar
         elif cls.option[cls.POTENTIAL] == cls.GAUSS:
             return energy.gauss_energyipar
+        elif cls.option[cls.POTENTIAL] == cls.IPL:
+            return energy.ipl_energyipar
 
     @classmethod
     def MCCycleFunc(cls):
@@ -109,13 +114,18 @@ class FuncSelector(object):
                 return mccycle.len_cyclenpt
             elif cls.option[cls.POTENTIAL] == cls.GAUSS:
                 return mccycle.gauss_cyclenpt
+            elif cls.option[cls.POTENTIAL] == cls.IPL:
+                return mccycle.ipl_cyclenpt
         if cls.option[cls.MCTYPE] == cls.NVT:
             # functions for NVT MC for each different potential            
             if cls.option[cls.POTENTIAL] == cls.LEN:
                 return mccycle.len_cyclenvt
             elif cls.option[cls.POTENTIAL] == cls.GAUSS:
                 return mccycle.gauss_cyclenvt
+            elif cls.option[cls.POTENTIAL] == cls.IPL:
+                return mccycle.ipl_cyclenvt
         if cls.option[cls.MCTYPE] == cls.MD:
+            # NVE MD is only available for Gaussian potential currently
             if cls.option[cls.POTENTIAL] == cls.GAUSS:
                 return mccycle.gauss_cyclemd
 
@@ -149,6 +159,10 @@ class FuncSelector(object):
                 def gauss_totalen_epsilon(positions, params):
                     return energy.gauss_totalenlist(positions, params) / params['npartot']
                 return gauss_totalen_epsilon
+            elif cls.option[cls.POTENTIAL] == cls.IPL:
+                def ipl_totalen_epsilon(positions, params):
+                    return energy.ipl_totalenlist(positions, params) / params['npartot']
+                return ipl_totalen_epsilon
         elif cls.option[cls.ORDERPARAM] == cls.NONE:
             return orderparam.nothing
 
