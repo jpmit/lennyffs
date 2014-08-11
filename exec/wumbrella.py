@@ -15,7 +15,7 @@ class Windowmaker(object):
     def __init__(self):
 
         self.params = initsim.getparams()
-        self.windowcentres = [n*self.params['windowsep'] for n in range(self.params['numwindows'])]
+        self.windowcentres = [self.params['firstwindow'] + n*self.params['windowsep'] for n in range(self.params['numwindows'])]
         self.dir = os.path.abspath(__file__)
         funcman = funcselector.FuncSelector(self.params)
         self.writexyz = funcman.WriteXyzFunc()
@@ -48,7 +48,8 @@ class Windowmaker(object):
     def visualise_potentials(self):
         visfunc.run_png(self.params['numwindows'],
                         self.params['windowsep'],
-                        self.params['k'])
+                        self.params['k'],
+                        self.params['firstwindow'])
     
             
             

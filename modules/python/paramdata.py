@@ -119,6 +119,7 @@ PDICT = {# simulation params
          # window parameters
          'numwindows': INT,
          'windowsep': FLOAT,
+         'firstwindow': FLOAT,
 
          # initialisation with seed
          'seed': BOOL,
@@ -137,6 +138,7 @@ DEFAULTS = {
     'usenearest': 'yes',
 
     # umbrella sampling
+    'firstwindow': '0.0',
     'numbrellacycles': '1000',
     'numwindows': '10',
     'nunbiased': '10',
@@ -144,6 +146,7 @@ DEFAULTS = {
 
     # initialisation with seed
     'seed': 'no',
+    'seeddensity': '1.0',
     'seedform': 'sc',
     'seedgencorrection': '1.0',
     'umb_centre': '0.0',
