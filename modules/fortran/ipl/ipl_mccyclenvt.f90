@@ -12,7 +12,7 @@
 
 subroutine ipl_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp, rc,&
                                 rcsq, vrc, vrc2, lboxx, lboxy, lboxz,&
-                                eps4, maxdisp, npar, nsurf, zperiodic,&
+                                epsovert, maxdisp, npar, nsurf, zperiodic,&
                                 sameseed, potexponent, etot)
   ! execute ncycles MD cycles
 
@@ -22,14 +22,14 @@ subroutine ipl_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp, rc,&
   ! inputs
   integer, intent(in) :: ncycles, nsamp, npar, nsurf
   real(kind=db), intent(in) :: rc, rcsq, vrc, vrc2, lboxx, lboxy, lboxz
-  real(kind=db), intent(in) :: eps4, maxdisp, potexponent
+  real(kind=db), intent(in) :: epsovert, maxdisp, potexponent
   logical, intent(in) :: zperiodic, sameseed
 
   ! outputs
   real(kind=db), dimension(npar), intent(inout) :: xpos, ypos, zpos
   real(kind=db), intent(inout) :: etot
 
-  !f2py intent(in) :: ncycles, nsamp, rc, rcsq, vrc, vrc2, lboxx, lboxy, lboxz, eps4
+  !f2py intent(in) :: ncycles, nsamp, rc, rcsq, vrc, vrc2, lboxx, lboxy, lboxz, epsovert
   !f2py intent(in) :: maxdisp, npar, nparsuf, zperiodic, sameseed, potexponent
   !f2py intent(in,out) :: xpos, ypos, zpos, etot
 
@@ -119,7 +119,7 @@ subroutine ipl_executecyclesnvt(xpos, ypos, zpos, ncycles, nsamp, rc,&
            accept = .True.
            if (enew > eold) then
               call random_number(rsc)
-              if (exp((eold - enew) * eps4) < rsc) accept = .False.
+              if (exp((eold - enew) * epsovert) < rsc) accept = .False.
            end if
            ! update positions if move accepted
            if (accept) then

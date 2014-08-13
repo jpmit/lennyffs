@@ -206,6 +206,7 @@ subroutine ipl_eij(ipar, jpar, xposi, yposi, zposi, xposj, yposj, zposj,&
   !f2py intent(out) :: eij
 
   real(kind=db) :: sepx, sepy, sepz, sepsq, rexponenti, halfexpminus2
+  halfexpminus2 = (potexponent - 2.0_db) / 2.0_db  
 
   eij = 0.0_db
   sepx = xposi - xposj

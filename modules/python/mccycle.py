@@ -32,7 +32,7 @@ def ipl_cyclenvt(positions, params, etot):
     lboxx = params['lboxx']
     lboxy = params['lboxy']
     lboxz = params['lboxz']
-    eps4 = 4.0/params['Tstar']    
+    epsovert = 1.0/params['Tstar']    
     maxdisp = params['maxdisp']
     nparsurf = params['nparsurf']
     zperiodic = params['zperiodic']
@@ -46,7 +46,7 @@ def ipl_cyclenvt(positions, params, etot):
                                                    ncycle, nsamp,
                                                    rc, rcsq, vrc,
                                                    vrc2, lboxx, lboxy,
-                                                   lboxz, eps4,
+                                                   lboxz, epsovert,
                                                    maxdisp, nparsurf,
                                                    zperiodic, ss,
                                                    potexponent,
