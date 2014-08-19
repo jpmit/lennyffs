@@ -35,7 +35,7 @@ positions = initsim.initpositions(params)
 funcman = funcselector.FuncSelector(params)
 totalenergyfunc = funcman.TotalEnergyFunc()
 cyclefunc = funcman.MCCycleFunc()
-orderpfunc = funcman.OrderParamFunc()
+orderpfunc = funcman.SingleOrderParamFunc()
 wxyzfunc = funcman.WriteXyzFunc()
 
 # check that lambda < lamA (we are in phase A)

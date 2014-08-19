@@ -22,9 +22,11 @@ writexyz_ld     - write xyz file with particle symbols as classified
 """
 
 import os
+import pickle
+
+import orderfuncs
 import orderparam
 import readwrite
-import pickle
 
 # lookup table for Lechner-Dellago (LD) method symbols
 _LD_SYMBOLS = {orderparam.LDFCC     : 'S', # FCC (yellow in jmol)
@@ -48,6 +50,7 @@ def writepickparams(params, fname='params.pkl'):
     fout.close()
     return
 
+
 def writeparams(params, fname='params.out'):
     """Write out dictionary of parameters in human readable form."""
     
@@ -63,6 +66,7 @@ def writeparams(params, fname='params.out'):
     fout.close()
     return
 
+
 def writemdpick(fname, positions, velocities):
     """
     Write pickle file that includes both positions and velocities.
@@ -74,6 +78,7 @@ def writemdpick(fname, positions, velocities):
     pickle.dump(topick, fout)
     fout.close()
 
+
 def readmdpick(fname):
     """
     Read file and return positions and velocities.
@@ -83,6 +88,7 @@ def readmdpick(fname):
     positions, velocities = pickle.load(pfile)
     pfile.close()
     return positions, velocities
+
 
 def _get_box_kwargs(params):            
     """If npt simulation, return dictionary with box dims.
@@ -95,6 +101,7 @@ def _get_box_kwargs(params):
                             params['lboxz']]}
     return {}
 
+
 def writexyz_tf(fname, positions, params):
     """
     Write positions in xyz format with symbols as atom types, using
@@ -102,7 +109,7 @@ def writexyz_tf(fname, positions, params):
     """
 
     # get TF classification
-    tfclass = orderparam._tfclass(positions, params)
+    tfclass = orderfuncs.tfclass(positions, params)
     # give each atom the correct symbol using lookup table
     symbols = [_TF_SYMBOLS[i] for i in tfclass]
 
@@ -112,6 +119,7 @@ def writexyz_tf(fname, positions, params):
     readwrite.wxyz(fname, positions, symbols, **kwargs)
     return
 
+
 def writexyz_ld(fname, positions, params):
     """
     Write positions in xyz format with symbols as atom types, using
@@ -119,7 +127,7 @@ def writexyz_ld(fname, positions, params):
     """
 
     # get LD classification
-    ldclass = orderparam._ldclass(positions, params)
+    ldclass = orderfuncs.ldclass(positions, params)
     # give each atom the correct symbol using lookup table
     symbols = [_LD_SYMBOLS[i] for i in ldclass]
 
@@ -127,6 +135,7 @@ def writexyz_ld(fname, positions, params):
 
     # write the file
     readwrite.wxyz(fname, positions, symbols, **kwargs)
+
 
 def writexyz_noop(fname, positions, params):
     """

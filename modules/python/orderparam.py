@@ -15,6 +15,7 @@ Functions that support the order parameters implemented below are in
 orderfuncs.py.
 
 FUNCTIONS:
+stringify       - Convert OP tuple to a string for writing to file
 allfracld_cpp   - Fractions of all polymorphs according to LD criterion.
 allfracldtf_cpp - Same as above, but including TF xtal fraction.
 fracld_cpp      - Fraction of xtal particles, according to LD criterion.
@@ -45,6 +46,10 @@ TFLIQ = 0
 TFXTAL = 1
 TFSURF = 2
 
+def stringify(op):
+    """Return OP tuple as a string for writing to file."""
+
+    return ' '.join(['{:.3f}'.format(o) for o in op])
 
 def allfracld_cpp(positions, params):
     """Return fractions of all polymorphs."""
@@ -61,13 +66,9 @@ def allfracld_cpp(positions, params):
 
 
 def allfracldtf_cpp(positions, params):
-    """
-    Return fractions of all polymorphs AND TF crystal fraction, as
-    a string.
-    """
+    """Return fractions of all polymorphs AND TF crystal fraction."""
     
-    return allfracld_cpp(positions, params) + ' {:.3f}'.\
-           format(fractf_cpp(positions, params))
+    return allfracld_cpp(positions, params) + fractf_cpp(positions, params)
 
 
 def fracld_cpp(positions, params):
@@ -90,7 +91,7 @@ def fracld_cpp(positions, params):
                                params['lboxz'], zperiodic, nsep,
                                usenearest)
     
-    return frac
+    return (frac,)
 
 
 def fractf_cpp(positions, params):
@@ -113,7 +114,31 @@ def fractf_cpp(positions, params):
                                 params['lboxz'], zperiodic, nsep,
                                 minlinks, thresh, usenearest)
 
-    return nclus
+    return (nclus,)
+
+
+def nclusbcld_cpp(positions, params):
+    """
+    Number of bcc-like particles in largest cluster and number of fcc
+    OR hcp-like particles (i.e. number of 'close-packed' particles) in
+    the largest cluster.
+    """
+
+    npar = params['npartot']
+    nsep = params['stillsep']
+    nparsurf = params['nparsurf']
+    zperiodic = params['zperiodic']
+    thresh = params['q6link']
+    minlinks = params['q6numlinks']
+    usenearest = params['usenearest']
+
+    npoly = mcfuncs.ncluspolyld(positions[:,0], positions[:,1],
+                                positions[:,2], npar, nparsurf,
+                                params['lboxx'], params['lboxy'],
+                                params['lboxz'], zperiodic, nsep,
+                                usenearest)
+
+    return (npoly[LDBCC], npoly[LDFCC + LDHCP])
 
 
 def nclusld_cpp(positions, params):
@@ -136,7 +161,7 @@ def nclusld_cpp(positions, params):
                             params['lboxz'], zperiodic, nsep,
                             usenearest)
 
-    return nclus
+    return (nclus,)
 
 
 def nclustf_cpp(positions, params):
@@ -159,7 +184,7 @@ def nclustf_cpp(positions, params):
                             params['lboxz'], zperiodic, nsep,
                             minlinks, thresh, usenearest)
 
-    return nclus
+    return (nclus,)
 
 
 def q6global_cpp(positions, params):
@@ -182,4 +207,4 @@ def q6global_cpp(positions, params):
                           params['lboxz'], zperiodic, nsep,
                           usenearest)
 
-    return q6
+    return (q6,)

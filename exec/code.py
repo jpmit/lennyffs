@@ -12,15 +12,18 @@ specified in the input file). For Forward Flux Sampling (FFS)
 simulations, see codeffs.py.
 """
 
-import numpy as np
-import funcselector
-import initsim
-import writeoutput
-import energy
-import force
-import mccycle
 import time
 import sys
+
+import numpy as np
+
+import energy
+import force
+import funcselector
+import initsim
+import mccycle
+from orderparam import stringify
+import writeoutput
 
 class MProgram(object):
     """The main MC/MD program."""
@@ -103,8 +106,8 @@ class MProgram(object):
 
         # run the MC cycles
         cyclesdone = 0
-        opfile.write('{0} {1}\n'.format(0, self.orderp(self.positions,
-                                                       self.params)))
+        opfile.write('{0} {1}\n'.format(0, stringify(self.orderp(self.positions,
+                                                                 self.params))))
         starttime = time.time()
 
         for cy in range(self.ncall):
@@ -116,8 +119,8 @@ class MProgram(object):
             cyclesdone += self.params['cycle']
             # write out order parameter
             opfile.write('{0} {1}\n'.format(cyclesdone,
-                                            self.orderp(self.positions,
-                                                        self.params)))
+                                            stringify(self.orderp(self.positions,
+                                                                  self.params))))
             opfile.flush()
             # write out pos file if required
             if (cyclesdone % self.params['nsave'] == 0):
@@ -146,8 +149,8 @@ class MProgram(object):
 
         # run the MC cycles
         cyclesdone = 0
-        opfile.write('{0} {1}\n'.format(0, self.orderp(self.positions,
-                                                       self.params)))
+        opfile.write('{0} {1}\n'.format(0, stringify(self.orderp(self.positions,
+                                                                 self.params))))
         starttime = time.time()
 
         for cy in range(self.ncall):
@@ -157,8 +160,8 @@ class MProgram(object):
             cyclesdone += self.params['cycle']
             # write out order parameter
             opfile.write('{0} {1}\n'.format(cyclesdone,
-                                            self.orderp(self.positions,
-                                                        self.params)))
+                                            stringify(self.orderp(self.positions,
+                                                                  self.params))))
             opfile.flush()
             # write out pos file if required
             if (cyclesdone % self.params['nsave'] == 0):

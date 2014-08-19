@@ -15,11 +15,13 @@ savelambda0config - save the particle positions and time of hitting
                     first FFS interface (lambda0).
 """
 
-import os
-import sys
 import glob
+import os
 import pickle
+import sys
+
 import numpy as np
+
 import funcselector
 import readwrite
 
@@ -31,6 +33,7 @@ def getshotdict(nint):
     pfile.close()
     return shotdict
 
+
 def getpickparams():
     """Return params dictionary from pickle file."""
     
@@ -38,6 +41,7 @@ def getpickparams():
     params = pickle.load(pfile)
     pfile.close()
     return params
+
 
 def getboxdims(infile):
     """
@@ -84,7 +88,7 @@ def takeshot(initfile, nint, params):
     fsel = funcselector.FuncSelector(params)
     totalenergyfunc = fsel.TotalEnergyFunc()
     mccyclefunc = fsel.MCCycleFunc()
-    opfunc = fsel.OrderParamFunc()
+    opfunc = fsel.SingleOrderParamFunc()
     
     # get initial potential energy and order parameter
     epot = totalenergyfunc(positions,params)
