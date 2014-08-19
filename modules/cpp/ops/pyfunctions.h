@@ -47,9 +47,14 @@ std::vector<TFCLASS> py_tfclass(boost::python::numeric::array,
                                 const int, const double, const bool);
 double py_nclusld(boost::python::numeric::array,
                   boost::python::numeric::array,
-                  boost::python::numeric::array, 
+                  boost::python::numeric::array,
                   const int, const int, const double, const double,
                   const double, const bool, const double, const bool);
+std::vector<int> py_ncluspolyld(boost::python::numeric::array,
+                                boost::python::numeric::array,
+                                boost::python::numeric::array, 
+                                const int, const int, const double, const double,
+                                const double, const bool, const double, const bool);
 std::vector<LDCLASS> py_ldclass(boost::python::numeric::array,
                                 boost::python::numeric::array,
                                 boost::python::numeric::array, 

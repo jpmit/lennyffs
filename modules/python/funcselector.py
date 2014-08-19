@@ -40,6 +40,7 @@ class FuncSelector(object):
     MD  = 'md'
     # choices for orderparam
     Q6 = 'q6global' # global Q6 of entire system
+    NBCCNCP = 'nbccncp' # number of bcc and close-packed (fcc or hcp) in largest cluster
     NTF = 'ntf' # largest cluster according to TF
     NLD = 'nld' # largest cluster according to LD
     FRACTF = 'fractf' # frac xtal particles according to TF
@@ -133,20 +134,22 @@ class FuncSelector(object):
     def OrderParamFunc(cls):
         """Return function that computes an MC cycle."""
 
-        if cls.option[cls.ORDERPARAM] == cls.Q6:
-            return orderparam.q6global_cpp
-        elif cls.option[cls.ORDERPARAM] == cls.NTF:
-            return orderparam.nclustf_cpp
-        elif cls.option[cls.ORDERPARAM] == cls.NLD:
-            return orderparam.nclusld_cpp
-        elif cls.option[cls.ORDERPARAM] == cls.FRACTF:
-            return orderparam.fractf_cpp
-        elif cls.option[cls.ORDERPARAM] == cls.FRACLD:
-            return orderparam.fracld_cpp
-        elif cls.option[cls.ORDERPARAM] == cls.ALLFRACLD:
+        if cls.option[cls.ORDERPARAM] == cls.ALLFRACLD:
             return orderparam.allfracld_cpp
         elif cls.option[cls.ORDERPARAM] == cls.ALLFRAC:
             return orderparam.allfracldtf_cpp
+        elif cls.option[cls.ORDERPARAM] == cls.FRACLD:
+            return orderparam.fracld_cpp
+        elif cls.option[cls.ORDERPARAM] == cls.FRACTF:
+            return orderparam.fractf_cpp
+        elif cls.option[cls.ORDERPARAM] == cls.NBCCNCP:
+            return orderparam.nclusbcld_cpp
+        elif cls.option[cls.ORDERPARAM] == cls.NLD:
+            return orderparam.nclusld_cpp
+        elif cls.option[cls.ORDERPARAM] == cls.NTF:
+            return orderparam.nclustf_cpp
+        elif cls.option[cls.ORDERPARAM] == cls.Q6:
+            return orderparam.q6global_cpp
         elif cls.option[cls.ORDERPARAM] == cls.POTENERGY:
             # potential energy OP depends on the interaction type
             if cls.option[cls.POTENTIAL] == cls.LEN:
@@ -165,6 +168,17 @@ class FuncSelector(object):
                 return ipl_totalen_epsilon
         elif cls.option[cls.ORDERPARAM] == cls.NONE:
             return orderparam.nothing
+
+    @classmethod
+    def SingleOrderParamFunc(cls):
+        """Same as above but returns only the first order parameter in the tuple."""
+
+        tuple_function = cls.OrderParamFunc()
+
+        def single_order(positions, params):
+            return tuple_function(positions, params)[0]
+
+        return single_order
 
     @classmethod
     def WriteXyzFunc(cls):
