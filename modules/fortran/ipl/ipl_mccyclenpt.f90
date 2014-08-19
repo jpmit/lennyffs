@@ -13,7 +13,7 @@
 
 subroutine ipl_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp, rc,&
                                 rcsq, vrc, vrc2, press, lboxx, lboxy,&
-                                lboxz, eps4, maxdisp, maxvol, npar,&
+                                lboxz, epsovert, maxdisp, maxvol, npar,&
                                 nsurf, zperiodic, sameseed, potexponent,&
                                 etot)
   ! execute ncycles MC cycles
@@ -24,14 +24,14 @@ subroutine ipl_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp, rc,&
   ! inputs
   integer, intent(in) :: ncycles, nsamp, npar, nsurf
   real(kind=db), intent(in) :: rc, rcsq, vrc, vrc2, press
-  real(kind=db), intent(in) :: eps4, maxdisp, maxvol, potexponent
+  real(kind=db), intent(in) :: epsovert, maxdisp, maxvol, potexponent
   logical, intent(in) :: zperiodic, sameseed
 
   ! outputs
   real(kind=db), dimension(npar), intent(inout) :: xpos, ypos, zpos
   real(kind=db), intent(inout) :: lboxx, lboxy, lboxz, etot
 
-  !f2py intent(in) :: ncycles, nsamp, rc, rcsq, vrc, vrc2, eps4
+  !f2py intent(in) :: ncycles, nsamp, rc, rcsq, vrc, vrc2, epsovert
   !f2py intent(in) :: maxdisp, npar, nparsuf, zperiodic, sameseed, potexponent
   !f2py intent(in,out) :: xpos, ypos, zpos, lboxx, lboxy, lboxz, etot
 
@@ -148,7 +148,7 @@ subroutine ipl_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp, rc,&
 
            ! See FS p122 (Algorithm 11) for this acceptance rule
            
-           arg = eps4 * (etot - etotnew + 0.25_db * press * (vboxold - vboxnew)) + &
+           arg = epsovert * (etot - etotnew + press * (vboxold - vboxnew)) + &
                  (nparfl + 1) * (lnvnew - lnvold)
            accept = .True.
            if (arg < 0) then
@@ -233,7 +233,7 @@ subroutine ipl_executecyclesnpt(xpos, ypos, zpos, ncycles, nsamp, rc,&
               accept = .True.
               if (enew > eold) then
                  call random_number(rsc)
-                 if (exp((eold - enew)*eps4) < rsc) accept = .False.
+                 if (exp((eold - enew) *epsovert) < rsc) accept = .False.
               end if
 
               ! update positions if move accepted

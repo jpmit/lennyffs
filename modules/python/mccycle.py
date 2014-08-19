@@ -71,7 +71,7 @@ def ipl_cyclenpt(positions, params, etot):
     lboxx = params['lboxx']
     lboxy = params['lboxy']
     lboxz = params['lboxz']
-    eps4 = 4.0/params['Tstar']    
+    epsovert = 1.0/params['Tstar']    
     maxdisp = params['maxdisp']
     maxvol = params['maxvol']
     nparsurf = params['nparsurf']
@@ -90,7 +90,7 @@ def ipl_cyclenpt(positions, params, etot):
                                                          vrc2,
                                                          pressure,
                                                          lboxx, lboxy,
-                                                         lboxz, eps4,
+                                                         lboxz, epsovert,
                                                          maxdisp,
                                                          maxvol,
                                                          nparsurf,
