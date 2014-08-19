@@ -133,20 +133,20 @@ class FuncSelector(object):
     def OrderParamFunc(cls):
         """Return function that computes an MC cycle."""
 
-        if cls.option[cls.ORDERPARAM] == cls.Q6:
-            return orderparam.q6global_cpp
-        elif cls.option[cls.ORDERPARAM] == cls.NTF:
-            return orderparam.nclustf_cpp
-        elif cls.option[cls.ORDERPARAM] == cls.NLD:
-            return orderparam.nclusld_cpp
-        elif cls.option[cls.ORDERPARAM] == cls.FRACTF:
-            return orderparam.fractf_cpp
-        elif cls.option[cls.ORDERPARAM] == cls.FRACLD:
-            return orderparam.fracld_cpp
-        elif cls.option[cls.ORDERPARAM] == cls.ALLFRACLD:
+        if cls.option[cls.ORDERPARAM] == cls.ALLFRACLD:
             return orderparam.allfracld_cpp
         elif cls.option[cls.ORDERPARAM] == cls.ALLFRAC:
             return orderparam.allfracldtf_cpp
+        elif cls.option[cls.ORDERPARAM] == cls.FRACLD:
+            return orderparam.fracld_cpp
+        elif cls.option[cls.ORDERPARAM] == cls.FRACTF:
+            return orderparam.fractf_cpp
+        elif cls.option[cls.ORDERPARAM] == cls.NLD:
+            return orderparam.nclusld_cpp
+        elif cls.option[cls.ORDERPARAM] == cls.NTF:
+            return orderparam.nclustf_cpp
+        elif cls.option[cls.ORDERPARAM] == cls.Q6:
+            return orderparam.q6global_cpp
         elif cls.option[cls.ORDERPARAM] == cls.POTENERGY:
             # potential energy OP depends on the interaction type
             if cls.option[cls.POTENTIAL] == cls.LEN:

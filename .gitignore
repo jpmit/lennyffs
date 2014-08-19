@@ -6,7 +6,6 @@ lennypackage.sh
 deploy.sh
 versions
 *.tar.gz
-test
 boost
 *.so
 *.o
