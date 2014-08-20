@@ -33,9 +33,6 @@ try:
 except IOError:
     sys.exit("Error: file params.pkl not found")
 
-if 'usenearest' not in params:
-    params['usenearest'] = False
-
 # box dimensions: if these are written in the XYZ file, as they would
 # be for an NPT simulation, we use the ones in the XYZ file to
 # overwrite those in the parameters dictionary.
