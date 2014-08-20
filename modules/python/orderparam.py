@@ -138,7 +138,7 @@ def nclusbcld_cpp(positions, params):
                                 params['lboxz'], zperiodic, nsep,
                                 usenearest)
 
-    return (npoly[LDBCC], npoly[LDFCC + LDHCP])
+    return (npoly[LDBCC], npoly[LDFCC] + npoly[LDHCP])
 
 
 def nclusld_cpp(positions, params):
