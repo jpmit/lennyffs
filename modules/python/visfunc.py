@@ -40,8 +40,8 @@ def runplot(numwindows,windsep,k,firstwindow):
         visfunc.evalfunc()
         visfunc.plot()
 
-def run(numwindows,windsep,k):
-    runplot(numwindows,windsep,k)
+def run(numwindows,windsep,k,firstwindow):
+    runplot(numwindows,windsep,k, firstwindow)
     plt.show()
 
     
@@ -50,6 +50,6 @@ def run_png(numwindows,windsep,k,firstwindow):
     plt.savefig('biasfactors.png', bbox_inches='tight')
 
 if __name__ == '__main__':
-    #USAGE: visfunc.py [number of windows] [window separation] [k]
-    run(sys.argv[1],sys.argv[2],sys.argv[3])
+    #USAGE: visfunc.py [number of windows] [window separation] [k] [first window]
+    run(sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4])
     

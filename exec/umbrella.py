@@ -67,7 +67,7 @@ class MProgram(object):
         funcman = funcselector.FuncSelector(self.params)
         self.totalenergy = funcman.TotalEnergyFunc()
         self.runcycle = funcman.MCCycleFunc()
-        self.orderp = funcman.OrderParamFunc()
+        self.orderp = funcman.SingleOrderParamFunc()
         self.writexyz = funcman.WriteXyzFunc()
 
         # initialize positions
