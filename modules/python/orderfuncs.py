@@ -39,7 +39,7 @@ def clusnums(cpositions, params):
                                   cpositions[:,2], len(cpositions),
                                   params['lboxx'], params['lboxy'],
                                   params['lboxz'], params['zperiodic'],
-                                  params['stillsep'], params['usenearest'])
+                                  params['stillsep'])
 
 
 def ldclass(positions, params):
