@@ -4,14 +4,16 @@
 # James Mithen
 # Output the largest cluster, removing periodic boundary conditions.
 
-import sys
-import numpy as np
 from copy import deepcopy
+import sys
+
+import numpy as np
+
 import readwrite
 from ffsfunctions import getpickparams, getboxdims
 import bops
 import graph
-import orderparam
+import orderfuncs
 from lenexceptions import UtilError
 
 # symbols identified as being crystal
@@ -64,7 +66,7 @@ surfpositions = np.array([positions[i] for i in range(npar)
 ns = len(surfpositions)
 
 # get largest cluster in the periodic system
-cluster = orderparam._clusnums(cpositions, params)
+cluster = orderfuncs.clusnums(cpositions, params)
 ncl = len(cluster)
 clpositions = np.empty([ncl,3])
 i = 0
@@ -153,7 +155,7 @@ params['lboxy'] = 1000000
 params['lboxz'] = 1000000
 
 # get largest cluster C++ code
-cluster = orderparam._clusnums(allpositions, params)
+cluster = orderfuncs.clusnums(allpositions, params)
 
 # get symbols of particles in cluster
 allsymbols = csymbols*NREP
