@@ -4,14 +4,16 @@
 # James Mithen
 # Output the largest crystalline cluster in the system.
 
-import sys
 import os
+import sys
+
 import numpy as np
+
 import readwrite
 import bops
 import graph
 from ffsfunctions import getpickparams, getboxdims
-import orderparam
+import orderfuncs
 
 # symbols identified as being crystal
 XTALPARS = ['S', # FCC (or all TF)
@@ -58,7 +60,7 @@ cpositions = np.array([positions[i] for i in cindexes])
 csymbols = np.array([symbols[i] for i in cindexes])
 
 # get largest cluster C++ code
-cluster = orderparam._clusnums(cpositions, params)
+cluster = orderfuncs._clusnums(cpositions, params)
 ncl = len(cluster)
 clpositions = np.empty([ncl,3])
 clsymbols = [None]*ncl
