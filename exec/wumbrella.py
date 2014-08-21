@@ -58,5 +58,5 @@ if __name__ == '__main__':
     if argv[1:2] != []:
         windowmaker.queue_name_form = argv[1]
     windowmaker.prep_windows()
-    windowmaker.visualise_potentials()
+    #windowmaker.visualise_potentials()
     

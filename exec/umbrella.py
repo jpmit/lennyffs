@@ -21,6 +21,7 @@ import writeoutput
 import energy
 import force
 import mccycle
+from orderparam import stringify
 import time
 import sys
 from copy import deepcopy
@@ -67,7 +68,7 @@ class MProgram(object):
         funcman = funcselector.FuncSelector(self.params)
         self.totalenergy = funcman.TotalEnergyFunc()
         self.runcycle = funcman.MCCycleFunc()
-        self.orderp = funcman.SingleOrderParamFunc()
+        self.orderp = funcman.OrderParamFunc()
         self.writexyz = funcman.WriteXyzFunc()
 
         # initialize positions
@@ -104,12 +105,12 @@ class MProgram(object):
 
         # write time 0 and initial orderp
         cyclesdone = 0
-        opfile.write('{0} {1}\n'.format(0, self.orderp(self.positions,
-                                                       self.params)))
-        #Initialise w and N
+        opfile.write('{0} {1}\n'.format(0, stringify(self.orderp(self.positions,
+                                                       self.params))))
+        #Initialise w and umb_centre
         self.umb_centre = self.params['umb_centre']
         self.umb_op = self.orderp(self.positions,self.params)
-        self.w = wfunc(self.umb_op,self.umb_centre,self.params['k'])
+        self.w = self.wfunc()
         
         starttime = time.time()
 
@@ -128,7 +129,7 @@ class MProgram(object):
 
             # w test and revert to temp values if rejected
             self.umb_op = self.orderp(self.positions,self.params)
-            self.w = wfunc(self.umb_op,self.umb_centre,self.params['k'])
+            self.w = self.wfunc()
             biasprob = min(1.0,np.exp(-1.0*(self.w-tempw)))
             random.seed()
             temprand = random.random()
@@ -143,8 +144,8 @@ class MProgram(object):
             cyclesdone += self.params['cycle']
             # write out order parameter
             opfile.write('{0} {1}\n'.format(cyclesdone,
-                                            self.orderp(self.positions,
-                                                        self.params)))
+                                            stringify(self.orderp(self.positions,
+                                                        self.params))))
             # switch to opval.out when equilibration is complete
             if self.params['umbequil'] == True and int(self.params['umbequilcycles']) <= cyclesdone:
                 opfile.flush()
@@ -173,11 +174,12 @@ class MProgram(object):
                                      self.params['lboxy']*\
                                      self.params['lboxz']))
 
-#------------------------------------------------------
-#Bias function definition       
-def wfunc(umb_op,umb_centre,k):               
-    return  0.5*k*(umb_op-umb_centre)**2     
-#------------------------------------------------------
+    def wfunc(self):
+        quads = 0
+        for i, val in enumerate(self.umb_centre):
+            quads += self.params['k'][i]*(self.umb_op[i] - val)**2
+        w = 0.5*quads
+        return w
 
 if __name__ == '__main__':
     mcprog = MProgram()

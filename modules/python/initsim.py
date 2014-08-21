@@ -512,9 +512,11 @@ def initflpositionslayer(params):
 
 def deduce_seed_size(params):
     """Determine required seed size based on parameters"""
-    if params['umb_orderptype'] == 'clustersize':
+    if params['orderparam'] == 'nld':
         return params['umb_centre']
-    if params['umb_orderptype'] == 'q6global':
+    if params['orderparam'] == 'ntf':
+        return params['umb_centre']
+    if params['orderparam'] == 'q6global':
         if params['seedform'] == 'fcc':
             perfectQ6 = 0.57452
         if params['seedform'] == 'bcc':
@@ -522,8 +524,9 @@ def deduce_seed_size(params):
         if params['seedform'] == 'sc':
             perfectQ6 = 0.35355
         return (params['umb_centre']/perfectQ6)*params['nparfl']
-    if params['umb_orderptype'] == 'potenergy':
+    if params['orderparam'] == 'potenergy':
         return 0.0
+    return 0.0
 
 def initseedpositions(params):
     """Initialize seed particle positions."""
@@ -555,9 +558,6 @@ def initpositionsseed(params):
     Initialize positions with seed present.  Note that the seed is not
     treated as a surface.
     """
-    # allow correction for particles lost at surface of cluster, where
-    # neighbour conditions are not met due to fluid
-    #params['seedgencorrection'] = 2.0
     # initialise seed of nparseed particles
     seedpositions = initseedpositions(params)
     
