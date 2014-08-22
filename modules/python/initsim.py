@@ -513,9 +513,9 @@ def initflpositionslayer(params):
 def deduce_seed_size(params):
     """Determine required seed size based on parameters"""
     if params['orderparam'] == 'nld':
-        return params['umb_centre']
+        return params['umb_centre'][0]
     if params['orderparam'] == 'ntf':
-        return params['umb_centre']
+        return params['umb_centre'][0]
     if params['orderparam'] == 'q6global':
         if params['seedform'] == 'fcc':
             perfectQ6 = 0.57452
@@ -523,9 +523,11 @@ def deduce_seed_size(params):
             perfectQ6 = 0.51069
         if params['seedform'] == 'sc':
             perfectQ6 = 0.35355
-        return (params['umb_centre']/perfectQ6)*params['nparfl']
+        return (params['umb_centre'][0]/perfectQ6)*params['nparfl']
     if params['orderparam'] == 'potenergy':
         return 0.0
+    if params['orderparam'] == 'nbccncp':
+        return params['umb_centre'][0] + params['umbcentre'][1]
     return 0.0
 
 def initseedpositions(params):
@@ -544,6 +546,7 @@ def initseedpositions(params):
     alatt = (pars_in_cell/params['seeddensity'])**(1.0/3.0)
 
     # generate seed particle positions from maketriples and scale by alatt
+    #print params['nparseed']
     seedpositions = alatt*np.array([c for c in maketriples(int(params['seedgencorrection']*params['nparseed']), params['seedform'])])
 
     # shift seed cluster to centre of box
@@ -715,6 +718,5 @@ def maketriples(Ntot,structure):
                                 raise StopIteration
 
                         elif structure == 'sc':
-                            print 'here'
                             continue
                             

@@ -150,7 +150,6 @@ DEFAULTS = {
     'seedform': 'sc',
     'seedgencorrection': '1.0',
     'umb_centre': '0.0',
-    'umb_orderptype': 'clustersize',
     'umbequilcycles': '0',
 
     # legacy surface parameters
