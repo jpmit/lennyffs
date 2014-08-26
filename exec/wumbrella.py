@@ -47,7 +47,7 @@ class Windowmaker(object):
             strwc = ''
             for c in wcentre:
                 strwc += str(c) + '-'
-            strw = strwc[:-1]
+            strwc = strwc[:-1]
         
             self.params['restartfile'] = 'initialpositions{0}.xyz'.format(strwc)
             self.params['umb_centre'] = wcentre
