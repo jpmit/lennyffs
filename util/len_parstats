@@ -36,6 +36,9 @@ for pt, pn in zip(PARTYPES, PARNAMES):
     # pad where appropriate to make the string look nice
     name = '{0} ({1})'.format(pt, pn).ljust(11)
     num = str(pcount[pt]).ljust(5)
-    st = '{0} : {1} ({2}%)'.format(name, num,
-                                   100* float(pcount[pt]) / npar)
+    if (npar == 0):
+        pc = 0.0
+    else:
+        pc = 100 * float(pcount[pt]) / npar
+    st = '{0} : {1} ({2}%)'.format(name, num, pc)
     print st
