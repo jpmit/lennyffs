@@ -34,6 +34,9 @@ graph getxgraph(const vector<Particle>& particles,
    double sep;
    
    for (i = 0; i != nxtal; ++i) {
+      // No easy api to add a node, so we add a loop to the graph.
+      // Note this is needed for when nxtal = 1.
+      add_edge(i, i, G);
       for (j = i + 1; j != nxtal; ++j) {
          if (simbox.isneigh(particles[xpars[i]], particles[xpars[j]], sep)) {
             add_edge(i, j, G);

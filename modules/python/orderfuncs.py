@@ -192,6 +192,8 @@ def getxgraph(positions, params, xpars):
     p5lboxz = 0.5 * lboxz
     
     for i in xpars:
+        # add node
+        xgraph.add_node(i)
         # get distances to all other solid particles
         for j in xpars:
             if i != j:
