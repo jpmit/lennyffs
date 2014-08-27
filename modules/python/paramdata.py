@@ -10,6 +10,7 @@ desired Python type.
 
 INT = 'int'
 INTLIST = 'intlist'
+FLOATLIST = 'floatlist'
 FLOAT = 'float'
 STRING = 'str'
 BOOL = 'bool'
@@ -111,15 +112,14 @@ PDICT = {# simulation params
          # umbrella paramaters
          'nunbiased': INT,
          'numbrellacycles': INT,
-         'umb_centre': FLOAT,
-         'k': FLOAT,
+         'umb_centre': FLOATLIST,
+         'k': FLOATLIST,
          'umbequilcycles': INT,
-         'umb_orderptype': STRING,
 
          # window parameters
-         'numwindows': INT,
-         'windowsep': FLOAT,
-         'firstwindow': FLOAT,
+         'numwindows': INTLIST,
+         'windowsep': FLOATLIST,
+         'firstwindow': FLOATLIST,
 
          # initialisation with seed
          'seed': BOOL,
@@ -150,7 +150,6 @@ DEFAULTS = {
     'seedform': 'sc',
     'seedgencorrection': '1.0',
     'umb_centre': '0.0',
-    'umb_orderptype': 'clustersize',
     'umbequilcycles': '0',
 
     # legacy surface parameters
@@ -160,7 +159,7 @@ DEFAULTS = {
 
 def _strtointlist(s):
     """
-    Converts string e.g. '[0,2,3,4,6]' to a Python list of integers.
+    Converts string e.g. '0,2,3,4,6' to a Python list of integers.
     """
 
     try:
@@ -170,6 +169,20 @@ def _strtointlist(s):
               format(s)
     
     return ilist
+
+
+def _strtofloatlist(s):
+    """
+    Converts string e.g. '0.1,2.5,3.98,4.1231,6.1' to a Python list of floats.
+    """
+
+    try:
+        flist = [float(f) for f in s.split(',')]
+    except:
+        raise ValueError, 'could not convert "{0}" to floatlist'.\
+              format(s)
+    
+    return flist
 
 def _strtobool(s):
     """
@@ -189,4 +202,4 @@ def _strtobool(s):
 # 'int', 'float', 'str' and 'bool' are built-in Python functions.
 
 FUNCS = {INT: int, FLOAT: float, STRING: str, BOOL: _strtobool,
-         INTLIST: _strtointlist}
+         INTLIST: _strtointlist, FLOATLIST: _strtofloatlist}

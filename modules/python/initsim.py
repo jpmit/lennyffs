@@ -512,18 +512,23 @@ def initflpositionslayer(params):
 
 def deduce_seed_size(params):
     """Determine required seed size based on parameters"""
-    if params['umb_orderptype'] == 'clustersize':
-        return params['umb_centre']
-    if params['umb_orderptype'] == 'q6global':
+    if params['orderparam'] == 'nld':
+        return params['umb_centre'][0]
+    if params['orderparam'] == 'ntf':
+        return params['umb_centre'][0]
+    if params['orderparam'] == 'q6global':
         if params['seedform'] == 'fcc':
             perfectQ6 = 0.57452
         if params['seedform'] == 'bcc':
             perfectQ6 = 0.51069
         if params['seedform'] == 'sc':
             perfectQ6 = 0.35355
-        return (params['umb_centre']/perfectQ6)*params['nparfl']
-    if params['umb_orderptype'] == 'potenergy':
+        return (params['umb_centre'][0]/perfectQ6)*params['nparfl']
+    if params['orderparam'] == 'potenergy':
         return 0.0
+    if params['orderparam'] == 'nbccncp':
+        return params['umb_centre'][0] + params['umb_centre'][1]
+    return 0.0
 
 def initseedpositions(params):
     """Initialize seed particle positions."""
@@ -541,6 +546,7 @@ def initseedpositions(params):
     alatt = (pars_in_cell/params['seeddensity'])**(1.0/3.0)
 
     # generate seed particle positions from maketriples and scale by alatt
+    #print params['nparseed']
     seedpositions = alatt*np.array([c for c in maketriples(int(params['seedgencorrection']*params['nparseed']), params['seedform'])])
 
     # shift seed cluster to centre of box
@@ -555,9 +561,6 @@ def initpositionsseed(params):
     Initialize positions with seed present.  Note that the seed is not
     treated as a surface.
     """
-    # allow correction for particles lost at surface of cluster, where
-    # neighbour conditions are not met due to fluid
-    #params['seedgencorrection'] = 2.0
     # initialise seed of nparseed particles
     seedpositions = initseedpositions(params)
     
@@ -715,6 +718,5 @@ def maketriples(Ntot,structure):
                                 raise StopIteration
 
                         elif structure == 'sc':
-                            print 'here'
                             continue
                             
