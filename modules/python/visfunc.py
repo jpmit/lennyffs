@@ -1,3 +1,5 @@
+#NOT YET ADAPTED FOR CHANGES MADE FOR 2-OP CASE
+
 import numpy as np
 import matplotlib.pyplot as plt
 import sys

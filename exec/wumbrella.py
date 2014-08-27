@@ -2,7 +2,8 @@ import initsim
 import pickle
 import os
 import funcselector
-import visfunc
+#VISFUNC NOT CURRENTLY WORKING
+#import visfunc
 from sys import argv, exit
 
 class Windowmaker(object):
@@ -63,6 +64,7 @@ class Windowmaker(object):
             self.writexyz('initialpositions{0}.xyz'.format(strwc), positions, self.params)
         bashscript.close()
 
+#THE VISFUNC MODULE DOESN'T CURRENTLY WORK
     def visualise_potentials(self):
         visfunc.run_png(self.params['numwindows'],
                         self.params['windowsep'],
