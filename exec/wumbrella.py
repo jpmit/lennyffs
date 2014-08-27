@@ -27,9 +27,7 @@ class Windowmaker(object):
         else:
             print " > 2 order parameters not supported"
             exit(0)
-
-        print self.windowcentres
-                       
+                      
         self.dir = os.path.abspath(__file__)
         funcman = funcselector.FuncSelector(self.params)
         self.writexyz = funcman.WriteXyzFunc()

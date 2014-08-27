@@ -527,7 +527,7 @@ def deduce_seed_size(params):
     if params['orderparam'] == 'potenergy':
         return 0.0
     if params['orderparam'] == 'nbccncp':
-        return params['umb_centre'][0] + params['umbcentre'][1]
+        return params['umb_centre'][0] + params['umb_centre'][1]
     return 0.0
 
 def initseedpositions(params):
