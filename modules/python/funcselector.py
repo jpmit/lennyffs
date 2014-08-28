@@ -156,15 +156,15 @@ class FuncSelector(object):
                 # output potential energy per particle in units of
                 # epsilon, rather than in units of 4 epsilon
                 def len_totalen_epsilon(positions, params):
-                    return 4.0 * energy.len_totalenlist(positions, params) / params['npartot']
+                    return (4.0 * energy.len_totalenlist(positions, params) / params['npartot'],)
                 return len_totalen_epsilon
             elif cls.option[cls.POTENTIAL] == cls.GAUSS:
                 def gauss_totalen_epsilon(positions, params):
-                    return energy.gauss_totalenlist(positions, params) / params['npartot']
+                    return (energy.gauss_totalenlist(positions, params) / params['npartot'],)
                 return gauss_totalen_epsilon
             elif cls.option[cls.POTENTIAL] == cls.IPL:
                 def ipl_totalen_epsilon(positions, params):
-                    return energy.ipl_totalenlist(positions, params) / params['npartot']
+                    return (energy.ipl_totalenlist(positions, params) / params['npartot'],)
                 return ipl_totalen_epsilon
         elif cls.option[cls.ORDERPARAM] == cls.NONE:
             return orderparam.nothing

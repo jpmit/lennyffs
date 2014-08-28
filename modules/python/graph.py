@@ -38,7 +38,14 @@ class Graph(object):
         
         return self.adj[n]
 
-    def add_edge(self,u,v):
+    def add_node(self, u):
+        """Add a node to the graph (if it doesn't already exist)."""
+
+        if u not in self.node:
+            self.node[u] = {}
+            self.adj[u] = {}
+
+    def add_edge(self, u, v):
         """Add an edge between two nodes u and v."""
         
         # add nodes u and/or v if do not already exist
@@ -49,12 +56,13 @@ class Graph(object):
             self.node[v] = {}
             self.adj[v] = {}
         # add the edge
-        ddict = self.adj[u].get(v,{})
+        ddict = self.adj[u].get(v, {})
         self.adj[u][v] = ddict
         self.adj[v][u] = ddict
         return
 
-def connected_nodes(G,n):
+
+def connected_nodes(G, n):
     """
     Return dictionary of all nodes of graph G connected to node n
     (including node n itself).  This uses BFS.
@@ -73,6 +81,7 @@ def connected_nodes(G,n):
         level = level + 1
     return seen
 
+
 def connected_comps(G):
     """Return list of connected components of graph G, ordered by size."""
     
@@ -81,8 +90,8 @@ def connected_comps(G):
     for n in G:
         if n not in seen:
             # get all nodes connected to n
-            d = connected_nodes(G,n)
+            d = connected_nodes(G, n)
             comps.append(d.keys())
             seen.update(d)
-    comps.sort(key=len,reverse=True)
+    comps.sort(key=len, reverse=True)
     return comps
