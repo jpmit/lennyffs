@@ -129,7 +129,7 @@ PDICT = {# simulation params
          'seedgencorrection': FLOAT,
          }
 
-# default values, arranged alphabetically.  These are used if the
+# default values.  These are used if the
 # parameter is not specified in the input file.
 DEFAULTS = {
     'k': '0.1',
@@ -151,6 +151,7 @@ DEFAULTS = {
     'seedgencorrection': '1.0',
     'umb_centre': '0.0',
     'umbequilcycles': '0',
+    'nparseed': '0',
 
     # legacy surface parameters
     'r6mult': '1.0',
