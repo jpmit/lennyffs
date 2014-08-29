@@ -45,7 +45,7 @@ class Windowmaker(object):
             
             strwc = ''
             for c in wcentre:
-                strwc += str(c) + '-'
+                strwc += str(c) + '_'
             strwc = strwc[:-1]
         
             self.params['restartfile'] = 'initialpositions{0}.xyz'.format(strwc)
