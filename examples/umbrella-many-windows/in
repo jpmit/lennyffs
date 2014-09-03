@@ -51,18 +51,19 @@ numbrellacycles 1000
 # total number of equilibration cycles
 umbequilcycles 1000
 
-# the centre of bias
-umb_centre 0.0
+# first umbrella window (lowest value for bias centre)
+firstwindow 0.0
+# number of umbrella windows
+numwindows 10
+# separation between window centres
+windowsep 50
+
 # the width of the bias potential: V = 0.5*k*(op - umb_centre)^2
 k 0.003
 
-# should a seed cluster be used?
-seed no
-# number of particles in the seed
-nparseed 0
-# the number density of the seed
+# the number density of the seeds
 seeddensity 0.106
-# the crystalline structure of the seed
+# the crystalline structure of the seeds
 seedform fcc
 # multiplicative correction factor for seed size - used to acount for particles at seed edge
 seedgencorrection 2.0
