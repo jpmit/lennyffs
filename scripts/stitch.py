@@ -5,15 +5,16 @@
 
 import sys
 from itertools import izip
-
+import numpy as np
 import scipy.optimize
+import matplotlib.pyplot as plt
 
 def free_energy(nvals, aks, b):
     """Free energy for a single window (see Auer and Frenkel)."""
 
     k = len(aks) # order of polynomial fit
     
-    return (sum([aks[i] * nvals**(i + 1) for i in range(k)], axis=0) + b)
+    return (np.sum([aks[i] * nvals**(i + 1) for i in range(k)], axis=0) + b)
 
 def free_energy_multiple(nvals, aks, bis):
 
@@ -155,12 +156,12 @@ class Stitcher(object):
 
         if useweights:
             weights = self._allweights
-            print weights
+            #print weights
         else:
             weights = np.ones(len(self._allgvals))
 
         p, success = scipy.optimize.leastsq(f_multiple, p0, args=(self._nvals, self._allgvals, weights))
-        print success
+        #print success
         self._params = p
 
     def get_curve(self):
@@ -189,41 +190,49 @@ class Stitcher(object):
 if __name__ == "__main__":
 
     import readwrite
+    import glob
     
-    files = ['/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim1/bcc/',
-             '/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim2/bcc/',
-             '/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim3/bcc/',
-             '/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim4/bcc/',
-             '/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim5/bcc/',
-             '/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim1/fcc/',
-             '/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim2/fcc/',
-             '/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim3/fcc/',
-             '/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim4/fcc/',
-             '/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim5/fcc/',
-             ]
+    files = glob.glob('bcc*') + glob.glob('fcc*')
+    #print files
+    #files = ['/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim1/bcc/',
+             #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim2/bcc/',
+             #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim3/bcc/',
+             #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim4/bcc/',
+             #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim5/bcc/',
+             #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim1/fcc/',
+             #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim2/fcc/',
+             #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim3/fcc/',
+             #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim4/fcc/',
+             #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim5/fcc/',
+             #]
     stitch = Stitcher()
-    stitch.load_files(files[:2])
-    stitch.fit(useweights=True)
-    ns, gs = stitch.get_curve()
-    plt.plot(ns, gs, label='combined with weights', color='k', linestyle='--')
-    stitch.fit(useweights=False)
-    ns, gs = stitch.get_curve()
-    plt.plot(ns, gs, label='combined', color='k')
+    #stitch.load_files(files[:2])
+    #stitch.fit(useweights=True)
+    #ns, gs = stitch.get_curve()
+    #plt.plot(ns, gs, label='combined with weights', color='k', linestyle='--')
+    #stitch.fit(useweights=False)
+    #ns, gs = stitch.get_curve()
+    #plt.plot(ns, gs, label='combined', color='k')
 
-    colors = ['b', 'g', 'r', 'c', 'm', 'y']
+    colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k', '0.25', '0.75', '0.5']
 
-    #for i, f in enumerate(files):
-    #    stitch.load_files([f])
-    #    stitch.fit(useweights=True)
-    #    ns, gs = stitch.get_curve()
-    #    handns, handgs = readwrite.r2col(f + 'finalstitch.out')
-    #    plt.plot(ns, gs, color=colors[i], label=f.split('/')[-2])
-    #    plt.plot(handns, handgs, color=colors[i], linestyle='--')  
+    maxs = []
+    for i, f in enumerate(files):
+        stitch.load_files([f])
+        stitch.fit(useweights=True)
+        ns, gs = stitch.get_curve()
+        print np.amax(gs)
+        maxs.append(np.amax(gs))        
+        #handns, handgs = readwrite.r2col(f + '/finalstitch.out')
+        plt.plot(ns, gs, color=colors[i], label=f.split('/')[-1])
+        #plt.plot(handns, handgs, color=colors[i], linestyle='--')  
+    print 'Ave: ' + str(np.mean(maxs)) + ' +/- ' + str(np.std(maxs)) 
 
     plt.legend()
 
     plt.xlabel('$n_{ld}$')
     plt.ylabel('$G / k_b T$')
+    plt.show()
 
 #    stitch = Stitcher()
 #    stitch.load_files(['/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim1/bcc/'])

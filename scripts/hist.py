@@ -284,6 +284,6 @@ Args
         # returns the class - useful for debugging
     return hm
 
-#if __name__ == '__main__':
-    #cl = run(dim=2, bin_width=[1.0, 1.0], debias=True, k=[0.003, 0.003], fe=True,
-             #rtmin=[-30, -30], rtmax=[30, 30], trim=True)
+if __name__ == '__main__':
+    cl = run(dim=2, bin_width=[1.0, 1.0], debias=True, k=[0.003, 0.003], fe=True,
+             rtmin=[-30, -30], rtmax=[30, 30], trim=True)

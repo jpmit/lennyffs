@@ -136,6 +136,9 @@ DEFAULTS = {
     'mctype': 'nvt',
     'sameseed': 'no',
     'usenearest': 'yes',
+    'surface' : 'no',
+    'nsamp' : '1000',
+    'nsave' : '1000',
 
     # umbrella sampling
     'firstwindow': '0.0',
