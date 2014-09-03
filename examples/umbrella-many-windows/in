@@ -1,7 +1,7 @@
 # Example in file for ONE WINDOW umbrella simulation - To be run with umbrella.py
 #
 # To run this example, copy this file into an empty directory and run
-# the main Python script [base]/umbrella.py (or you can just keep the
+# the main Python script [base]/wumbrella.py (or you can just keep the
 # input file in this directory, but it is probably best to keep it
 # outwith any git repository).
 
