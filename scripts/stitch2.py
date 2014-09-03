@@ -153,7 +153,7 @@ if __name__ == "__main__":
     # should only load a single folder here
     r = stitch.load_files(folder)
 
-    # order=3 gives all terms up to and including x^3y^3
+    # order=3 gives all terms up to and including 
     stitch.fit(order=3)
 
     n1, n2, fe = stitch.get_curve()
