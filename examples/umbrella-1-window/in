@@ -1,0 +1,69 @@
+# Example in file for ONE WINDOW umbrella simulation - To be run with umbrella.py
+#
+# To run this example, copy this file into an empty directory and run
+# the main Python script [base]/umbrella.py (or you can just keep the
+# input file in this directory, but it is probably best to keep it
+# outwith any git repository).
+
+# simulation can be either new or restart
+simulation new
+# since new above, restartfile is ignored
+restartfile equil.xyz
+
+# interaction potential can be either 'gauss' or 'len'
+potential gauss
+# cutoff radius for interaction
+rcut 3.7
+
+# temperature
+Tstar 0.002
+# number of fluid particles (excluding possible surface)
+nparfl 5000
+# minimum particle separation after initialisation
+rcinit 0.6
+# box volume
+boxvol 47000
+
+# MC parameters
+mctype npt
+# pressure (used for NPT only)
+pressure 0.01
+# maximum displacement for each attemped MC move
+maxdisp 0.3
+# maximum volume change for each attemped MC move
+maxvol 0.008
+
+# order parameters
+orderparam nld
+# we print out the order parameter (to opval.out) every opsamp cycles
+opsamp 100
+# separation for particles to be considered neighbours
+stillsep 3.0
+# threshold for a crystalline line
+q6link 0.65
+# number of links for a crystalline particle
+q6numlinks 6
+
+# number of unbiased cycles between each bias factor calculation
+nunbiased 5
+# number of bias factor calculations (total cycles is numbrellacycles*nunbiased)
+numbrellacycles 1000
+# total number of equilibration cycles
+umbequilcycles 1000
+
+# the centre of bias
+umb_centre 0.0
+# the width of the bias potential: V = 0.5*k*(op - umb_centre)^2
+k 0.003
+
+# should a seed cluster be used?
+seed no
+# number of particles in the seed
+nparseed 0
+# the number density of the seed
+seeddensity 0.106
+# the crystalline structure of the seed
+seedform fcc
+# multiplicative correction factor for seed size - used to acount for particles at seed edge
+seedgencorrection 2.0
+
