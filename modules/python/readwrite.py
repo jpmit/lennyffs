@@ -125,7 +125,7 @@ def r3col(fname, sep=None):
     fin.close()
     col1, col2, col3 = [],[],[]
     for line in lines:
-        if '#' in line:
+        if '#' in line or not (line.strip()):
             continue
         splin = line.split(sep)
         col1.append(float(splin[0]))
