@@ -6,3 +6,5 @@
 * Get visfunc.py to work with new 'list' parameters
 
 * Add module to make histograms/free energy plots
+
+* hist.py still produces lots of blank lines - need to work out why
