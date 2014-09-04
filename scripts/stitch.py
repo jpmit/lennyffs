@@ -191,6 +191,13 @@ if __name__ == "__main__":
 
     import readwrite
     import glob
+    from sys import argv
+    from os import getcwd
+
+    if len(argv) > 1:
+        files = glob.glob('argv[1]')
+    else:
+        files = glob.glob(os.getcwd())
     
     files = glob.glob('bcc*') + glob.glob('fcc*')
     #print files

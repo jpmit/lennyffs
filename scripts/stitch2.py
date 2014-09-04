@@ -1,4 +1,3 @@
-# stitch2.py
 # James Mithen
 
 """Code for converting umbrella sampling histograms into a free energy curve for the 2-d case."""
@@ -21,8 +20,10 @@ def free_energy(nvals, aks, b, order):
     result = np.zeros(len(n1s))
     index = 0
     for i in range(order + 1):
+        n1s_power = n1s**i
         for j in range(order + 1 - i):
-            result += aks[index] * n1s**i * n2s**j
+            #result += aks[index] * n1s**i * n2s**j
+            result += aks[index] * n1s_power * n2s**j
             index += 1
     
     return result + b
@@ -65,9 +66,10 @@ class Stitcher2(object):
         self._gvals = []
 
         self._allgvals = np.array([])
-
+        #print histfiles
         for i, f in enumerate(histfiles):
             n1s, n2s, gvs = readwrite.r3col(f)
+            #print n1s
             ns = zip(n1s, n2s)
             self._nvals.append(ns)
             self._gvals.append(gvs)
@@ -75,16 +77,17 @@ class Stitcher2(object):
         
         return ns, gvs
 
-    def load_files(self, folder):
+    def load_files(self, folders):
         """Load histogram data from all fhist*.out files in each of the folders."""
 
         # clear all existing data
         self._data = {}
+        for folder in folders:
+            print folder
+            histfiles = glob.glob('{}/fhist*'.format(folder))
 
-        histfiles = glob.glob('{}/fhist*'.format(folder))
-
-        # store the data
-        self._data[folder] = self.load_histfiles(histfiles)
+            # store the data
+            self._data[folder] = self.load_histfiles(histfiles)
 
         # store the number of windows
         self._nw = len(histfiles)
@@ -145,13 +148,15 @@ def write_output(fname, xs, ys, zs):
     
 
 if __name__ == "__main__":
-    
-    folder = '/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p003P011/test2/'
+    import time
+    import os
+    starttime = time.time()
+    folders = []
+    folders.append(os.getcwd())
              
     stitch = Stitcher2()
 
-    # should only load a single folder here
-    r = stitch.load_files(folder)
+    r = stitch.load_files(folders)
 
     # order=3 gives all terms up to and including 
     stitch.fit(order=3)
@@ -160,3 +165,6 @@ if __name__ == "__main__":
 
     # write data to output file for plotting with gnuplot
     write_output('dataout.out', n1, n2, fe)
+
+    endtime = time.time()
+    print "Total run time: " + str(endtime-starttime) + 's'

@@ -135,6 +135,22 @@ lot of jobs) are sent; codeffs.py uses the fact that some jobs can
 'shots' for interface 2 do not start before the interface 1 -> 2 has
 finished.  See the file codeffs.py itself for further details.
 
+umbrella.py
+
+Again this will look for the input file name 'in' in the working
+directory it is run from. Works in the same way as code.py except
+the system can be subjected to a biasing potential to have some
+control over which region of configuration phase can be explored.
+While this can be run directly, it is usually more useful to run
+wumbrell.py.
+
+wumbrella.py
+Will set up a series of umbrella sampling windows based on the
+'in' file contents. It will also write a bash script to be
+executed on the head node of a cluster running the Sun Grid Engine.
+This script will run each of the windows simultaneously using
+umbrella.py.
+
 diagnostics.py
 
 This should be run from a folder that codeffs.py has already been run
@@ -143,6 +159,7 @@ files, which are written by codeffs.py at each interface, and collate
 the statistics, writing out the number of successful shots at each
 interface, and other diagnostics such as the transition rate.  Two
 files are written, 'allinterfaces.out' and 'allinterfaceseff.out'.
+
 
 INPUT FILE
 ----------
