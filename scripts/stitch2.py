@@ -154,18 +154,30 @@ if __name__ == "__main__":
     from os import getcwd
     starttime = time.time()
 
-    if len(argv) > 1:
-        folders = glob.glob(argv[1])
-    else:
-        folders  = glob.glob(os.getcwd())
+    # to use this program from the command line do:
+    # python stitch.py [keyword1] [arg1] [keyword2] [arg2]...
+    # current keywords are: folders --> ARG: 'a glob here' (must have quotes)
+    #                       order   --> ARG: integer (the order of the fit)
 
+
+    if 'folders' in argv:
+        folderglob = argv[argv.index('folders')+1]
+    else:
+        folderglob = os.getcwd()
+
+    if 'order' in argv:
+        fit_order = int(argv[argv.index('order')+1])
+    else:
+        fit_order = 3
+
+    folders  = glob.glob(folderglob)
              
     stitch = Stitcher2()
 
     r = stitch.load_files(folders)
 
     # order=3 gives all terms up to and including 
-    stitch.fit(order=3)
+    stitch.fit(order=fit_order)
 
     n1, n2, fe = stitch.get_curve()
 

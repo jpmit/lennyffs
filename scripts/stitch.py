@@ -194,60 +194,58 @@ if __name__ == "__main__":
     from sys import argv
     from os import getcwd
 
-    if len(argv) > 1:
-        folders = glob.glob(argv[1])
+    # to use this program from the command line do:
+    # python stitch.py [keyword1] [arg1] [keyword2] [arg2]...
+    # current keywords are: folders --> ARG: 'a glob here' (must have quotes)
+    #                       order   --> ARG: integer (the order of the fit)
+    #                       mode    --> ARG: 'separate' or 'combined' for how the
+    #                                        curves are fit
+
+    if 'folders' in argv:
+        folderglob = argv[argv.index('folders')+1]
     else:
-        folders = glob.glob(os.getcwd())
+        folderglob = os.getcwd()
+
+    if 'order' in argv:
+        fit_order = int(argv[argv.index('order')+1])
+    else:
+        fit_order = 4
+
+    if 'mode' in argv:
+        mode = argv[argv.index('mode')+1]
+    else:
+        mode = 'separate'
+
+    folders = glob.glob(folderglob)
     
-    #print files
-    #folders = ['/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim1/bcc/',
-               #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim2/bcc/',
-               #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim3/bcc/',
-               #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim4/bcc/',
-               #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim5/bcc/',
-               #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim1/fcc/',
-               #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim2/fcc/',
-               #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim3/fcc/',
-               #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim4/fcc/',
-               #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim5/fcc/',
-               #]
     stitch = Stitcher()
-    #stitch.load_files(folders[:2])
-    #stitch.fit(useweights=True)
-    #ns, gs = stitch.get_curve()
-    #plt.plot(ns, gs, label='combined with weights', color='k', linestyle='--')
-    #stitch.fit(useweights=False)
-    #ns, gs = stitch.get_curve()
-    #plt.plot(ns, gs, label='combined', color='k')
 
-    colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k', '0.25', '0.75', '0.5']
-
-    maxs = []
-    for i, f in enumerate(folders):
-        stitch.load_files([f])
+    if mode == 'combined':
+        stitch.load_files(folders[:2])
         stitch.fit(useweights=True)
         ns, gs = stitch.get_curve()
-        print np.amax(gs)
-        maxs.append(np.amax(gs))        
-        #handns, handgs = readwrite.r2col(f + '/finalstitch.out')
-        plt.plot(ns, gs, color=colors[i], label=f.split('/')[-1])
-        #plt.plot(handns, handgs, color=colors[i], linestyle='--')  
-    print 'Ave: ' + str(np.mean(maxs)) + ' +/- ' + str(np.std(maxs)) 
+        plt.plot(ns, gs, label='combined with weights', color='k', linestyle='--')
+        stitch.fit(useweights=False, order=fit_order)
+        ns, gs = stitch.get_curve()
+        plt.plot(ns, gs, label='combined', color='k')
+
+    if mode == 'separate':
+        colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k', '0.25', '0.75', '0.5']
+
+        maxs = []
+        for i, f in enumerate(folders):
+            stitch.load_files([f])
+            stitch.fit(useweights=True, order=fit_order)
+            ns, gs = stitch.get_curve()
+            print np.amax(gs)
+            maxs.append(np.amax(gs))        
+            #handns, handgs = readwrite.r2col(f + '/finalstitch.out')
+            plt.plot(ns, gs, color=colors[i], label=f.split('/')[-1])
+            #plt.plot(handns, handgs, color=colors[i], linestyle='--')  
+        print 'Ave: ' + str(np.mean(maxs)) + ' +/- ' + str(np.std(maxs)) 
 
     plt.legend()
 
     plt.xlabel('$n_{ld}$')
     plt.ylabel('$G / k_b T$')
     plt.show()
-
-#    stitch = Stitcher()
-#    stitch.load_files(['/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim1/bcc/'])
-#    stitch.fit()
-#    ns, gs = stitch.get_curve()
-#    plt.plot(ns, gs, ls='--')
-
-#    stitch = Stitcher()
-#    stitch.load_files(['/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim1/fcc/'])
-#    stitch.fit()
-#    ns, gs = stitch.get_curve()
-#    plt.plot(ns, gs, ls='--')
