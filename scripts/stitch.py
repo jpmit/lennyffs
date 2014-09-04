@@ -195,25 +195,24 @@ if __name__ == "__main__":
     from os import getcwd
 
     if len(argv) > 1:
-        files = glob.glob('argv[1]')
+        folders = glob.glob(argv[1])
     else:
-        files = glob.glob(os.getcwd())
+        folders = glob.glob(os.getcwd())
     
-    files = glob.glob('bcc*') + glob.glob('fcc*')
     #print files
-    #files = ['/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim1/bcc/',
-             #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim2/bcc/',
-             #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim3/bcc/',
-             #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim4/bcc/',
-             #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim5/bcc/',
-             #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim1/fcc/',
-             #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim2/fcc/',
-             #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim3/fcc/',
-             #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim4/fcc/',
-             #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim5/fcc/',
-             #]
+    #folders = ['/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim1/bcc/',
+               #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim2/bcc/',
+               #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim3/bcc/',
+               #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim4/bcc/',
+               #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim5/bcc/',
+               #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim1/fcc/',
+               #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim2/fcc/',
+               #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim3/fcc/',
+               #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim4/fcc/',
+               #'/user/phstf/jm0037/awork/montecarlo/epitaxy/polymorph/umbrella/stitching/T0p005P0p0055_sim5/fcc/',
+               #]
     stitch = Stitcher()
-    #stitch.load_files(files[:2])
+    #stitch.load_files(folders[:2])
     #stitch.fit(useweights=True)
     #ns, gs = stitch.get_curve()
     #plt.plot(ns, gs, label='combined with weights', color='k', linestyle='--')
@@ -224,7 +223,7 @@ if __name__ == "__main__":
     colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k', '0.25', '0.75', '0.5']
 
     maxs = []
-    for i, f in enumerate(files):
+    for i, f in enumerate(folders):
         stitch.load_files([f])
         stitch.fit(useweights=True)
         ns, gs = stitch.get_curve()

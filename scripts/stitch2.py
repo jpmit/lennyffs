@@ -150,9 +150,15 @@ def write_output(fname, xs, ys, zs):
 if __name__ == "__main__":
     import time
     import os
+    from sys import argv
+    from os import getcwd
     starttime = time.time()
-    folders = []
-    folders.append(os.getcwd())
+
+    if len(argv) > 1:
+        folders = glob.glob(argv[1])
+    else:
+        folders  = glob.glob(os.getcwd())
+
              
     stitch = Stitcher2()
 
