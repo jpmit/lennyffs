@@ -1,3 +1,8 @@
+#! /usr/bin/env python
+# hist.py
+# Adam Callison
+# ac00285@surrey.ac.uk
+
 import pylab as pl
 import glob
 import numpy as np
@@ -32,7 +37,7 @@ class HistMaker():
         self.tmax = [float('inf')]*self.dim
 
         # loads 1 or 2 columns into op_array depending on self.dim
-        self.op_array = pl.loadtxt(infile)[:,[n for n in range(1,self.dim+1)]]
+        self.op_array = pl.loadtxt(infile)[:,[n for n in range(1, self.dim+1)]]
 
     # set_lims will take 2 lists (or ints for 1D) defining the trim limits
     def set_lims(self, min_list, max_list):
@@ -72,9 +77,8 @@ class HistMaker():
         # bin_starts will contain a list for each dimension of the starting
         # value for each bin. Determined from max and min data, bin_width and
         # numbins.
-        # MAYBE SHOULD USE bin_maxes, bin_mins INSTEAD OF MAX, MIN DATA
         for i in range(self.dim):
-            self.bin_starts[i] = [(int((pl.amin(self.op_array[:,i])\
+            self.bin_starts[i] = [(int((bin_mins[i]\
                                         /self.bin_width[i]))*\
                                  self.bin_width[i]) + n*self.bin_width[i] \
                                   for n in range(self.numbins[i])]
@@ -165,9 +169,12 @@ class HistMaker():
         self.surfhist = []
         if self.dim == 2:
             for i, x in enumerate(self.bin_middles[0]):
+                blank_line = False
                 for j, y in enumerate(self.bin_middles[1]):
+                    blank_line = True
                     self.surfhist.append([x, y, self.bin_counts[i][j]])
-                self.surfhist.append('LINEBREAK')
+                if blank_line:
+                    self.surfhist.append('LINEBREAK')
 
         elif self.dim == 1:
             for i, x in enumerate(self.bin_middles[0]):
@@ -286,4 +293,7 @@ Args
 
 if __name__ == '__main__':
     cl = run(dim=2, bin_width=[1.0, 1.0], debias=True, k=[0.003, 0.003], fe=True,
-             rtmin=[-30, -30], rtmax=[30, 30], trim=True)
+              rtmin=[-30, -30], rtmax=[30, 30], trim=True)
+
+    #cl = run(dim=1, bin_width=1.0, debias=True, k=0.003, fe=True,
+             #rtmin=-30, rtmax=30, trim=True)

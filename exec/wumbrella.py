@@ -1,10 +1,17 @@
+#! /usr/bin/env python
+# wumbrella.py
+# James Mithen, Adam Callison
+# j.mithen@surrey.ac.uk,  ac00285@surrey.ac.uk
+
+
 import initsim
 import pickle
 import os
 import funcselector
-#VISFUNC NOT CURRENTLY WORKING
+#VISFUNC NOT CURRENTLY WORKING - NEEDS UPDATING SINCE 2D CHANGES
 #import visfunc
 from sys import argv, exit
+import writeoutput
 
 class Windowmaker(object):
     """
@@ -36,7 +43,11 @@ class Windowmaker(object):
         # if queue_name_form supplied, the queue name will be this with the
         # window index appended
         self.queue_name_form = 'unnamed'
-        # add making master-pickles here
+        # pickled version of master (wumbrella) parameters 'params.pkl'
+        writeoutput.writepickparams(self.params)
+        # human readable version 'params.out'
+        writeoutput.writeparams(self.params)
+
 
     def prep_windows(self):
         """Produces initial positions and parameter files"""

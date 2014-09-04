@@ -204,7 +204,7 @@ if __name__ == "__main__":
     if 'folders' in argv:
         folderglob = argv[argv.index('folders')+1]
     else:
-        folderglob = os.getcwd()
+        folderglob = getcwd()
 
     if 'order' in argv:
         fit_order = int(argv[argv.index('order')+1])

@@ -149,7 +149,6 @@ def write_output(fname, xs, ys, zs):
 
 if __name__ == "__main__":
     import time
-    import os
     from sys import argv
     from os import getcwd
     starttime = time.time()
@@ -163,7 +162,7 @@ if __name__ == "__main__":
     if 'folders' in argv:
         folderglob = argv[argv.index('folders')+1]
     else:
-        folderglob = os.getcwd()
+        folderglob = getcwd()
 
     if 'order' in argv:
         fit_order = int(argv[argv.index('order')+1])

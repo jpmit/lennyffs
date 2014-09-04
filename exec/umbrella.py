@@ -1,7 +1,7 @@
 #! /usr/bin/env python
-# code.py
-# James Mithen
-# j.mithen@surrey.ac.uk
+# umbrella.py
+# James Mithen, Adam Callison
+# j.mithen@surrey.ac.uk,  ac00285@surrey.ac.uk
 
 """
 This is the umbrella-enabled main Monte-Carlo (MC) code.
