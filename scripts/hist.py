@@ -171,9 +171,8 @@ class HistMaker():
             for i, x in enumerate(self.bin_middles[0]):
                 blank_line = False
                 for j, y in enumerate(self.bin_middles[1]):
-                    blank_line = True
                     self.surfhist.append([x, y, self.bin_counts[i][j]])
-                if blank_line:
+                if np.count_nonzero(self.bin_counts[i]) != 0:
                     self.surfhist.append('LINEBREAK')
 
         elif self.dim == 1:
@@ -292,8 +291,28 @@ Args
     return hm
 
 if __name__ == '__main__':
-    cl = run(dim=2, bin_width=[1.0, 1.0], debias=True, k=[0.003, 0.003], fe=True,
-              rtmin=[-30, -30], rtmax=[30, 30], trim=True)
+    import hist_use_cases
+    from sys import argv
+
+    if 'use_case' in argv:
+        try:
+            use_case = hist_use_cases.USE_CASES[argv[argv.index('use_case') + 1]]
+            #print use_case
+            argv[argv.index('use_case'):argv.index('use_case') + 2] = []
+        except:
+            raise ValueError('No use case ' + argv[argv.index('use_case') + 1])
+    else:
+        use_case = hist_use_cases.DEFAULT
+
+    in_arg_dict = hist_use_cases.arg_list_to_dict(argv[1:])
+
+    arg_dict = hist_use_cases.arg_merge(in_arg_dict, use_case)
+
+    cl = run(**arg_dict)
+        
+    
+    ##cl = run(dim=2, bin_width=[1.0, 1.0], debias=True, k=[0.003, 0.003], fe=True,
+              #rtmin=[-30, -30], rtmax=[30, 30], trim=True)
 
     #cl = run(dim=1, bin_width=1.0, debias=True, k=0.003, fe=True,
              #rtmin=-30, rtmax=30, trim=True)

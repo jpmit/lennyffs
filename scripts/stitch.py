@@ -206,6 +206,7 @@ if __name__ == "__main__":
     else:
         folderglob = getcwd()
 
+
     if 'order' in argv:
         fit_order = int(argv[argv.index('order')+1])
     else:
