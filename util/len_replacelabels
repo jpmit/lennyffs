@@ -1,0 +1,46 @@
+#! /usr/bin/env python
+
+# len_replacelabels
+# James Mithen
+# Replace particles from .xyz file if they have a given symbol e.g.
+# 'S', 'N', 'O' with another symbol.  Note that symbol can be anything but must be a
+# single character (input like SNO will be treated as three characters,
+# and a particle with any of these symbols will be removed).
+
+import sys
+import readwrite
+from ffsfunctions import getboxdims
+
+if len(sys.argv) != 5:
+    sys.exit("Syntax len_replacelabels symbols newsymbol infile.xyz outfile.xyz")
+
+# symbols can be given as S SNO etc. so can strip multiple symbols by
+# running this script only once
+strips = list(sys.argv[1])
+replacement = sys.argv[2]
+infile = sys.argv[3]
+outfile = sys.argv[4]
+
+# read infile positions and symbols
+try:
+    fin = open(infile,'r')
+except IOError:
+    sys.exit("Problem reading file %s" %infile)
+positions, symbols = readwrite.rxyz(infile, True)
+fin.close()
+npar = len(positions)
+
+# get boxdims from file if we have them
+boxdims = getboxdims(infile)
+# we pass boxdict to the wxyz file, so that the XYZ file for the
+# cluster we are writing also has the boxdims written on it.
+boxdict = {}
+if boxdims:
+    boxdict = {'boxdims' : boxdims}
+
+for i in range(npar):
+    if symbols[i] in strips:
+        symbols[i] = replacement
+
+readwrite.wxyz(outfile, positions, symbols, **boxdict)
+
