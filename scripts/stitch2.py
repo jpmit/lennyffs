@@ -28,6 +28,24 @@ def free_energy(nvals, aks, b, order):
     
     return result + b
 
+
+def print_fit_function(akvals, order):
+    """Print the parameters from the fit."""
+
+    index = 0
+    for i in range(order + 1):
+        for j in range(order + 1 - i):
+            if index == 0:
+                outstr = ''
+            else:
+                outstr = '{} {} '.format(outstr, '+' if akvals[index] > 0 else '-')
+            # construct x * y in such a way that it can be put directly into GNUplot
+            var = '*'.join(['x'] * i + ['y'] * j)
+            outstr = '{}{}{}{}'.format(outstr, abs(akvals[index]), '*' if index > 0 else '', var)
+            index += 1
+    print outstr
+    
+
 def free_energy_multiple(nvals, aks, bis, order):
 
     # note each window can be a different length (have a different number of points)
@@ -133,6 +151,9 @@ class Stitcher2(object):
 
         return alln1vals, alln2vals, fecurve
 
+    def get_aks(self):
+        return self._params[self._nw:]
+
 
 def write_output(fname, xs, ys, zs):
     outf = open(fname, 'w')
@@ -157,7 +178,7 @@ if __name__ == "__main__":
     # python stitch.py [keyword1] [arg1] [keyword2] [arg2]...
     # current keywords are: folders --> ARG: 'a glob here' (must have quotes)
     #                       order   --> ARG: integer (the order of the fit)
-
+    #                       outfile --> ARG: string (name of output file to write)
 
     if 'folders' in argv:
         folderglob = argv[argv.index('folders')+1]
@@ -168,6 +189,9 @@ if __name__ == "__main__":
         fit_order = int(argv[argv.index('order')+1])
     else:
         fit_order = 3
+
+    if 'outfile' in argv:
+        outfile = argv[argv.index('outfile')+1]
 
     folders  = glob.glob(folderglob)
              
@@ -185,3 +209,4 @@ if __name__ == "__main__":
 
     endtime = time.time()
     print "Total run time: " + str(endtime-starttime) + 's'
+    print_fit_function(stitch.get_aks(), fit_order)
