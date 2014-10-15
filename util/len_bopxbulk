@@ -10,7 +10,7 @@ import sys
 import os
 import numpy as np
 import readwrite
-import orderparam
+import orderfuncs
 from ffsfunctions import getpickparams, getboxdims
 
 # symbols identified as being crystal
@@ -49,6 +49,6 @@ cpositions = np.array([positions[i] for i in range(npar)
                        if symbols[i] in XTALPARS])
 
 # get indices of particles in largest cluster and hence cluster size
-ncl = len(orderparam._clusnums(cpositions, params))
+ncl = len(orderfuncs.clusnums(cpositions, params))
 
 print ncl
