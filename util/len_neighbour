@@ -8,7 +8,7 @@ import sys
 import numpy as np
 import readwrite
 from ffsfunctions import getpickparams, getboxdims
-import orderparam
+import orderfuncs
 
 # assignment dict for BCC and FCC particles: key is number of
 # neighbours, value is symbol.  If a particle has a number of
@@ -22,12 +22,12 @@ PARSYMB = {7  : 'F', # bcc
            13 : 'S'  # cp
            }
 
-if len(sys.argv) != 4:
-    sys.exit("Syntax len_neighbour infile.xyz outfile")
+if len(sys.argv) != 3:
+    sys.exit("Syntax len_neighbour rcut infile.xyz")
 
 rcut = float(sys.argv[1])
 infile = sys.argv[2]
-outfile = sys.argv[3]
+#outfile = sys.argv[3]
 
 # Get the box dimensions: we first try getting them from the
 # 'params.pkl' file, if this exists.
@@ -66,7 +66,7 @@ myparams = {'lboxx': lboxx, 'lboxy': lboxy, 'lboxz': lboxz,
             'zperiodic': params.get('zperiodic', True)}
 
 # get num neighbours for each particle
-nneigh = orderparam._numneighcut(positions, myparams)
+nneigh = orderfuncs.numneighcut(positions, myparams)
 
 # TODO: implement this neighbour list in C instead.
 #for i in range(npar):
@@ -80,15 +80,17 @@ nneigh = orderparam._numneighcut(positions, myparams)
 
 # store indexes of particles we want (those with the correct number of
 # neighbours).
-wanted = []
-symbs = []
-for i in range(npar):
-    # we don't want to write out liquid particles, there are probably
-    # many liquid particles with 7, 8, 9, 11, 12, 13 neighbours.
-    if symbols[i] != 'N':
-        if nneigh[i] in PARSYMB:
-            wanted.append(i)
-            symbs.append(PARSYMB[nneigh[i]])
+#wanted = []
+#symbs = []
+#for i in range(npar):
+#    # we don't want to write out liquid particles, there are probably
+#    # many liquid particles with 7, 8, 9, 11, 12, 13 neighbours.
+#    if symbols[i] != 'N':
+#        if nneigh[i] in PARSYMB:
+#            wanted.append(i)
+#            symbs.append(PARSYMB[nneigh[i]])
 
 # use awesome numpy array indexing here!
-readwrite.wxyz(outfile, positions[wanted], symbs)
+for n in nneigh:
+    print n
+#readwrite.wxyz(outfile, positions[wanted], symbs)
