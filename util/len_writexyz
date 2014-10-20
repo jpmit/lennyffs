@@ -1,0 +1,41 @@
+#! /usr/bin/env python
+
+# len_writexyz
+# James Mithen
+# Rewrite the xyz file using the params. 
+
+import sys
+
+import funcselector
+import readwrite
+from ffsfunctions import getpickparams, getboxdims
+
+if len(sys.argv) != 3:
+    sys.exit("Syntax len_writexyz infile.xyz outfile")
+
+infile = sys.argv[1]
+outfile = sys.argv[2]
+
+try:
+    params = getpickparams()
+except IOError:
+    sys.exit("Error: file params.pkl not found")
+
+# box dimensions: if these are written in the XYZ file, as they would
+# be for an NPT simulation, we use the ones in the XYZ file to
+# overwrite those in the parameters dictionary.
+boxdims = getboxdims(infile)
+if boxdims:
+    params['lboxx'] = boxdims[0]
+    params['lboxy'] = boxdims[1]
+    params['lboxz'] = boxdims[2]
+
+# read infile and keep only surface and crystal atoms
+positions, symbols = readwrite.rxyz(infile, True)
+
+# get function for writing XYZ file 
+funcman = funcselector.FuncSelector(params)
+writexyz = funcman.WriteXyzFunc()
+
+writexyz(outfile, positions, params)
+
