@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-# len_bopxbulk
+# len_ncluster 
 # James Mithen
 # Return size of largest crystalline cluster in system.
 # Note that the crystalline particles must already be identified in
