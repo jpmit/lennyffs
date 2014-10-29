@@ -8,8 +8,8 @@ C++.  Now deprecated functions that use the fortran extension module
 can be found in orderfuncs.py .
 
 Each of the functions below is designed to be used from the code as an
-orderparameter in e.g. FFS or Umbrella Sampling simulations.  Each
-returns a tuple, typically of length 1.
+orderparameter in e.g. FFS or Umbrella Sampling simulations.  *Each
+returns a tuple*, typically of length 1.
 
 Functions that support the order parameters implemented below are in
 orderfuncs.py.
@@ -20,6 +20,10 @@ allfracld_cpp   - Fractions of all polymorphs according to LD criterion.
 allfracldtf_cpp - Same as above, but including TF xtal fraction.
 fracld_cpp      - Fraction of xtal particles, according to LD criterion.
 fractf_cpp      - Fraction of xtal particles, according to TF criterion.
+nclusbcld_cpp   - Number of bcc-like and number of close-packed particles
+                  in largest cluster (2d OP) according to LD criterion.
+ncluscpld_cpp   - Number of close-packed particles in largest cluster
+                  according to LD criterion.
 nclusld_cpp     - Number of particles in largest cluster according to LD
                   criterion.
 nclustf_cpp     - Number of particles in largest cluster according to TF
@@ -117,11 +121,9 @@ def fractf_cpp(positions, params):
     return (nclus,)
 
 
-def nclusbcld_cpp(positions, params):
+def _ncluspolyld_cpp(positions, params):
     """
-    Number of bcc-like particles in largest cluster and number of fcc
-    OR hcp-like particles (i.e. number of 'close-packed' particles) in
-    the largest cluster.
+    Number of particles of each polymorph in largest cluster.
     """
 
     npar = params['npartot']
@@ -138,7 +140,30 @@ def nclusbcld_cpp(positions, params):
                                 params['lboxz'], zperiodic, nsep,
                                 usenearest)
 
+    return npoly
+
+
+def nclusbcld_cpp(positions, params):
+    """
+    Number of bcc-like particles in largest cluster and number of fcc
+    OR hcp-like particles (i.e. number of 'close-packed' particles) in
+    the largest cluster.
+    """
+
+    npoly = _ncluspolyld_cpp(positions, params)
+
     return (npoly[LDBCC], npoly[LDFCC] + npoly[LDHCP])
+
+
+def ncluscpld_cpp(positions, params):
+    """
+    Number of close packed (i.e. identified as either fcc or hcp)
+    particles in largest cluster.
+    """
+
+    npoly = _ncluspolyld_cpp(positions, params)
+
+    return (npoly[LDFCC] + npoly[LDHCP],)
 
 
 def nclusld_cpp(positions, params):
