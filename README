@@ -102,8 +102,9 @@ code.py        - for direct simulations
 codeffs.py     - for FFS simulations.  Note that codeffs.py submits jobs to a compute 
 					  cluster.  It therefore must be run on a cluster computer with the Sun 
 					  Grid Engine (SGE) installed (!)
-diagnostics.py - run after codeffs to collect FFS results (this can be run on any 
-					  machine, no job submission needed).
+ffsdiagnostics.py - run after codeffs to collect FFS results (this can be run on any 
+					     machine, no job submission needed).
+usdiagnostics.py  - run after wumbrella.py to output opval (histogram) files
 
 NOTE: A number of sample input files are provided in [base]/examples
 which illustrate how to run the code for both 'direct' and FFS
@@ -145,13 +146,14 @@ While this can be run directly, it is usually more useful to run
 wumbrell.py.
 
 wumbrella.py
+
 Will set up a series of umbrella sampling windows based on the
 'in' file contents. It will also write a bash script to be
 executed on the head node of a cluster running the Sun Grid Engine.
 This script will run each of the windows simultaneously using
 umbrella.py.
 
-diagnostics.py
+ffsdiagnostics.py
 
 This should be run from a folder that codeffs.py has already been run
 in, at the end of the simlation.  It will read the 'interface*.out'
@@ -160,6 +162,13 @@ the statistics, writing out the number of successful shots at each
 interface, and other diagnostics such as the transition rate.  Two
 files are written, 'allinterfaces.out' and 'allinterfaceseff.out'.
 
+usdiagnostics.py
+
+This should be run from a folder in which a US simulation has been run
+(typically the US simulation will have been run via wumbrella.py).  It
+will read each of the opval*.out files (one for each window) written
+by the US simulation and write fhist*.out files, which give the
+(relative) free energies for the particular window.
 
 INPUT FILE
 ----------
