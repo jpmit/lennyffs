@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 # hist.py
-# Adam Callison
+# Adam Callison, James Mithen
 # ac00285@surrey.ac.uk
 
 import pylab as pl

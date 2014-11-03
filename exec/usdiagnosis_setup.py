@@ -68,8 +68,3 @@ def arg_list_to_dict(arg_list):
         i += 2
 
     return arg_typer(arg_dict)
-        
-        
-    
-    
-    
