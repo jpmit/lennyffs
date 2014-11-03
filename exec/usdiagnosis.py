@@ -3,9 +3,9 @@
 # Adam Callison, James Mithen
 # ac00285@surrey.ac.uk
 
-import pylab as pl
 import glob
 import numpy as np
+from ffsfunctions import getpickparams
 
 class HistMaker():
     def __init__(self, infile='surfhist.in', outfile='surfhist.out',
@@ -37,7 +37,7 @@ class HistMaker():
         self.tmax = [float('inf')]*self.dim
 
         # loads 1 or 2 columns into op_array depending on self.dim
-        self.op_array = pl.loadtxt(infile)[:,[n for n in range(1, self.dim+1)]]
+        self.op_array = np.loadtxt(infile)[:,[n for n in range(1, self.dim+1)]]
 
     # set_lims will take 2 lists (or ints for 1D) defining the trim limits
     def set_lims(self, min_list, max_list):
@@ -59,17 +59,17 @@ class HistMaker():
         # of length self.dim
         bin_maxes = [0]*self.dim
         for i, m in enumerate(bin_maxes):
-            bin_maxes[i] = min(self.tmax[0], pl.amax(self.op_array[:,i]))
+            bin_maxes[i] = min(self.tmax[0], np.amax(self.op_array[:,i]))
         bin_mins = [0]*self.dim
         for i, m in enumerate(bin_mins):
-            bin_mins[i] = max(self.tmin[0], pl.amin(self.op_array[:,i]))
+            bin_mins[i] = max(self.tmin[0], np.amin(self.op_array[:,i]))
 
         # number of bins in each dimension determined from bin_maxes/mins and
         # bin_width
         for i, n in enumerate(self.numbins):
-            self.numbins[i] = int(pl.floor(bin_maxes[i]\
+            self.numbins[i] = int(np.floor(bin_maxes[i]\
                                            /self.bin_width[i]) - \
-                                  pl.floor(bin_mins[i]\
+                                  np.floor(bin_mins[i]\
                                            /self.bin_width[i])) + 1
 
         self.bin_starts, self.bin_middles = [0]*self.dim, [0]*self.dim
@@ -143,7 +143,7 @@ class HistMaker():
                                                           /2.0)))**2)
 
                 w = 0.5*quads
-                W = pl.exp(-w)
+                W = np.exp(-w)
                 self.surfhist[i][self.dim] /= W
 
     def free_energy(self):
@@ -158,7 +158,7 @@ class HistMaker():
                 self.surfhist.pop(i)
             else:
                 # converts count to free energy in place
-                self.surfhist[i][self.dim] = -1*pl.log(\
+                self.surfhist[i][self.dim] = -1*np.log(\
                     self.surfhist[i][self.dim])
                 i += 1
 
@@ -294,6 +294,7 @@ if __name__ == '__main__':
     import hist_use_cases
     from sys import argv
 
+    # infer whether this is a 1D US simulation or a 2D US simulation
     if 'use_case' in argv:
         try:
             use_case = hist_use_cases.USE_CASES[argv[argv.index('use_case') + 1]]
