@@ -21,11 +21,18 @@ XTALPARS = ['S', # FCC (or all TF)
             'F', # BCC
             'B'] # ICOS
 
-if len(sys.argv) != 3:
-    sys.exit("Syntax len_largestcluster infile.xyz outfile")
+if len(sys.argv) != 3 and len(sys.argv) != 4:
+    sys.exit("Syntax len_largestcluster symbols* infile.xyz outfile")
 
-infile = sys.argv[1]
-outfile = sys.argv[2]
+if len(sys.argv) == 3:
+    symbols_wanted = XTALPARS
+    infile = sys.argv[1]
+    outfile = sys.argv[2]
+else:
+    # consider only certain symbols for computing the largest cluster
+    symbols_wanted = list(sys.argv[1])
+    infile = sys.argv[2]
+    outfile = sys.argv[3]
 
 try:
     params = getpickparams()
@@ -55,7 +62,7 @@ spositions = np.array([positions[i] for i in range(npar)
 ns = len(spositions)
 
 # crystal atoms
-cindexes = [i for i in range(npar) if symbols[i] in XTALPARS]
+cindexes = [i for i in range(npar) if symbols[i] in symbols_wanted]
 cpositions = np.array([positions[i] for i in cindexes])
 csymbols = np.array([symbols[i] for i in cindexes])
 
