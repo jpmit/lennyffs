@@ -4,11 +4,13 @@
 # James Mithen
 # Return FFS 'ancestry' of a particular FFS configuration.
 
-import readwrite
 import sys
-import numpy as np
 import re
 import glob
+
+import numpy as np
+
+import readwrite
 
 if len(sys.argv) != 2:
     sys.exit("Syntax len_ancestry infile.xyz")
@@ -24,20 +26,32 @@ ns = nums.split('_')
 intnum = int(ns[0])
 shotnum = int(ns[1])
 
-# get maximum interface number
-#maxinum = max([int(re.findall('\d+', f)[0]) for f in glob.glob('interface*.out')])
-
 # open each interface file in turn
 shotnums = np.zeros(intnum + 1,dtype = int)
 shotnums[intnum] = shotnum
 
-# work backwards from current interface
-for i in range(intnum):
-    fint = open('interface%d.out' %(intnum - i),'r')
+def interface_dict(ifile):
+    """Return shot dict for interface file"""
+
+    # read data from interface*.out file
+    fint = open(ifile)
     lines = fint.readlines()
     fint.close()
+
+    # we return dictionary with key that is the shot number, and value
+    # that is the shot number it came from (at the previous
+    # interface).
+    idict = {}
+    for lin in lines[6:]:
+        spl = lin.split()
+        idict[int(spl[0])] = int(spl[1])
+    return idict
+
+# work backwards from current interface
+for i in range(intnum):
+    idict = interface_dict('interface{}.out'.format(intnum - i))
     last = shotnums[intnum - i]
-    shotfrom = int(lines[last + 5].split()[1])
+    shotfrom = idict[last]
     shotnums[intnum-i-1] = shotfrom
 
 # stitch together filenames
