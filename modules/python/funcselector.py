@@ -41,6 +41,7 @@ class FuncSelector(object):
     # choices for orderparam
     Q6 = 'q6global' # global Q6 of entire system
     NCP = 'ncp' # number of close-packed (fcc or hcp) in largest cluster
+    NALLCP = 'nallcp' # number of close-packed (fcc or hcp) in largest cluster    
     NBCCNCP = 'nbccncp' # number of bcc and close-packed (fcc or hcp) in largest cluster
     NTF = 'ntf' # largest cluster according to TF
     NLD = 'nld' # largest cluster according to LD
@@ -145,6 +146,8 @@ class FuncSelector(object):
             return orderparam.fractf_cpp
         elif cls.option[cls.ORDERPARAM] == cls.NCP:
             return orderparam.ncluscpld_cpp
+        elif cls.option[cls.ORDERPARAM] == cls.NALLCP:
+            return orderparam.nclusallcpld_cpp
         elif cls.option[cls.ORDERPARAM] == cls.NBCCNCP:
             return orderparam.nclusbcld_cpp
         elif cls.option[cls.ORDERPARAM] == cls.NLD:

@@ -166,6 +166,29 @@ def ncluscpld_cpp(positions, params):
     return (npoly[LDFCC] + npoly[LDHCP],)
 
 
+def nclusallcpld_cpp(positions, params):
+    """
+    Size of largest cluster where all particles in cluster are close
+    packed (nb this is different to ncluscpld_cpp).
+    """
+
+    # get classification of all particles as np array so we can do
+    # clever manipulations
+    pclass = np.array(orderfuncs.ldclass(positions, params), dtype='int')
+
+    cpclass = (pclass == LDFCC) + (pclass == LDHCP)
+    npar = int(sum(cpclass)) # number of fcc or hcp particles
+    zperiodic = params['zperiodic']
+    nsep = params['stillsep']
+
+    # get indices of particles in largest cluster
+    clusnums = mcfuncs.largestcluster(positions[cpclass, 0], positions[cpclass, 1],
+                                      positions[cpclass, 2], npar,
+                                      params['lboxx'], params['lboxy'],
+                                      params['lboxz'], zperiodic, nsep)
+    return (len(clusnums),)
+
+
 def nclusld_cpp(positions, params):
     """
     Number of particles in largest cluster, according to
@@ -173,11 +196,9 @@ def nclusld_cpp(positions, params):
     """
     
     npar = params['npartot']
-    nsep = params['stillsep']
     nparsurf = params['nparsurf']
     zperiodic = params['zperiodic']
-    thresh = params['q6link']
-    minlinks = params['q6numlinks']
+    nsep = params['stillsep']
     usenearest = params['usenearest']
 
     nclus = mcfuncs.nclusld(positions[:,0], positions[:,1],
