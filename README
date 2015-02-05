@@ -16,6 +16,7 @@ the following potentials/algorithms:
 potentials:
 * Lennard-Jones
 * Gaussian 
+* Inverse Power Law (IPL)
 
 algorithms:
 * NVT Metropolis Monte-Carlo

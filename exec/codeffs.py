@@ -102,7 +102,7 @@ if ffsre == FFSNEW:
 else:
     intstart = ffsre
     
-for nint in range(intstart,numint):
+for nint in range(intstart, numint):
 
     # work out job to hold for (if any)
     if nint == intstart:

@@ -37,7 +37,7 @@ class MProgram(object):
         Read parameters, get initial positions,
         and setup any parameters needed for the simulation.
         """
-        #allow taking index as command line argument
+        # allow taking index as command line argument
         if len(sys.argv) != 1 and sys.argv[1] == '-w':
             self.iwind = sys.argv[2]
         else:
@@ -107,7 +107,7 @@ class MProgram(object):
         cyclesdone = 0
         opfile.write('{0} {1}\n'.format(0, stringify(self.orderp(self.positions,
                                                        self.params))))
-        #Initialise w and umb_centre
+        # initialise w and umb_centre
         self.umb_centre = self.params['umb_centre']
         self.umb_op = self.orderp(self.positions,self.params)
         self.w = self.wfunc()
@@ -116,7 +116,7 @@ class MProgram(object):
 
         for cy in range(self.numbrellacycles):
 
-            # Store values that may be reverted if bias-chain is rejected
+            # store values that may be reverted if bias-chain is rejected
             temppositions = deepcopy(self.positions)
             templboxx, templboxy, templboxz = self.params['lboxx'], self.params['lboxy'], self.params['lboxz']
             tempepot = epot
@@ -128,9 +128,9 @@ class MProgram(object):
                                                  epot)
 
             # w test and revert to temp values if rejected
-            self.umb_op = self.orderp(self.positions,self.params)
+            self.umb_op = self.orderp(self.positions, self.params)
             self.w = self.wfunc()
-            biasprob = min(1.0,np.exp(-1.0*(self.w-tempw)))
+            biasprob = min(1.0, np.exp(-1.0 * (self.w - tempw)))
             random.seed()
             temprand = random.random()
             
@@ -145,7 +145,7 @@ class MProgram(object):
             # write out order parameter
             opfile.write('{0} {1}\n'.format(cyclesdone,
                                             stringify(self.orderp(self.positions,
-                                                        self.params))))
+                                                                  self.params))))
             # switch to opval.out when equilibration is complete
             if self.params['umbequil'] == True and int(self.params['umbequilcycles']) <= cyclesdone:
                 opfile.flush()
@@ -177,8 +177,8 @@ class MProgram(object):
     def wfunc(self):
         quads = 0
         for i, val in enumerate(self.umb_centre):
-            quads += self.params['k'][i]*(self.umb_op[i] - val)**2
-        w = 0.5*quads
+            quads += self.params['k'][i] * (self.umb_op[i] - val)**2
+        w = 0.5 * quads
         return w
 
 if __name__ == '__main__':
