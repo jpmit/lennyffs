@@ -99,13 +99,14 @@ RUNNING CODE
 
 The following scripts are in the exec directory, marked executable (the first line is 
 '#! /usr/bin/env python'):
+
 code.py        - for direct simulations
-codeffs.py     - for FFS simulations.  Note that codeffs.py submits jobs to a compute 
-					  cluster.  It therefore must be run on a cluster computer with the Sun 
-					  Grid Engine (SGE) installed (!)
-ffsdiagnostics.py - run after codeffs to collect FFS results (this can be run on any 
-					     machine, no job submission needed).
-usdiagnostics.py  - run after wumbrella.py to output opval (histogram) files
+
+codeffs.py     - for FFS simulations.  Note that codeffs.py submits jobs to a compute cluster.  It therefore must be run on a cluster computer with the Sun Grid Engine (SGE) installed (!), or a compatible engine that provides the 'qsub' command.
+
+ffsdiagnostics.py - run after codeffs to collect FFS results (this can be run on any machine, no 'qsub' job submission needed).
+
+usdiagnostics.py  - run after wumbrella.py to output opval (histogram) files.
 
 NOTE: A number of sample input files are provided in [base]/examples
 which illustrate how to run the code for both 'direct' and FFS
@@ -187,8 +188,11 @@ example, here are some possible examples of lines that appear in the
 input file:
 
 restartfile config1.xyz
+
 potential len
+
 Tstar 0.5
+
 surface False
 
 A complete list of the possible parameters, as well as their 'types'
