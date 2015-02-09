@@ -1,4 +1,5 @@
-LENNYFFS
+LennyFFS
+========
 
 Copyright (c) 2012-2014 James Mithen.
 j.mithen@surrey.ac.uk
@@ -6,16 +7,16 @@ j.mithen@surrey.ac.uk
 INTRODUCTION
 ------------
 
-A code for performing dynamical simulations of systems of particles.
+LennyFFS is a code for performing simulations of systems of particles.
 The code is called 'lennyffs' since it was originally designed to do
-'forward flux sampling' (FFS) simulations of systems with
+forward flux sampling (FFS) simulations of systems with
 Lennard-Jones (LJ) potentials.  However, the current capabilities of
 the code are rather greater.  In particular, the code can be used with
-the following potentials/algorithms:
+the following potentials and algorithms:
 
 potentials:
 * Lennard-Jones
-* Gaussian 
+* Gaussian (also known as 'Gaussian Core')
 * Inverse Power Law (IPL)
 
 algorithms:
@@ -23,26 +24,33 @@ algorithms:
 * NPT Metropolis Monte-Carlo
 * NVE Molecular Dynamics
 
-FFS can be used, but 'direct simulation' (i.e. normal simulation) is
+For rare event simulation, either FFS or Umbrella Sampling (US) can be
+used,but 'direct simulation' (i.e. normal Monte-Carlo simulation) is
 also possible.
 
 REQUIREMENTS
 ------------
 
 Python 2.x
+
 Numpy
+
 Boost C++ libraries
+
 C++ compiler
+
 Fortran compiler
 
 INSTALLATION
 ------------
 
 Below and in the rest of the document [base] refers to the base path
-of the root code directory (the directory that this README file is
+of the root code directory (the directory that this README.md file is
 contained in).
 
-Steps to install:
+To install, simply run the script [base]/setup.sh
+
+This will do the following:
 
 * Navigate to [base]/modules/fortran and run 'make' to compile fortran library
 
@@ -53,22 +61,15 @@ Steps to install:
   [base]/modules/fortran
   [base]/modules/cpp
 
-This can be done by adding the line:
-PYTHONPATH=[base]/modules/python:[base]/modules/fortran:[base]/modules/cpp:$PYTHONPATH
-to your ~/.bashrc file.
-
-* You may also want to add the following directories to your PATH
+* Add the following directories to your PATH
   environment variable:
-  [base]/exec - this will mean that the executable files used
+  [base]/exec - this means that the executable files used
                 such as [base]/exec/code.py can be run directly
 					 from the command line with 'code.py' rather than 
 					 having to type the full path [base]/exec/code.py
   [base]/util - same idea as above, but for accessing the utilities, 
                 such as 'len_largestcluster' etc. directly from the 
 					 command line.
-
-This can be done by adding the line:
-PATH=[base]/exec:[base]/util:$PATH to your ~/.bashrc file.
 
 CODE TREE
 ---------
@@ -207,4 +208,3 @@ best thing to do is to look at the example input files in
 [base]/examples .  After that, the details (source code) of how the
 parameters in the input file are parsed are all contained in
 [base]/modules/python/initsim.py .
-
