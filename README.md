@@ -9,10 +9,10 @@ INTRODUCTION
 
 LennyFFS is a code for performing simulations of systems of particles.
 The code is called 'lennyffs' since it was originally designed to do
-forward flux sampling (FFS) simulations of systems with
-Lennard-Jones (LJ) potentials.  However, the current capabilities of
-the code are rather greater.  In particular, the code can be used with
-the following potentials and algorithms:
+forward flux sampling (FFS) simulations of systems with Lennard-Jones
+(LJ) potentials.  However, the current capabilities of the code are
+rather greater.  In particular, the code can be used with the
+following potentials and algorithms:
 
 potentials:
 * Lennard-Jones
@@ -44,61 +44,61 @@ Fortran compiler
 INSTALLATION
 ------------
 
+To install, simply run the script setup.sh
+
 Below and in the rest of the document [base] refers to the base path
-of the root code directory (the directory that this README.md file is
-contained in).
+of the root code directory (the directory that this README.md file and
+the setup.sh file is contained in).
 
-To install, simply run the script [base]/setup.sh
-
-This will do the following:
+Running setup.sh will do the following:
 
 * Navigate to [base]/modules/fortran and run 'make' to compile fortran library
 
 * Navigate to [base]/modules/cpp and run 'make' to compile C++ library
 
 * Add the following paths to your PYTHONPATH environment variable:
-  [base]/modules/python
-  [base]/modules/fortran
-  [base]/modules/cpp
+  * [base]/modules/python
+  * [base]/modules/fortran
+  * [base]/modules/cpp
 
 * Add the following directories to your PATH
   environment variable:
-  [base]/exec - this means that the executable files used
+  * [base]/exec - this means that the executable files used
                 such as [base]/exec/code.py can be run directly
 					 from the command line with 'code.py' rather than 
-					 having to type the full path [base]/exec/code.py
-  [base]/util - same idea as above, but for accessing the utilities, 
+					 having to type the full path.
+  * [base]/util - same idea as above, but for accessing the utilities, 
                 such as 'len_largestcluster' etc. directly from the 
 					 command line.
 
 CODE TREE
 ---------
 
-[base]/exec
+* [base]/exec
 
-[base]/modules
-              /python
-                      /ase
-              /cpp
-                      /ops
-              /fortran
-                      /clist
-                      /gauss
-                      /global
-                      /len
-                      /ops
-                      /util
+* [base]/modules
+  * /python
+    * /ase
+  * /cpp
+    * /ops
+  * /fortran
+    * /clist
+    * /gauss
+    * /global
+    * /len
+    * /ops
+    * /util
 
-[base]/other
+* [base]/other
 
-[base]/scripts
+* [base]/scripts
 
-[base]/util
+* [base]/util
 
 RUNNING CODE
 -------------
 
-The following scripts are in the exec directory, marked executable (the first line is 
+The following scripts are in the [base]/exec directory, marked executable (the first line is 
 '#! /usr/bin/env python'):
 
 code.py        - for direct simulations
