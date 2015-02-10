@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Build Fortran shared library
 cd ./modules/fortran
 make
