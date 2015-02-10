@@ -71,6 +71,17 @@ Running setup.sh will do the following:
                 such as 'len_largestcluster' etc. directly from the 
 					 command line.
 
+GETTING STARTED
+---------------
+
+After installation via setup.sh, the easiest way to get started is to
+navigate to the directory [base]/examples/example1 and type 'code.py'
+and press enter.  This will run a normal NPT simulation for a system
+with gaussian potential, as specified in the 'in' file.  You may need
+to type 'source ~/.bashrc' or open a new terminal window before doing
+this so that the PATH and PYTHONPATH environment variables are
+properly set.
+
 CODE TREE
 ---------
 
@@ -101,11 +112,11 @@ RUNNING CODE
 The following scripts are in the [base]/exec directory, marked executable (the first line is 
 '#! /usr/bin/env python'):
 
-code.py        - for direct simulations
+code.py        - for direct simulations (i.e. no rare event method)
 
-codeffs.py     - for FFS simulations.  Note that codeffs.py submits jobs to a compute cluster.  It therefore must be run on a cluster computer with the Sun Grid Engine (SGE) installed (!), or a compatible engine that provides the 'qsub' command.
+codeffs.py     - for FFS simulations.  Note that codeffs.py submits jobs to a compute cluster using the 'qsub' command.  It therefore must be run on a cluster computer with the Sun Grid Engine (SGE) installed (!), or a compatible engine that provides the 'qsub' command.
 
-ffsdiagnostics.py - run after codeffs to collect FFS results (this can be run on any machine, no 'qsub' job submission needed).
+ffsdiagnostics.py - run after codeffs in the same directory in which the ffs simulation was run to collect FFS results (this can be run on any machine, no 'qsub' job submission needed).
 
 usdiagnostics.py  - run after wumbrella.py to output opval (histogram) files.
 
