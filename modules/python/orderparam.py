@@ -55,6 +55,11 @@ def stringify(op):
 
     return ' '.join(['{:.3f}'.format(o) for o in op])
 
+def allvx(positions, velocities, params):
+    """All x co-ords of velocity."""
+
+    return tuple(velocities[:, 0])
+
 def allfracld_cpp(positions, params):
     """Return fractions of all polymorphs."""
     

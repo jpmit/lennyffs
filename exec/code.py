@@ -106,8 +106,14 @@ class MProgram(object):
 
         # run the MC cycles
         cyclesdone = 0
-        opfile.write('{0} {1}\n'.format(0, stringify(self.orderp(self.positions,
-                                                                 self.params))))
+
+        # hacky for computing diffusion coefficient.
+        if self.params['orderparam'] == 'allvx':
+            op = self.orderp(self.positions, self.velocities, self.params)
+        else:
+            op = self.orderp(self.positions, self.params)
+        opfile.write('{0} {1}\n'.format(0, stringify(op)))
+        
         starttime = time.time()
 
         for cy in range(self.ncall):
@@ -118,9 +124,12 @@ class MProgram(object):
             
             cyclesdone += self.params['cycle']
             # write out order parameter
-            opfile.write('{0} {1}\n'.format(cyclesdone,
-                                            stringify(self.orderp(self.positions,
-                                                                  self.params))))
+            if self.params['orderparam'] == 'allvx':
+                op = self.orderp(self.positions, self.velocities, self.params)
+            else:
+                op = self.orderp(self.positions, self.params)
+            opfile.write('{0} {1}\n'.format(cyclesdone, stringify(op)))
+
             opfile.flush()
             # write out pos file if required
             if (cyclesdone % self.params['nsave'] == 0):

@@ -1,0 +1,43 @@
+#! /usr/bin/env python
+
+# len_diffusion
+# James Mithen
+# compute velocity autocorrelation function (v_x only)
+
+import sys
+
+import numpy as np
+
+from ffsfunctions import getpickparams
+
+try:
+    params = getpickparams()
+except IOError:
+    sys.exit("Error: could not open file params.pkl")
+
+dt = params['dt'] * params['nsamp']
+
+vxs = np.loadtxt('opval.out')
+
+# don't need information about cycles
+vxs = vxs[:,1:]
+Nstep = len(vxs)
+
+dts = np.arange(0.0, dt * Nstep, dt)
+
+# compute average for single particle first
+vx0 = vxs#[:,:10]
+vxangle = np.empty(vx0.shape)
+
+for i in range(0, Nstep):
+    vxangle[i] = (1.0 / (Nstep - i)) * np.sum(vx0[:Nstep - i] * vx0[i:], axis=0)
+
+# example of plotting for a single particle
+# plt.plot(vxangle[:,0])
+
+# vxaverage gives the curve we want the area of
+vxaverage = np.average(vxangle, axis=1)
+
+# spit out t and d(t) value
+for (t, dt) in zip(dts, vxaverage):
+    print t, dt

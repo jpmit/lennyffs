@@ -50,6 +50,7 @@ class FuncSelector(object):
     ALLFRACLD = 'allfracld' # frac of all polymorphs (LD)
     ALLFRAC = 'allfrac' # frac of all polymorphs (LD) + TF xtal frac
     POTENERGY = 'potenergy' # potential energy of the system
+    ALLVX = 'allvx'
     NONE = 'none'
     # choices for writexyz
     LD = 'ld'
@@ -136,6 +137,8 @@ class FuncSelector(object):
     def OrderParamFunc(cls):
         """Return function that computes the order parameter."""
 
+        if cls.option[cls.ORDERPARAM] == cls.ALLVX:
+            return orderparam.allvx
         if cls.option[cls.ORDERPARAM] == cls.ALLFRACLD:
             return orderparam.allfracld_cpp
         elif cls.option[cls.ORDERPARAM] == cls.ALLFRAC:
